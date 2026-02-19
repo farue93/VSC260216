@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abschlussklausur NaWi C</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #1a0a2e; --bg2: #251446; --card: rgba(37,20,70,0.85);
+      --primary: #f093fb; --secondary: #a890b8; --text: #e0d0f0; --text-bright: #f3e8ff;
+      --gold: #ffd700; --success: #2ecc71; --error: #ff6b6b; --accent: #ff9a76;
+      --border: rgba(240,147,251,0.12);
+    }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg); color: var(--text);
+      line-height: 1.7; min-height: 100vh;
+    }
+    body::before {
+      content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: radial-gradient(ellipse at 20% 80%, rgba(240,147,251,0.04) 0%, transparent 50%),
+                  radial-gradient(ellipse at 80% 20%, rgba(255,154,118,0.04) 0%, transparent 50%);
+      z-index: -1; animation: bgShift 22s ease-in-out infinite alternate;
+    }
+    @keyframes bgShift { to { transform: translate(3%, -2%); } }
+    .container { max-width: 880px; margin: 0 auto; padding: 20px; }
+
+    .exam-header {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 40px; text-align: center; margin-bottom: 30px;
+      position: relative; overflow: hidden;
+    }
+    .exam-header::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary));
+    }
+    .exam-header h1 { font-size: 2.2em; font-weight: 800; color: var(--text-bright); }
+    .exam-header .subtitle { color: var(--primary); font-weight: 600; font-size: 1.1em; }
+    .exam-meta { display: flex; justify-content: center; gap: 30px; margin-top: 16px; flex-wrap: wrap; }
+    .exam-meta span { background: rgba(240,147,251,0.08); padding: 6px 16px; border-radius: 10px; font-size: 0.85em; color: var(--secondary); }
+    .exam-meta span strong { color: var(--text-bright); }
+
+    .timer-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px 24px; margin-bottom: 30px;
+      position: sticky; top: 10px; z-index: 100; backdrop-filter: blur(10px);
+    }
+    .timer-display { font-size: 1.4em; font-weight: 700; color: var(--primary); font-variant-numeric: tabular-nums; }
+    .timer-display.warning { color: var(--gold); }
+    .timer-display.danger { color: var(--error); animation: pulse 1s infinite; }
+    @keyframes pulse { 50% { opacity: 0.5; } }
+    .timer-btn {
+      background: rgba(240,147,251,0.15); border: 1px solid var(--primary);
+      color: var(--primary); padding: 8px 20px; border-radius: 10px;
+      cursor: pointer; font-family: inherit; font-weight: 600; font-size: 0.85em; transition: all 0.3s;
+    }
+    .timer-btn:hover { background: rgba(240,147,251,0.25); }
+
+    .section {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 36px; margin-bottom: 28px;
+    }
+    .section-head {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 28px; padding-bottom: 16px;
+      border-bottom: 1px solid rgba(240,147,251,0.1);
+    }
+    .section-icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      background: linear-gradient(135deg, rgba(240,147,251,0.2), rgba(255,154,118,0.2));
+      display: flex; align-items: center; justify-content: center; font-size: 1.5em;
+    }
+    .section-head h2 { font-size: 1.35em; font-weight: 700; color: var(--text-bright); }
+    .section-head .pts { margin-left: auto; background: rgba(255,215,0,0.12); color: var(--gold); padding: 4px 14px; border-radius: 10px; font-weight: 700; font-size: 0.85em; }
+
+    .question { margin-bottom: 32px; }
+    .question:last-child { margin-bottom: 0; }
+    .q-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+    .q-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 30px; height: 30px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--bg); font-weight: 800; font-size: 0.8em; flex-shrink: 0;
+    }
+    .q-title { font-weight: 600; font-size: 1.05em; color: var(--text-bright); }
+    .q-pts { margin-left: auto; color: var(--gold); font-size: 0.8em; font-weight: 600; white-space: nowrap; }
+    .part { margin: 16px 0 16px 12px; padding-left: 16px; border-left: 2px solid rgba(240,147,251,0.15); }
+    .part-label { font-weight: 600; color: var(--primary); font-size: 0.85em; margin-bottom: 6px; }
+    .hint { background: rgba(255,215,0,0.08); border-left: 3px solid var(--gold); padding: 8px 14px; border-radius: 0 8px 8px 0; font-size: 0.85em; color: var(--gold); margin: 10px 0; }
+    .answer-field {
+      background: rgba(240,147,251,0.03); border: 1.5px dashed rgba(240,147,251,0.2);
+      border-radius: 12px; padding: 14px 18px; margin: 10px 0; min-height: 48px;
+    }
+    .answer-field:focus-within { border-color: var(--primary); background: rgba(240,147,251,0.06); }
+    .answer-input { width: 100%; background: transparent; border: none; color: var(--text-bright); font-family: inherit; font-size: 0.95em; outline: none; resize: vertical; }
+    .answer-input::placeholder { color: rgba(168,144,184,0.5); }
+    .calc-input {
+      display: inline-block; width: 120px; background: rgba(240,147,251,0.05);
+      border: 1.5px solid rgba(240,147,251,0.2); border-radius: 8px;
+      padding: 6px 12px; color: var(--text-bright); font-family: inherit;
+      font-size: 0.95em; outline: none; text-align: center;
+    }
+    .calc-input:focus { border-color: var(--primary); }
+    .calc-row { display: flex; align-items: center; gap: 10px; margin: 8px 0; flex-wrap: wrap; }
+    .calc-row label { min-width: 100px; font-size: 0.9em; }
+    .mc-group { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
+    .mc-item {
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(240,147,251,0.03); border: 1.5px solid rgba(240,147,251,0.1);
+      border-radius: 10px; padding: 12px 16px; cursor: pointer; transition: all 0.3s;
+    }
+    .mc-item:hover { border-color: rgba(240,147,251,0.3); background: rgba(240,147,251,0.06); }
+    .mc-item input[type="radio"], .mc-item input[type="checkbox"] { accent-color: var(--primary); width: 18px; height: 18px; cursor: pointer; }
+    .mc-item label { cursor: pointer; font-size: 0.9em; flex: 1; }
+    .q-table { width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 12px; overflow: hidden; margin: 12px 0; }
+    .q-table th { background: rgba(240,147,251,0.1); padding: 10px 14px; text-align: left; font-weight: 600; font-size: 0.85em; color: var(--text-bright); }
+    .q-table td { padding: 10px 14px; border-top: 1px solid rgba(240,147,251,0.06); font-size: 0.9em; }
+    .q-table select { background: rgba(240,147,251,0.05); border: 1.5px solid rgba(240,147,251,0.2); border-radius: 8px; padding: 6px 10px; color: var(--text-bright); font-family: inherit; font-size: 0.9em; width: 100%; }
+    .eq-box { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 16px 22px; margin: 12px 0; font-size: 1.05em; text-align: center; border: 1px solid rgba(240,147,251,0.08); font-family: 'Courier New', monospace; }
+    .draw-area {
+      background: rgba(0,0,0,0.25); border: 2px dashed rgba(240,147,251,0.2);
+      border-radius: 14px; min-height: 220px; margin: 12px 0;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--secondary); font-size: 0.85em; overflow: hidden;
+    }
+    .draw-area svg { width: 100%; height: auto; }
+
+    /* Lückentext */
+    .luecke {
+      display: inline-block; min-width: 120px; border-bottom: 2px dashed rgba(240,147,251,0.4);
+      text-align: center; padding: 2px 8px; margin: 0 4px;
+    }
+    .luecke input {
+      background: transparent; border: none; color: var(--primary); font-family: inherit;
+      font-size: inherit; text-align: center; outline: none; width: 100%;
+      font-weight: 600;
+    }
+
+    .sol-toggle { text-align: center; margin: 40px 0 20px; }
+    .sol-btn {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--bg); padding: 14px 36px; border: none; border-radius: 14px;
+      font-family: inherit; font-weight: 700; font-size: 1.05em; cursor: pointer;
+      box-shadow: 0 4px 20px rgba(240,147,251,0.2); transition: all 0.3s;
+    }
+    .sol-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(240,147,251,0.3); }
+    #solutionsSection { display: none; animation: fadeIn 0.5s ease; }
+    #solutionsSection.show { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .sol-section { background: var(--card); border: 1px solid rgba(46,204,113,0.2); border-radius: 20px; padding: 36px; margin-bottom: 28px; }
+    .sol-section h3 { color: var(--success); font-size: 1.2em; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    .sol-answer { background: rgba(46,204,113,0.06); border: 1px solid rgba(46,204,113,0.15); border-radius: 10px; padding: 14px 18px; margin: 10px 0; font-size: 0.92em; line-height: 1.8; }
+    .sol-answer strong { color: var(--success); }
+    .sol-step { display: flex; gap: 10px; align-items: baseline; margin: 6px 0; }
+    .sol-step .step-num { background: rgba(240,147,251,0.15); color: var(--primary); width: 22px; height: 22px; border-radius: 50%; font-size: 0.7em; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+    .sol-highlight { background: rgba(240,147,251,0.1); border-left: 3px solid var(--primary); padding: 10px 16px; border-radius: 0 10px 10px 0; margin: 10px 0; }
+    .diagram-container { background: rgba(0,0,0,0.2); border-radius: 14px; padding: 16px; margin: 16px 0; text-align: center; }
+    .diagram-container svg { max-width: 100%; height: auto; }
+    .diagram-caption { font-size: 0.8em; color: var(--secondary); margin-top: 8px; }
+    .chem-eq .ox { color: #ff6b6b; font-weight: 600; }
+    .chem-eq .red { color: #48a9fe; font-weight: 600; }
+    sub { font-size: 0.75em; } sup { font-size: 0.75em; }
+    .sep { border: none; border-top: 1px solid rgba(240,147,251,0.08); margin: 24px 0; }
+
+    /* pH-Skala Visualisierung */
+    .ph-scale {
+      display: flex; border-radius: 10px; overflow: hidden; margin: 14px 0; height: 40px;
+      font-size: 0.75em; font-weight: 700;
+    }
+    .ph-scale div {
+      flex: 1; display: flex; align-items: center; justify-content: center; color: #fff;
+    }
+
+    @media print {
+      body { background: #fff; color: #222; }
+      .timer-bar, .sol-toggle { display: none; }
+      .section, .exam-header { border: 1px solid #ccc; background: #fff; }
+    }
+    @media (max-width: 600px) { .exam-header h1 { font-size: 1.6em; } .section { padding: 20px; } }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="exam-header">
+    <h1>🧪 Abschlussklausur NaWi C</h1>
+    <p class="subtitle">Naturwissenschaften · Physik & Chemie</p>
+    <div class="exam-meta">
+      <span>⏱ <strong>60 Minuten</strong></span>
+      <span>📊 <strong>90 Punkte</strong></span>
+      <span>📅 <strong>Klausur C</strong></span>
+    </div>
+  </div>
+
+  <div class="timer-bar">
+    <div>
+      <span style="color:var(--secondary);font-size:0.85em;">⏱ Restzeit:</span>
+      <span class="timer-display" id="timerDisplay">60:00</span>
+    </div>
+    <button class="timer-btn" id="timerBtn" onclick="toggleTimer()">▶ Timer starten</button>
+  </div>
+
+  <!-- ═══ TEIL A: OPTIK (18P) ═══ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon">🔦</div>
+      <h2>Teil A: Optik</h2>
+      <span class="pts">18 Punkte</span>
+    </div>
+
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">1</span>
+        <span class="q-title">Farben des Lichts & Spektrum</span>
+        <span class="q-pts">10 P</span>
+      </div>
+
+      <div class="part">
+        <div class="part-label">a) Warum ist der Himmel blau? (2 Punkte)</div>
+        <p>Erklären Sie mithilfe der <strong>Lichtstreuung</strong>, warum der Himmel tagsüber blau erscheint.</p>
+        <div class="answer-field"><textarea class="answer-input" rows="3" placeholder="Erklärung..."></textarea></div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Wie entsteht ein Regenbogen? (3 Punkte)</div>
+        <p>Beschreiben Sie die drei optischen Vorgänge, die bei der Entstehung eines Regenbogens in einem Wassertropfen auftreten.</p>
+        <div class="answer-field"><textarea class="answer-input" rows="3" placeholder="1. ...\n2. ...\n3. ..."></textarea></div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">c) Additive vs. subtraktive Farbmischung (3 Punkte)</div>
+        <p>Erklären Sie den Unterschied und nennen Sie je ein Beispiel.</p>
+        <table class="q-table">
+          <tr><th></th><th>Additive Farbmischung</th><th>Subtraktive Farbmischung</th></tr>
+          <tr><td>Prinzip</td><td><input type="text" class="calc-input" style="width:100%" placeholder="..."></td><td><input type="text" class="calc-input" style="width:100%" placeholder="..."></td></tr>
+          <tr><td>Grundfarben</td><td><input type="text" class="calc-input" style="width:100%" placeholder="..."></td><td><input type="text" class="calc-input" style="width:100%" placeholder="..."></td></tr>
+          <tr><td>Beispiel</td><td><input type="text" class="calc-input" style="width:100%" placeholder="z.B. ..."></td><td><input type="text" class="calc-input" style="width:100%" placeholder="z.B. ..."></td></tr>
+        </table>
+      </div>
+
+      <div class="part">
+        <div class="part-label">d) Infrarot & UV-Strahlung (2 Punkte)</div>
+        <p>Was haben Infrarot, sichtbares Licht und UV-Strahlung gemeinsam? Was unterscheidet sie?</p>
+        <div class="answer-field"><textarea class="answer-input" rows="3" placeholder="Gemeinsamkeit: ...\nUnterschied: ..."></textarea></div>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">2</span>
+        <span class="q-title">Zeichenaufgabe: Doppelspiegel & Spiegelbild</span>
+        <span class="q-pts">8 P</span>
+      </div>
+
+      <div class="part">
+        <div class="part-label">a) Doppelspiegel im 90°-Winkel (5 Punkte)</div>
+        <p>Zwei ebene Spiegel stehen im <strong>90°-Winkel</strong> zueinander. Ein Lichtstrahl trifft auf den ersten Spiegel unter <strong>35° zum Lot</strong>.</p>
+        <p>Zeichnen Sie den <strong>vollständigen Strahlengang</strong>: Einfallender Strahl → Reflexion am 1. Spiegel → Reflexion am 2. Spiegel → Austritt.</p>
+        <div class="hint">💡 Das Reflexionsgesetz gilt an jedem Spiegel einzeln! Der Strahl wird zweimal reflektiert.</div>
+        <div class="draw-area" style="min-height:280px;">
+          <svg viewBox="0 0 500 280" xmlns="http://www.w3.org/2000/svg">
+            <!-- Spiegel 1 (vertikal) -->
+            <rect x="80" y="40" width="8" height="200" rx="2" fill="#f093fb" opacity="0.3"/>
+            <text x="55" y="35" fill="#f093fb" font-size="11" font-family="Inter">Spiegel 1</text>
+            <!-- Spiegel 2 (horizontal) -->
+            <rect x="80" y="240" width="340" height="8" rx="2" fill="#ff9a76" opacity="0.3"/>
+            <text x="220" y="265" fill="#ff9a76" font-size="11" font-family="Inter">Spiegel 2</text>
+            <!-- 90° Markierung -->
+            <rect x="80" y="232" width="16" height="16" fill="none" stroke="#fff" stroke-width="1" opacity="0.3"/>
+            <!-- Einfallender Strahl -->
+            <line x1="240" y1="30" x2="88" y2="120" stroke="#ffd700" stroke-width="2"/>
+            <polygon points="95,114 88,120 95,118" fill="#ffd700"/>
+            <text x="250" y="28" fill="#ffd700" font-size="11" font-family="Inter">Einfallender Strahl</text>
+            <text x="170" y="100" fill="#555" font-size="12" font-family="Inter" font-style="italic">Zeichne den weiteren Verlauf →</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Spiegelbildgröße (3 Punkte)</div>
+        <p>Ein Gegenstand (Höhe h = 12 cm) steht 30 cm vor einem ebenen Spiegel.</p>
+        <div class="calc-row"><label>Bildgröße:</label><input type="text" class="calc-input" placeholder="? cm"></div>
+        <div class="calc-row"><label>Bildentfernung:</label><input type="text" class="calc-input" placeholder="? cm vom Spiegel"></div>
+        <p style="margin-top:8px;">Erklären Sie, warum das Bild gleich groß erscheint:</p>
+        <div class="answer-field"><textarea class="answer-input" rows="2" placeholder="Erklärung..."></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TEIL B: E-LEHRE (16P) ═══ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon">⚡</div>
+      <h2>Teil B: Elektrizitätslehre</h2>
+      <span class="pts">16 Punkte</span>
+    </div>
+
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">3</span>
+        <span class="q-title">Gemischte Schaltung – Berechnung</span>
+        <span class="q-pts">10 P</span>
+      </div>
+      <p>In einer gemischten Schaltung sind <strong>R₁ = 40 Ω</strong> und <strong>R₂ = 60 Ω</strong> zueinander <strong>parallel</strong> geschaltet. Diese Parallelschaltung ist <strong>in Reihe</strong> mit <strong>R₃ = 30 Ω</strong> an eine Batterie mit <strong>U = 24 V</strong> angeschlossen.</p>
+
+      <div class="part">
+        <div class="part-label">a) R<sub>parallel</sub> berechnen (2 Punkte)</div>
+        <div class="calc-row"><label>R<sub>parallel</sub> =</label><input type="text" class="calc-input" placeholder="? Ω"></div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) R<sub>ges</sub> berechnen (1 Punkt)</div>
+        <div class="calc-row"><label>R<sub>ges</sub> =</label><input type="text" class="calc-input" placeholder="? Ω"></div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">c) I<sub>ges</sub> berechnen (2 Punkte)</div>
+        <div class="calc-row"><label>I<sub>ges</sub> ≈</label><input type="text" class="calc-input" placeholder="? A"></div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">d) Teilspannungen (3 Punkte)</div>
+        <p style="font-size:0.9em;">Berechnen Sie U₃ (an R₃) und U<sub>parallel</sub> (an R₁||R₂).</p>
+        <div class="calc-row"><label>U₃ ≈</label><input type="text" class="calc-input" placeholder="? V"></div>
+        <div class="calc-row"><label>U<sub>par</sub> ≈</label><input type="text" class="calc-input" placeholder="? V"></div>
+        <div class="hint">💡 Probe: U₃ + U<sub>par</sub> muss = 24 V ergeben!</div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">e) Teilströme I₁ und I₂ (2 Punkte)</div>
+        <div class="calc-row"><label>I₁ ≈</label><input type="text" class="calc-input" placeholder="? A"></div>
+        <div class="calc-row"><label>I₂ ≈</label><input type="text" class="calc-input" placeholder="? A"></div>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">4</span>
+        <span class="q-title">Verständnis: Energieübertragung & Wechselstrom</span>
+        <span class="q-pts">6 P</span>
+      </div>
+
+      <div class="part">
+        <div class="part-label">a) Wechselstrom vs. Gleichstrom (2 Punkte)</div>
+        <p>Erklären Sie den Unterschied. Nennen Sie je eine <strong>typische Anwendung</strong>.</p>
+        <div class="answer-field"><textarea class="answer-input" rows="3" placeholder="AC: ...\nDC: ..."></textarea></div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Hochspannung bei Stromübertragung (2 Punkte)</div>
+        <p>Warum wird Strom über lange Strecken mit <strong>Hochspannung</strong> (z.B. 380 kV) übertragen und nicht mit 230 V? Erklären Sie den physikalischen Hintergrund.</p>
+        <div class="answer-field"><textarea class="answer-input" rows="3" placeholder="Erklärung..."></textarea></div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">c) Transformator (2 Punkte)</div>
+        <p>Was ist ein <strong>Transformator</strong>? Wozu dient er im Stromnetz?</p>
+        <div class="answer-field"><textarea class="answer-input" rows="2" placeholder="Definition + Funktion..."></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TEIL C: MAGNETISMUS (10P) ═══ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon">🧲</div>
+      <h2>Teil C: Magnetismus</h2>
+      <span class="pts">10 Punkte</span>
+    </div>
+
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">5</span>
+        <span class="q-title">Magnetfelder verstehen</span>
+        <span class="q-pts">5 P</span>
+      </div>
+
+      <div class="part">
+        <div class="part-label">a) Feldlinien zeichnen (2 Punkte)</div>
+        <p>Zeichnen Sie das <strong>Magnetfeld eines Stabmagneten</strong> (mindestens 4 Feldlinien mit Pfeilen):</p>
+        <div class="draw-area" style="min-height:200px;">
+          <svg viewBox="0 0 500 200" xmlns="http://www.w3.org/2000/svg">
+            <rect x="160" y="80" width="80" height="40" rx="4" fill="#2ecc71" opacity="0.3"/>
+            <text x="180" y="105" fill="#2ecc71" font-size="14" font-family="Inter" font-weight="800">N</text>
+            <rect x="240" y="80" width="80" height="40" rx="4" fill="#ff6b6b" opacity="0.3"/>
+            <text x="265" y="105" fill="#ff6b6b" font-size="14" font-family="Inter" font-weight="800">S</text>
+            <text x="175" y="165" fill="#555" font-size="11" font-family="Inter" font-style="italic">Zeichne Feldlinien mit Pfeilen</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Feldlinien-Richtung (1 Punkt)</div>
+        <p>Von welchem Pol verlaufen die Feldlinien <strong>außerhalb</strong> des Magneten zu welchem Pol?</p>
+        <div class="answer-field"><input type="text" class="answer-input" placeholder="Von ... nach ..."></div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">c) Zwei Magnete zusammenbringen (2 Punkte)</div>
+        <p>Zwei Stabmagnete werden mit den <strong>Nordpolen</strong> zueinander gehalten. Beschreiben Sie, was passiert und erklären Sie die Feldlinien zwischen den Polen.</p>
+        <div class="answer-field"><textarea class="answer-input" rows="3" placeholder="Beobachtung + Feldlinienerklärung..."></textarea></div>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">6</span>
+        <span class="q-title">Magnetismus – Multiple Choice</span>
+        <span class="q-pts">5 P</span>
+      </div>
+
+      <div class="part">
+        <div class="part-label">a) Anwendungen von Magneten (2P)</div>
+        <p>Welche Geräte nutzen <strong>Elektromagnete</strong>? (Mehrere richtig!)</p>
+        <div class="mc-group">
+          <div class="mc-item"><input type="checkbox" id="a1"><label for="a1">Türklingel</label></div>
+          <div class="mc-item"><input type="checkbox" id="a2"><label for="a2">Kompass</label></div>
+          <div class="mc-item"><input type="checkbox" id="a3"><label for="a3">Elektromotor</label></div>
+          <div class="mc-item"><input type="checkbox" id="a4"><label for="a4">Schrottplatz-Kran</label></div>
+          <div class="mc-item"><input type="checkbox" id="a5"><label for="a5">Taschenlampe</label></div>
+          <div class="mc-item"><input type="checkbox" id="a6"><label for="a6">Lautsprecher</label></div>
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Magnetisierung (1P)</div>
+        <div class="mc-group">
+          <div class="mc-item"><input type="radio" name="mag" id="mg1"><label for="mg1">Nur neue Materialien können magnetisiert werden</label></div>
+          <div class="mc-item"><input type="radio" name="mag" id="mg2"><label for="mg2">Ferromagnetische Materialien können durch Kontakt mit einem Magneten magnetisiert werden</label></div>
+          <div class="mc-item"><input type="radio" name="mag" id="mg3"><label for="mg3">Jedes Material kann magnetisiert werden</label></div>
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">c) Was passiert beim Erhitzen eines Magneten? (2P)</div>
+        <div class="mc-group">
+          <div class="mc-item"><input type="radio" name="heat" id="h1"><label for="h1">Er wird stärker</label></div>
+          <div class="mc-item"><input type="radio" name="heat" id="h2"><label for="h2">Er verliert seine Magnetisierung über der Curie-Temperatur</label></div>
+          <div class="mc-item"><input type="radio" name="heat" id="h3"><label for="h3">Er wechselt die Pole</label></div>
+          <div class="mc-item"><input type="radio" name="heat" id="h4"><label for="h4">Nichts verändert sich</label></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TEIL D: CHEMIE (32P) ═══ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon">⚗️</div>
+      <h2>Teil D: Chemie</h2>
+      <span class="pts">32 Punkte</span>
+    </div>
+
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">7</span>
+        <span class="q-title">Lückentext – Chemische Grundlagen</span>
+        <span class="q-pts">6 P</span>
+      </div>
+      <p>Ergänzen Sie die Lücken mit den <strong>passenden Begriffen</strong>:</p>
+      <div style="line-height:2.4; margin-top:16px; font-size:0.95em;">
+        <p>Bei einer <span class="luecke"><input type="text" placeholder="(1)"></span> Reaktion wird Wärme freigesetzt, bei einer <span class="luecke"><input type="text" placeholder="(2)"></span> Reaktion wird Wärme aufgenommen.</p>
+        <p>Eine Säure nach Brønsted ist ein <span class="luecke"><input type="text" placeholder="(3)"></span>, sie gibt Protonen (H⁺) ab. Eine Base ist ein <span class="luecke"><input type="text" placeholder="(4)"></span>, sie nimmt Protonen auf.</p>
+        <p>Bei der Oxidation werden Elektronen <span class="luecke"><input type="text" placeholder="(5)"></span>, die Oxidationszahl <span class="luecke"><input type="text" placeholder="(6)"></span>.</p>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">8</span>
+        <span class="q-title">Redoxreaktion: Aluminium + Sauerstoff</span>
+        <span class="q-pts">8 P</span>
+      </div>
+      <p>Aluminium reagiert mit Sauerstoff zu Aluminiumoxid (Al₂O₃). Diese stark exotherme Reaktion wird auch als <strong>Thermitreaktion</strong> genutzt.</p>
+
+      <div class="part">
+        <div class="part-label">a) Oxidationszahlen (2 Punkte)</div>
+        <div class="calc-row"><label>Al (Edukt) =</label><input type="text" class="calc-input" placeholder="?"></div>
+        <div class="calc-row"><label>O₂ (Edukt) =</label><input type="text" class="calc-input" placeholder="?"></div>
+        <div class="calc-row"><label>Al in Al₂O₃ =</label><input type="text" class="calc-input" placeholder="?"></div>
+        <div class="calc-row"><label>O in Al₂O₃ =</label><input type="text" class="calc-input" placeholder="?"></div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Teilgleichungen (3 Punkte)</div>
+        <p><strong>Oxidation:</strong></p>
+        <div class="answer-field"><input type="text" class="answer-input" placeholder="Al → ..."></div>
+        <p style="margin-top:8px;"><strong>Reduktion:</strong></p>
+        <div class="answer-field"><input type="text" class="answer-input" placeholder="O₂ + ... e⁻ → ..."></div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">c) Gesamtgleichung (2 Punkte)</div>
+        <div class="answer-field"><input type="text" class="answer-input" placeholder="... Al + ... O₂ → ... Al₂O₃"></div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">d) Warum ist Aluminium so reaktiv? (1 Punkt)</div>
+        <div class="answer-field"><textarea class="answer-input" rows="2" placeholder="Erklärung..."></textarea></div>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">9</span>
+        <span class="q-title">Säure-Base: Essigsäure & pH-Wert</span>
+        <span class="q-pts">7 P</span>
+      </div>
+
+      <div class="part">
+        <div class="part-label">a) CH₃COOH + H₂O (2 Punkte)</div>
+        <div class="eq-box">CH₃COOH + H₂O ⇌ <input type="text" class="calc-input" style="width:200px" placeholder="Produkte?"></div>
+        <p style="font-size:0.85em; margin-top:6px;">Hinweis: Das ⇌ zeigt, dass es sich um eine <strong>Gleichgewichtsreaktion</strong> handelt (Essigsäure = schwache Säure).</p>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Korrespondierende Paare (2 Punkte)</div>
+        <div class="calc-row"><label>Paar 1:</label><input type="text" class="calc-input" style="width:220px" placeholder="Säure / korr. Base"></div>
+        <div class="calc-row"><label>Paar 2:</label><input type="text" class="calc-input" style="width:220px" placeholder="Base / korr. Säure"></div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">c) pH-Wert (3 Punkte)</div>
+        <p>Was gibt der <strong>pH-Wert</strong> an? Ordnen Sie zu:</p>
+        <div class="calc-row"><label>pH &lt; 7:</label><input type="text" class="calc-input" style="width:120px" placeholder="?"></div>
+        <div class="calc-row"><label>pH = 7:</label><input type="text" class="calc-input" style="width:120px" placeholder="?"></div>
+        <div class="calc-row"><label>pH &gt; 7:</label><input type="text" class="calc-input" style="width:120px" placeholder="?"></div>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">10</span>
+        <span class="q-title">Funktionelle Gruppen & Veresterung</span>
+        <span class="q-pts">6 P</span>
+      </div>
+
+      <div class="part">
+        <div class="part-label">a) Funktionelle Gruppen zuordnen (3 Punkte)</div>
+        <table class="q-table">
+          <tr><th>Stoff</th><th>Funktionelle Gruppe</th><th>Stoffklasse</th></tr>
+          <tr><td>Ethanol (C₂H₅OH)</td><td><input type="text" class="calc-input" style="width:100%" placeholder="?"></td><td><input type="text" class="calc-input" style="width:100%" placeholder="?"></td></tr>
+          <tr><td>Butansäure (C₃H₇COOH)</td><td><input type="text" class="calc-input" style="width:100%" placeholder="?"></td><td><input type="text" class="calc-input" style="width:100%" placeholder="?"></td></tr>
+          <tr><td>Methylformiat (HCOOCH₃)</td><td><input type="text" class="calc-input" style="width:100%" placeholder="?"></td><td><input type="text" class="calc-input" style="width:100%" placeholder="?"></td></tr>
+        </table>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Veresterung (3 Punkte)</div>
+        <p><strong>Methanol</strong> reagiert mit <strong>Ameisensäure</strong> (Methansäure, HCOOH).</p>
+        <div class="calc-row"><label>Hauptprodukt:</label><input type="text" class="calc-input" style="width:250px" placeholder="Name?"></div>
+        <div class="calc-row"><label>Nebenprodukt:</label><input type="text" class="calc-input" style="width:180px" placeholder="?"></div>
+        <p style="margin-top:8px;">Schreiben Sie die Reaktionsgleichung:</p>
+        <div class="answer-field"><input type="text" class="answer-input" placeholder="HCOOH + CH₃OH → ..."></div>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">11</span>
+        <span class="q-title">Reaktionsgleichungen aus der Biologie</span>
+        <span class="q-pts">5 P</span>
+      </div>
+
+      <div class="part">
+        <div class="part-label">a) Photosynthese (2 Punkte)</div>
+        <p>Stellen Sie die <strong>Summengleichung der Photosynthese</strong> auf:</p>
+        <div class="answer-field"><input type="text" class="answer-input" placeholder="... CO₂ + ... H₂O → ... + ... O₂"></div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Alkoholische Gärung (3 Punkte)</div>
+        <p>Stellen Sie die Gleichung auf und benennen Sie die Produkte:</p>
+        <div class="answer-field"><input type="text" class="answer-input" placeholder="C₆H₁₂O₆ → ... + ..."></div>
+        <div class="calc-row"><label>Produkt 1:</label><input type="text" class="calc-input" style="width:200px" placeholder="Name?"></div>
+        <div class="calc-row"><label>Produkt 2:</label><input type="text" class="calc-input" style="width:200px" placeholder="Name?"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TEIL E: NACHHALTIGKEIT (14P) ═══ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon">🌱</div>
+      <h2>Teil E: Nachhaltige Entwicklung</h2>
+      <span class="pts">14 Punkte</span>
+    </div>
+
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">12</span>
+        <span class="q-title">Energie & Klimaschutz</span>
+        <span class="q-pts">7 P</span>
+      </div>
+
+      <div class="part">
+        <div class="part-label">a) Erneuerbare Energien (3 Punkte)</div>
+        <p>Nennen Sie <strong>drei erneuerbare Energiequellen</strong> und je einen Vor- und Nachteil:</p>
+        <table class="q-table">
+          <tr><th>Energiequelle</th><th>Vorteil</th><th>Nachteil</th></tr>
+          <tr><td><input type="text" class="calc-input" style="width:100%" placeholder="1."></td><td><input type="text" class="calc-input" style="width:100%" placeholder="..."></td><td><input type="text" class="calc-input" style="width:100%" placeholder="..."></td></tr>
+          <tr><td><input type="text" class="calc-input" style="width:100%" placeholder="2."></td><td><input type="text" class="calc-input" style="width:100%" placeholder="..."></td><td><input type="text" class="calc-input" style="width:100%" placeholder="..."></td></tr>
+          <tr><td><input type="text" class="calc-input" style="width:100%" placeholder="3."></td><td><input type="text" class="calc-input" style="width:100%" placeholder="..."></td><td><input type="text" class="calc-input" style="width:100%" placeholder="..."></td></tr>
+        </table>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Treibhauseffekt (2 Punkte)</div>
+        <p>Erklären Sie den <strong>natürlichen Treibhauseffekt</strong> und warum seine Verstärkung problematisch ist.</p>
+        <div class="answer-field"><textarea class="answer-input" rows="3" placeholder="Erklärung..."></textarea></div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">c) Fossil vs. erneuerbar (2 Punkte)</div>
+        <p>Nennen Sie den grundlegenden <strong>Unterschied</strong> zwischen fossilen und erneuerbaren Energieträgern.</p>
+        <div class="answer-field"><textarea class="answer-input" rows="2" placeholder="Unterschied..."></textarea></div>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">13</span>
+        <span class="q-title">Nachhaltige Produkte & Verbraucherhandeln</span>
+        <span class="q-pts">7 P</span>
+      </div>
+
+      <div class="part">
+        <div class="part-label">a) Biobasiert ≠ biologisch abbaubar (2 Punkte)</div>
+        <p>Erklären Sie den Unterschied zwischen <strong>biobasiert</strong> und <strong>biologisch abbaubar</strong>.</p>
+        <div class="answer-field"><textarea class="answer-input" rows="3" placeholder="Biobasiert: ...\nBiologisch abbaubar: ..."></textarea></div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Grenzen des Recyclings (2 Punkte)</div>
+        <p>Warum wird <strong>Recycling allein</strong> das Plastikproblem nicht lösen? Nennen Sie zwei Gründe.</p>
+        <div class="answer-field"><textarea class="answer-input" rows="3" placeholder="1) ...\n2) ..."></textarea></div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">c) Verbrauchermaßnahmen (3 Punkte)</div>
+        <p>Nennen Sie <strong>drei konkrete Maßnahmen</strong>, die Verbraucher im Alltag umsetzen können, um nachhaltiger zu leben:</p>
+        <div class="answer-field"><textarea class="answer-input" rows="3" placeholder="1) ...\n2) ...\n3) ..."></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ LÖSUNGEN ═══ -->
+  <div class="sol-toggle">
+    <button class="sol-btn" onclick="toggleSolutions()">📋 Musterlösungen anzeigen</button>
+  </div>
+
+  <div id="solutionsSection">
+
+    <div class="sol-section">
+      <h3>🔦 Teil A: Optik – Lösungen</h3>
+
+      <div class="sol-answer">
+        <strong>1a) Blauer Himmel:</strong> Sonnenlicht besteht aus allen Farben. Kleine Moleküle in der Atmosphäre (N₂, O₂) streuen kurzwelliges blaues Licht viel stärker als langwelliges rotes Licht (<strong>Rayleigh-Streuung</strong>). Deshalb sehen wir von überall blaues Streulicht.
+      </div>
+      <div class="sol-answer">
+        <strong>1b) Regenbogen:</strong> Im Wassertropfen finden drei Vorgänge statt:<br>
+        1. <strong>Brechung</strong> beim Eintritt (Luft → Wasser)<br>
+        2. <strong>Reflexion</strong> an der Rückseite des Tropfens<br>
+        3. <strong>Brechung</strong> beim Austritt (Wasser → Luft)<br>
+        Da der Brechungswinkel von der Wellenlänge abhängt (Dispersion), wird weißes Licht in seine Spektralfarben aufgefächert.
+      </div>
+
+      <div class="diagram-container">
+        <svg viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg">
+          <!-- Prisma -->
+          <polygon points="160,20 250,160 70,160" fill="rgba(240,147,251,0.1)" stroke="#f093fb" stroke-width="2"/>
+          <text x="145" y="130" fill="#f093fb" font-size="12" font-family="Inter">Prisma</text>
+          <!-- Weißes Licht -->
+          <line x1="10" y1="80" x2="155" y2="80" stroke="#fff" stroke-width="3"/>
+          <text x="30" y="72" fill="#fff" font-size="11" font-family="Inter">Weißes Licht</text>
+          <!-- Spektralfarben -->
+          <line x1="210" y1="130" x2="420" y2="50" stroke="#ff0000" stroke-width="2"/>
+          <line x1="210" y1="133" x2="420" y2="65" stroke="#ff8800" stroke-width="2"/>
+          <line x1="210" y1="136" x2="420" y2="80" stroke="#ffdd00" stroke-width="2"/>
+          <line x1="210" y1="139" x2="420" y2="95" stroke="#00cc00" stroke-width="2"/>
+          <line x1="210" y1="142" x2="420" y2="110" stroke="#0088ff" stroke-width="2"/>
+          <line x1="210" y1="145" x2="420" y2="125" stroke="#4400ff" stroke-width="2"/>
+          <line x1="210" y1="148" x2="420" y2="140" stroke="#8800cc" stroke-width="2"/>
+          <text x="425" y="55" fill="#ff0000" font-size="9" font-family="Inter">Rot</text>
+          <text x="425" y="100" fill="#00cc00" font-size="9" font-family="Inter">Grün</text>
+          <text x="425" y="145" fill="#8800cc" font-size="9" font-family="Inter">Violett</text>
+        </svg>
+        <div class="diagram-caption">Dispersion: Weißes Licht wird im Prisma in Spektralfarben zerlegt</div>
+      </div>
+
+      <div class="sol-answer">
+        <strong>1c) Farbmischung:</strong><br>
+        <strong>Additiv:</strong> Lichtfarben werden überlagert (addiert). Grundfarben: <strong>Rot, Grün, Blau (RGB)</strong>. Alle zusammen → Weiß. Beispiel: Bildschirm, Beamer.<br>
+        <strong>Subtraktiv:</strong> Farbpigmente absorbieren (subtrahieren) bestimmte Wellenlängen. Grundfarben: <strong>Cyan, Magenta, Gelb (CMY)</strong>. Alle zusammen → Schwarz. Beispiel: Drucker, Malfarben.
+      </div>
+      <div class="sol-answer">
+        <strong>1d)</strong> Gemeinsamkeit: Alle sind <strong>elektromagnetische Wellen</strong> und breiten sich mit Lichtgeschwindigkeit aus.<br>
+        Unterschied: Sie unterscheiden sich in der <strong>Wellenlänge/Frequenz</strong>. IR > sichtbar > UV (IR hat die größte Wellenlänge, UV die kleinste von den dreien).
+      </div>
+
+      <hr class="sep">
+      <p><strong>Aufgabe 2: Doppelspiegel & Spiegelbild</strong></p>
+
+      <div class="sol-answer">
+        <strong>2a) 90°-Doppelspiegel:</strong> Einfallswinkel am 1. Spiegel = 35° zum Lot → reflektiert unter 35°. Der reflektierte Strahl trifft auf Spiegel 2 unter 90°−35° = <strong>55° zum Lot</strong> → reflektiert unter 55°. Der austretende Strahl verläuft <strong>antiparallel</strong> (genau entgegengesetzt) zum einfallenden Strahl.
+      </div>
+
+      <div class="diagram-container">
+        <svg viewBox="0 0 460 280" xmlns="http://www.w3.org/2000/svg">
+          <!-- Spiegel 1 (vertikal) -->
+          <rect x="70" y="30" width="6" height="200" rx="2" fill="#f093fb" opacity="0.4"/>
+          <text x="45" y="25" fill="#f093fb" font-size="10" font-family="Inter">Sp.1</text>
+          <!-- Spiegel 2 (horizontal) -->
+          <rect x="70" y="230" width="340" height="6" rx="2" fill="#ff9a76" opacity="0.4"/>
+          <text x="220" y="255" fill="#ff9a76" font-size="10" font-family="Inter">Sp.2</text>
+          <!-- 90°-Ecke -->
+          <rect x="70" y="222" width="14" height="14" fill="none" stroke="#fff" stroke-width="1" opacity="0.3"/>
+          <!-- Einfallend -->
+          <line x1="230" y1="20" x2="76" y2="110" stroke="#ffd700" stroke-width="2.5"/>
+          <text x="235" y="18" fill="#ffd700" font-size="10" font-family="Inter">Einfallend</text>
+          <!-- Lot 1 (horizontal) -->
+          <line x1="50" y1="110" x2="130" y2="110" stroke="#fff" stroke-width="0.8" stroke-dasharray="4,3" opacity="0.3"/>
+          <!-- Reflektiert → Spiegel 2 -->
+          <line x1="76" y1="110" x2="270" y2="230" stroke="#2ecc71" stroke-width="2.5"/>
+          <text x="130" y="175" fill="#2ecc71" font-size="10" font-family="Inter" transform="rotate(32,140,165)">1. Reflexion</text>
+          <!-- Lot 2 (vertikal) -->
+          <line x1="270" y1="200" x2="270" y2="260" stroke="#fff" stroke-width="0.8" stroke-dasharray="4,3" opacity="0.3"/>
+          <!-- Austritt -->
+          <line x1="270" y1="230" x2="420" y2="260" stroke="#ff6b6b" stroke-width="2.5"/>
+          <text x="340" y="258" fill="#ff6b6b" font-size="10" font-family="Inter">Austritt (antiparallel)</text>
+          <!-- Winkel-Labels -->
+          <text x="90" y="96" fill="#ffd700" font-size="10" font-family="Inter" font-weight="700">35°</text>
+          <text x="90" y="128" fill="#2ecc71" font-size="10" font-family="Inter" font-weight="700">35°</text>
+          <text x="250" y="222" fill="#2ecc71" font-size="10" font-family="Inter" font-weight="700">55°</text>
+          <text x="282" y="222" fill="#ff6b6b" font-size="10" font-family="Inter" font-weight="700">55°</text>
+        </svg>
+        <div class="diagram-caption">90°-Doppelspiegel: Austrittsstrahl antiparallel zum Eintrittsstrahl</div>
+      </div>
+
+      <div class="sol-answer">
+        <strong>2b)</strong> Bildgröße = <strong>12 cm</strong> (gleich groß). Bildentfernung = <strong>30 cm hinter dem Spiegel</strong>.<br>
+        Das Bild ist gleich groß, weil bei einem ebenen Spiegel der Bildabstand = Gegenstandsabstand und der Abbildungsmaßstab = 1 ist. Jeder Punkt des Gegenstands wird genau symmetrisch hinter dem Spiegel abgebildet (virtuelles Bild).
+      </div>
+    </div>
+
+    <!-- Lösung B -->
+    <div class="sol-section">
+      <h3>⚡ Teil B: Elektrizitätslehre – Lösungen</h3>
+
+      <p><strong>Aufgabe 3: Gemischte Schaltung</strong></p>
+
+      <div class="diagram-container">
+        <svg viewBox="0 0 480 180" xmlns="http://www.w3.org/2000/svg">
+          <line x1="30" y1="30" x2="30" y2="150" stroke="#f093fb" stroke-width="2"/>
+          <line x1="30" y1="30" x2="120" y2="30" stroke="#f093fb" stroke-width="2"/>
+          <line x1="30" y1="150" x2="120" y2="150" stroke="#f093fb" stroke-width="2"/>
+          <!-- R1 branch -->
+          <line x1="120" y1="30" x2="120" y2="55" stroke="#f093fb" stroke-width="2"/>
+          <line x1="120" y1="55" x2="150" y2="55" stroke="#f093fb" stroke-width="2"/>
+          <rect x="150" y="45" width="80" height="20" rx="4" fill="none" stroke="#ff6b6b" stroke-width="2"/>
+          <text x="165" y="59" fill="#ff6b6b" font-size="10" font-family="Inter" font-weight="700">R₁=40Ω</text>
+          <line x1="230" y1="55" x2="280" y2="55" stroke="#f093fb" stroke-width="2"/>
+          <!-- R2 branch -->
+          <line x1="120" y1="150" x2="120" y2="125" stroke="#f093fb" stroke-width="2"/>
+          <line x1="120" y1="125" x2="150" y2="125" stroke="#f093fb" stroke-width="2"/>
+          <rect x="150" y="115" width="80" height="20" rx="4" fill="none" stroke="#48a9fe" stroke-width="2"/>
+          <text x="163" y="129" fill="#48a9fe" font-size="10" font-family="Inter" font-weight="700">R₂=60Ω</text>
+          <line x1="230" y1="125" x2="280" y2="125" stroke="#f093fb" stroke-width="2"/>
+          <!-- Reconnect -->
+          <line x1="280" y1="55" x2="280" y2="125" stroke="#f093fb" stroke-width="2"/>
+          <line x1="280" y1="90" x2="320" y2="90" stroke="#f093fb" stroke-width="2"/>
+          <!-- R3 in series -->
+          <rect x="320" y="80" width="80" height="20" rx="4" fill="none" stroke="#2ecc71" stroke-width="2"/>
+          <text x="335" y="94" fill="#2ecc71" font-size="10" font-family="Inter" font-weight="700">R₃=30Ω</text>
+          <line x1="400" y1="90" x2="450" y2="90" stroke="#f093fb" stroke-width="2"/>
+          <line x1="450" y1="30" x2="450" y2="150" stroke="#f093fb" stroke-width="2"/>
+          <line x1="450" y1="30" x2="400" y2="30" stroke="#f093fb" stroke-width="2"/>
+          <line x1="400" y1="30" x2="280" y2="30" stroke="#f093fb" stroke-width="2"/>
+          <line x1="280" y1="30" x2="280" y2="55" stroke="#f093fb" stroke-width="2"/>
+          <line x1="450" y1="150" x2="280" y2="150" stroke="#f093fb" stroke-width="2"/>
+          <line x1="280" y1="125" x2="280" y2="150" stroke="#f093fb" stroke-width="2"/>
+          <!-- Battery -->
+          <line x1="22" y1="75" x2="38" y2="75" stroke="#ffd700" stroke-width="3"/>
+          <line x1="26" y1="85" x2="34" y2="85" stroke="#ffd700" stroke-width="1.5"/>
+          <text x="3" y="100" fill="#ffd700" font-size="10" font-family="Inter">24V</text>
+        </svg>
+        <div class="diagram-caption">Gemischte Schaltung: R₁ ∥ R₂ in Reihe mit R₃</div>
+      </div>
+
+      <div class="sol-answer">
+        <strong>a)</strong> 1/R<sub>par</sub> = 1/40 + 1/60 = 3/120 + 2/120 = 5/120 → <strong>R<sub>par</sub> = 24 Ω</strong>
+      </div>
+      <div class="sol-answer">
+        <strong>b)</strong> R<sub>ges</sub> = R<sub>par</sub> + R₃ = 24 + 30 = <strong>54 Ω</strong>
+      </div>
+      <div class="sol-answer">
+        <strong>c)</strong> I<sub>ges</sub> = U/R = 24/54 = <strong>≈ 0,44 A</strong> (exakt: 4/9 A)
+      </div>
+      <div class="sol-answer">
+        <strong>d)</strong> U₃ = I · R₃ = 0,44 · 30 ≈ <strong>13,3 V</strong><br>
+        U<sub>par</sub> = U - U₃ = 24 - 13,3 ≈ <strong>10,7 V</strong><br>
+        <span style="color:var(--secondary);">Probe: 13,3 + 10,7 = 24 V ✓</span>
+      </div>
+      <div class="sol-answer">
+        <strong>e)</strong> I₁ = U<sub>par</sub>/R₁ = 10,7/40 ≈ <strong>0,27 A</strong><br>
+        I₂ = U<sub>par</sub>/R₂ = 10,7/60 ≈ <strong>0,18 A</strong><br>
+        <span style="color:var(--secondary);">Probe: 0,27 + 0,18 ≈ 0,45 ≈ I<sub>ges</sub> ✓</span>
+      </div>
+
+      <hr class="sep">
+      <p><strong>Aufgabe 4: Verständnis</strong></p>
+      <div class="sol-answer">
+        <strong>a)</strong> <strong>Wechselstrom (AC):</strong> Richtung wechselt periodisch (50 Hz in Europa). Anwendung: Steckdose, Stromnetz.<br>
+        <strong>Gleichstrom (DC):</strong> Fließt immer in eine Richtung. Anwendung: Batterie, USB-Ladegerät, Elektronik.
+      </div>
+      <div class="sol-answer">
+        <strong>b)</strong> P = U · I → bei gleicher Leistung P: höhere Spannung U → kleinerer Strom I. Die Wärmeverluste in der Leitung sind P<sub>Verlust</sub> = I² · R. Kleinerer Strom → <strong>viel weniger Wärmeverluste</strong> (quadratisch!). Deshalb Hochspannung.
+      </div>
+      <div class="sol-answer">
+        <strong>c)</strong> Ein Transformator wandelt Wechselspannung in eine höhere oder niedrigere Spannung um (Prinzip: elektromagnetische Induktion). Im Stromnetz: Spannung wird am Kraftwerk <strong>hochtransformiert</strong> für den Transport und vor dem Haushalt <strong>heruntertransformiert</strong> auf 230 V.
+      </div>
+    </div>
+
+    <!-- Lösung C -->
+    <div class="sol-section">
+      <h3>🧲 Teil C: Magnetismus – Lösungen</h3>
+
+      <div class="sol-answer">
+        <strong>5a+b) Feldlinien:</strong> Verlaufen <strong>außerhalb von N nach S</strong>, innerhalb von S nach N. Geschlossene Linien. Je dichter die Linien, desto stärker das Feld.
+      </div>
+
+      <div class="diagram-container">
+        <svg viewBox="0 0 500 240" xmlns="http://www.w3.org/2000/svg">
+          <rect x="165" y="100" width="80" height="40" rx="6" fill="rgba(46,204,113,0.15)" stroke="#2ecc71" stroke-width="2"/>
+          <text x="185" y="125" fill="#2ecc71" font-size="15" font-family="Inter" font-weight="800">N</text>
+          <rect x="245" y="100" width="80" height="40" rx="6" fill="rgba(255,107,107,0.15)" stroke="#ff6b6b" stroke-width="2"/>
+          <text x="270" y="125" fill="#ff6b6b" font-size="15" font-family="Inter" font-weight="800">S</text>
+          <!-- Field lines -->
+          <path d="M 165,120 C 100,120 60,40 245,40 C 430,40 390,120 325,120" fill="none" stroke="#f093fb" stroke-width="1.5" opacity="0.6"/>
+          <path d="M 165,120 C 110,120 80,60 245,60 C 400,60 380,120 325,120" fill="none" stroke="#f093fb" stroke-width="1.5" opacity="0.7"/>
+          <path d="M 165,120 C 130,120 110,85 245,85 C 370,85 360,120 325,120" fill="none" stroke="#f093fb" stroke-width="1.5" opacity="0.8"/>
+          <path d="M 165,120 C 100,120 60,200 245,200 C 430,200 390,120 325,120" fill="none" stroke="#f093fb" stroke-width="1.5" opacity="0.6"/>
+          <path d="M 165,120 C 110,120 80,180 245,180 C 400,180 380,120 325,120" fill="none" stroke="#f093fb" stroke-width="1.5" opacity="0.7"/>
+          <path d="M 165,120 C 130,120 110,155 245,155 C 370,155 360,120 325,120" fill="none" stroke="#f093fb" stroke-width="1.5" opacity="0.8"/>
+          <!-- Arrows on top line -->
+          <polygon points="340,42 330,38 330,46" fill="#f093fb" opacity="0.6"/>
+          <polygon points="150,42 160,38 160,46" fill="#f093fb" opacity="0.6"/>
+          <polygon points="340,198 330,194 330,202" fill="#f093fb" opacity="0.6"/>
+          <polygon points="150,198 160,194 160,202" fill="#f093fb" opacity="0.6"/>
+          <!-- N→S Richtungspfeil -->
+          <text x="230" y="22" fill="#f093fb" font-size="10" font-family="Inter" opacity="0.6">Außen: N → S</text>
+        </svg>
+        <div class="diagram-caption">Feldlinien eines Stabmagneten: Außen von Nord nach Süd</div>
+      </div>
+
+      <div class="sol-answer">
+        <strong>5c)</strong> Gleichnamige Pole (N–N) stoßen sich ab. Die Feldlinien beider Nordpole „drücken" gegeneinander, können sich nicht verbinden → <strong>abstoßende Kraft</strong>. (Ungleichnamige Pole: Feldlinien verbinden sich → anziehende Kraft.)
+      </div>
+      <hr class="sep">
+      <div class="sol-answer">
+        <strong>6a)</strong> Elektromagnete: <strong>Türklingel</strong> ✓, Kompass ✗ (Dauermagnet), <strong>Elektromotor</strong> ✓, <strong>Schrottplatz-Kran</strong> ✓, Taschenlampe ✗ (kein Magnet), <strong>Lautsprecher</strong> ✓.
+      </div>
+      <div class="sol-answer"><strong>6b)</strong> Ferromagnetische Materialien können durch Kontakt magnetisiert werden ✓</div>
+      <div class="sol-answer"><strong>6c)</strong> Er verliert seine Magnetisierung über der Curie-Temperatur ✓</div>
+    </div>
+
+    <!-- Lösung D -->
+    <div class="sol-section">
+      <h3>⚗️ Teil D: Chemie – Lösungen</h3>
+
+      <p><strong>Aufgabe 7: Lückentext</strong></p>
+      <div class="sol-answer">
+        (1) <strong>exothermen</strong>, (2) <strong>endothermen</strong>, (3) <strong>Protonendonator</strong>, (4) <strong>Protonenakzeptor</strong>, (5) <strong>abgegeben</strong>, (6) <strong>steigt</strong>.
+      </div>
+
+      <hr class="sep">
+      <p><strong>Aufgabe 8: Al + O₂</strong></p>
+      <div class="sol-answer">
+        <strong>a)</strong> Al (Edukt) = <strong>0</strong>, O₂ (Edukt) = <strong>0</strong>, Al in Al₂O₃ = <strong>+III</strong>, O in Al₂O₃ = <strong>−II</strong>
+      </div>
+      <div class="sol-answer">
+        <strong>b)</strong><br>
+        <span class="chem-eq"><strong>Oxidation:</strong> <span class="ox">Al → Al³⁺ + 3 e⁻</span> (×4)</span><br>
+        <span class="chem-eq"><strong>Reduktion:</strong> <span class="red">O₂ + 4 e⁻ → 2 O²⁻</span> (×3)</span>
+        <div class="sol-highlight">Elektronenbilanz: 4×3 = 12 e⁻ = 3×4 = 12 e⁻ ✓</div>
+      </div>
+      <div class="sol-answer">
+        <strong>c)</strong>
+        <div class="eq-box" style="background:rgba(46,204,113,0.08); border-color:rgba(46,204,113,0.2);">4 Al + 3 O₂ → 2 Al₂O₃</div>
+      </div>
+      <div class="sol-answer">
+        <strong>d)</strong> Aluminium hat eine niedrige Elektronegativität und gibt seine 3 Valenzelektronen leicht ab (unedles Metall). Deshalb reagiert es sehr heftig mit stark elektronegativen Elementen wie Sauerstoff.
+      </div>
+
+      <hr class="sep">
+      <p><strong>Aufgabe 9: Essigsäure & pH</strong></p>
+      <div class="sol-answer">
+        <strong>a)</strong>
+        <div class="eq-box" style="background:rgba(46,204,113,0.08); border-color:rgba(46,204,113,0.2);">CH₃COOH + H₂O ⇌ H₃O⁺ + CH₃COO⁻</div>
+      </div>
+      <div class="sol-answer">
+        <strong>b)</strong> Paar 1: <strong>CH₃COOH / CH₃COO⁻</strong> (Säure / korr. Base)<br>
+        Paar 2: <strong>H₂O / H₃O⁺</strong> (Base / korr. Säure)
+      </div>
+      <div class="sol-answer">
+        <strong>c) pH-Wert:</strong> Gibt die Konzentration der H₃O⁺-Ionen in einer Lösung an.<br>
+        pH < 7 = <strong>sauer</strong>, pH = 7 = <strong>neutral</strong>, pH > 7 = <strong>basisch (alkalisch)</strong>
+      </div>
+      <!-- pH-Skala Visualisierung -->
+      <div class="diagram-container">
+        <div class="ph-scale">
+          <div style="background:#ff0000">0</div>
+          <div style="background:#ff3300">1</div>
+          <div style="background:#ff6600">2</div>
+          <div style="background:#ff9900">3</div>
+          <div style="background:#ccaa00">4</div>
+          <div style="background:#aacc00">5</div>
+          <div style="background:#66cc00">6</div>
+          <div style="background:#00aa00">7</div>
+          <div style="background:#00aa66">8</div>
+          <div style="background:#0099aa">9</div>
+          <div style="background:#0066cc">10</div>
+          <div style="background:#0033cc">11</div>
+          <div style="background:#3300cc">12</div>
+          <div style="background:#6600aa">13</div>
+          <div style="background:#880088">14</div>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:0.8em; margin-top:6px; color:var(--secondary);">
+          <span>← sauer</span><span>neutral</span><span>basisch →</span>
+        </div>
+        <div class="diagram-caption">pH-Skala: 0 (stark sauer) bis 14 (stark basisch)</div>
+      </div>
+
+      <hr class="sep">
+      <p><strong>Aufgabe 10: Funktionelle Gruppen</strong></p>
+      <div class="sol-answer">
+        <strong>a)</strong><br>
+        Ethanol: <strong>−OH (Hydroxylgruppe)</strong> → Alkohol<br>
+        Butansäure: <strong>−COOH (Carboxylgruppe)</strong> → Carbonsäure<br>
+        Methylformiat: <strong>−COO− (Estergruppe)</strong> → Ester
+      </div>
+      <div class="sol-answer">
+        <strong>b)</strong> Methanol + Ameisensäure → <strong>Ameisensäuremethylester (Methylformiat)</strong> + <strong>Wasser</strong>
+        <div class="eq-box" style="background:rgba(46,204,113,0.08); border-color:rgba(46,204,113,0.2);">HCOOH + CH₃OH → HCOOCH₃ + H₂O</div>
+      </div>
+
+      <hr class="sep">
+      <p><strong>Aufgabe 11: Bio-Reaktionen</strong></p>
+      <div class="sol-answer">
+        <strong>a) Photosynthese:</strong>
+        <div class="eq-box" style="background:rgba(46,204,113,0.08); border-color:rgba(46,204,113,0.2);">6 CO₂ + 6 H₂O → C₆H₁₂O₆ + 6 O₂</div>
+        (Lichtenergie + Chlorophyll erforderlich)
+      </div>
+      <div class="sol-answer">
+        <strong>b) Alkoholische Gärung:</strong>
+        <div class="eq-box" style="background:rgba(46,204,113,0.08); border-color:rgba(46,204,113,0.2);">C₆H₁₂O₆ → 2 C₂H₅OH + 2 CO₂</div>
+        Produkt 1: <strong>Ethanol</strong> (Trinkalkohol), Produkt 2: <strong>Kohlenstoffdioxid</strong> (CO₂)
+      </div>
+    </div>
+
+    <!-- Lösung E -->
+    <div class="sol-section">
+      <h3>🌱 Teil E: Nachhaltigkeit – Lösungen</h3>
+
+      <div class="sol-answer">
+        <strong>12a)</strong>
+        <table class="q-table" style="background:rgba(46,204,113,0.03);">
+          <tr><th>Quelle</th><th>Vorteil</th><th>Nachteil</th></tr>
+          <tr><td>Solarenergie</td><td>Keine Emissionen im Betrieb, unerschöpflich</td><td>Wetterabhängig, Speicherproblem</td></tr>
+          <tr><td>Windenergie</td><td>Keine CO₂-Emissionen, geringe Betriebskosten</td><td>Windabhängig, Landschaftseingriff</td></tr>
+          <tr><td>Wasserkraft</td><td>Konstante Erzeugung, speicherbar</td><td>Eingriff in Ökosysteme, Standortgebunden</td></tr>
+        </table>
+      </div>
+      <div class="sol-answer">
+        <strong>12b)</strong> Der <strong>natürliche Treibhauseffekt</strong> hält die Erde bewohnbar warm (~15°C statt −18°C). Treibhausgase (CO₂, CH₄) absorbieren Wärmestrahlung der Erde und strahlen sie teilweise zurück. Die <strong>Verstärkung</strong> durch menschliche CO₂-Emissionen (fossile Verbrennung) führt zu übermäßiger Erwärmung → Klimawandel.
+      </div>
+      <div class="sol-answer">
+        <strong>12c)</strong> <strong>Fossile</strong> Energieträger (Kohle, Erdöl, Gas): Entstanden über Millionen Jahre, endlicher Vorrat, setzen CO₂ frei. <strong>Erneuerbare</strong> (Solar, Wind, Wasser, Biomasse): Ständig verfügbar, unerschöpflich, klimafreundlich.
+      </div>
+      <hr class="sep">
+      <div class="sol-answer">
+        <strong>13a)</strong> <strong>Biobasiert:</strong> Rohstoff stammt aus nachwachsenden Quellen (z.B. Maisstärke). Sagt nichts über Abbaubarkeit.<br>
+        <strong>Biologisch abbaubar:</strong> Material kann von Mikroorganismen vollständig zersetzt werden. Die chemische Struktur entscheidet, nicht der Rohstoff.
+      </div>
+      <div class="sol-answer">
+        <strong>13b)</strong> (1) Nicht aller Kunststoff wird gesammelt/sortiert (Fehlwürfe, Export). (2) Beim Recycling tritt oft <strong>Downcycling</strong> auf – die Qualität sinkt mit jedem Zyklus.
+      </div>
+      <div class="sol-answer">
+        <strong>13c)</strong> (1) <strong>Mehrwegflaschen/-becher</strong> statt Einweg nutzen. (2) <strong>Regional und saisonal</strong> einkaufen (weniger Transportemissionen). (3) <strong>Reparieren statt wegwerfen</strong> (Repair-Cafés). Auch: ÖPNV nutzen, weniger Flüge, Strom sparen, bewusst konsumieren.
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+let timerRunning=false,timeLeft=60*60,timerInterval;
+function toggleTimer(){const b=document.getElementById('timerBtn');if(!timerRunning){timerRunning=true;b.textContent='⏸ Pause';timerInterval=setInterval(updateTimer,1000);}else{timerRunning=false;b.textContent='▶ Weiter';clearInterval(timerInterval);}}
+function updateTimer(){timeLeft--;if(timeLeft<=0){clearInterval(timerInterval);timeLeft=0;document.getElementById('timerDisplay').textContent='00:00';document.getElementById('timerDisplay').classList.add('danger');alert('⏰ Die Zeit ist abgelaufen!');return;}const m=Math.floor(timeLeft/60),s=timeLeft%60,d=document.getElementById('timerDisplay');d.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');d.classList.remove('warning','danger');if(timeLeft<=300)d.classList.add('danger');else if(timeLeft<=600)d.classList.add('warning');}
+function toggleSolutions(){const sec=document.getElementById('solutionsSection'),btn=document.querySelector('.sol-btn');if(sec.classList.contains('show')){sec.classList.remove('show');btn.textContent='📋 Musterlösungen anzeigen';}else{if(!confirm('Lösungen anzeigen? Nur nach Bearbeitung!'))return;sec.classList.add('show');btn.textContent='🙈 Lösungen ausblenden';sec.scrollIntoView({behavior:'smooth'});}}
+</script>
+</body>
+</html>

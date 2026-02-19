@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abschlussklausur NaWi A</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F3F2F8; --bg2: #EBE9F3; --card: #FFFFFF;
+      --primary: #7C3AED; --secondary: #6B7280; --text: #1A1A2E; --text-bright: #111827;
+      --gold: #F59E0B; --success: #10B981; --error: #EF4444; --accent: #A78BFA;
+      --border: rgba(124,58,237,0.12);
+      --purple-bg: rgba(124,58,237,0.06);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg); color: var(--text);
+      line-height: 1.7; min-height: 100vh;
+    }
+    /* ── Background Decoration ── */
+    body::before {
+      content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: radial-gradient(ellipse at 20% 50%, rgba(124,58,237,0.04) 0%, transparent 50%),
+                  radial-gradient(ellipse at 80% 20%, rgba(167,139,250,0.04) 0%, transparent 50%);
+      z-index: -1; animation: bgShift 20s ease-in-out infinite alternate;
+    }
+    @keyframes bgShift { to { transform: translate(3%, 3%); } }
+
+    .container { max-width: 880px; margin: 0 auto; padding: 20px; }
+
+    /* ── Header ── */
+    .exam-header {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 40px; text-align: center;
+      margin-bottom: 30px; position: relative; overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .exam-header::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary));
+    }
+    .exam-header h1 {
+      font-size: 2.2em; font-weight: 800; color: var(--text-bright);
+      margin-bottom: 4px;
+    }
+    .exam-header .subtitle { color: var(--primary); font-weight: 600; font-size: 1.1em; }
+    .exam-meta {
+      display: flex; justify-content: center; gap: 30px; margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    .exam-meta span {
+      background: var(--purple-bg); padding: 6px 16px;
+      border-radius: 10px; font-size: 0.85em; color: var(--secondary);
+    }
+    .exam-meta span strong { color: var(--text-bright); }
+
+    /* ── Timer ── */
+    .timer-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px 24px; margin-bottom: 30px;
+      position: sticky; top: 10px; z-index: 100; backdrop-filter: blur(10px);
+      box-shadow: var(--shadow-sm);
+    }
+    .timer-display { font-size: 1.4em; font-weight: 700; color: var(--primary); font-variant-numeric: tabular-nums; }
+    .timer-display.warning { color: var(--gold); }
+    .timer-display.danger { color: var(--error); animation: pulse 1s infinite; }
+    @keyframes pulse { 50% { opacity: 0.5; } }
+    .timer-btn {
+      background: rgba(124,58,237,0.1); border: 1px solid var(--primary);
+      color: var(--primary); padding: 8px 20px; border-radius: 10px;
+      cursor: pointer; font-family: inherit; font-weight: 600; font-size: 0.85em;
+      transition: all 0.3s;
+    }
+    .timer-btn:hover { background: rgba(124,58,237,0.2); }
+
+    /* ── Sections ── */
+    .section {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 36px; margin-bottom: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+    .section-head {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 28px; padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(167,139,250,0.12));
+      display: flex; align-items: center; justify-content: center; font-size: 1.5em;
+    }
+    .section-head h2 { font-size: 1.35em; font-weight: 700; color: var(--text-bright); }
+    .section-head .pts {
+      margin-left: auto; background: rgba(245,158,11,0.1);
+      color: var(--gold); padding: 4px 14px; border-radius: 10px;
+      font-weight: 700; font-size: 0.85em;
+    }
+
+    /* ── Questions ── */
+    .question { margin-bottom: 32px; }
+    .question:last-child { margin-bottom: 0; }
+    .q-head {
+      display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px;
+    }
+    .q-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 30px; height: 30px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--bg); font-weight: 800; font-size: 0.8em; flex-shrink: 0;
+    }
+    .q-title { font-weight: 600; font-size: 1.05em; color: var(--text-bright); }
+    .q-pts {
+      margin-left: auto; color: var(--gold); font-size: 0.8em; font-weight: 600;
+      white-space: nowrap;
+    }
+    .part { margin: 16px 0 16px 12px; padding-left: 16px; border-left: 2px solid rgba(124,58,237,0.15); }
+    .part-label {
+      font-weight: 600; color: var(--primary); font-size: 0.85em;
+      margin-bottom: 6px;
+    }
+    .hint {
+      background: rgba(245,158,11,0.08); border-left: 3px solid var(--gold);
+      padding: 8px 14px; border-radius: 0 8px 8px 0; font-size: 0.85em;
+      color: #b45309; margin: 10px 0;
+    }
+
+    /* ── Answer Fields ── */
+    .answer-field {
+      background: rgba(124,58,237,0.03); border: 1.5px dashed rgba(124,58,237,0.2);
+      border-radius: 12px; padding: 14px 18px; margin: 10px 0;
+      min-height: 48px; transition: all 0.3s;
+    }
+    .answer-field:focus-within { border-color: var(--primary); background: rgba(124,58,237,0.06); }
+    .answer-input {
+      width: 100%; background: transparent; border: none; color: var(--text-bright);
+      font-family: inherit; font-size: 0.95em; outline: none; resize: vertical;
+    }
+    .answer-input::placeholder { color: rgba(156,163,175,0.6); }
+    .calc-input {
+      display: inline-block; width: 120px; background: rgba(124,58,237,0.04);
+      border: 1.5px solid rgba(124,58,237,0.2); border-radius: 8px;
+      padding: 6px 12px; color: var(--text-bright); font-family: inherit;
+      font-size: 0.95em; outline: none; text-align: center;
+    }
+    .calc-input:focus { border-color: var(--primary); }
+    .calc-row { display: flex; align-items: center; gap: 10px; margin: 8px 0; flex-wrap: wrap; }
+    .calc-row label { min-width: 100px; font-size: 0.9em; }
+
+    /* ── MC ── */
+    .mc-group { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
+    .mc-item {
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(124,58,237,0.03); border: 1.5px solid rgba(124,58,237,0.1);
+      border-radius: 10px; padding: 12px 16px; cursor: pointer; transition: all 0.3s;
+    }
+    .mc-item:hover { border-color: rgba(124,58,237,0.25); background: rgba(124,58,237,0.06); }
+    .mc-item input[type="radio"], .mc-item input[type="checkbox"] {
+      accent-color: var(--primary); width: 18px; height: 18px; cursor: pointer;
+    }
+    .mc-item label { cursor: pointer; font-size: 0.9em; flex: 1; }
+
+    /* ── Tables ── */
+    .q-table {
+      width: 100%; border-collapse: separate; border-spacing: 0;
+      border-radius: 12px; overflow: hidden; margin: 12px 0;
+    }
+    .q-table th {
+      background: rgba(124,58,237,0.08); padding: 10px 14px; text-align: left;
+      font-weight: 600; font-size: 0.85em; color: var(--text-bright);
+    }
+    .q-table td {
+      padding: 10px 14px; border-top: 1px solid var(--border);
+      font-size: 0.9em;
+    }
+    .q-table select {
+      background: rgba(124,58,237,0.04); border: 1.5px solid rgba(124,58,237,0.2);
+      border-radius: 8px; padding: 6px 10px; color: var(--text-bright);
+      font-family: inherit; font-size: 0.9em; width: 100%;
+    }
+
+    /* ── Richtig/Falsch Table ── */
+    .rf-table td:nth-child(2), .rf-table td:nth-child(3) { text-align: center; width: 50px; }
+
+    /* ── Equation Box ── */
+    .eq-box {
+      background: rgba(124,58,237,0.04); border-radius: 12px; padding: 16px 22px;
+      margin: 12px 0; font-size: 1.05em; text-align: center;
+      border: 1px solid var(--border);
+      font-family: 'Courier New', monospace; letter-spacing: 0.5px;
+      color: var(--primary); font-weight: 500;
+    }
+
+    /* ── Zeichenfläche ── */
+    .draw-area {
+      background: rgba(124,58,237,0.02); border: 2px dashed rgba(124,58,237,0.2);
+      border-radius: 14px; min-height: 220px; margin: 12px 0;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--secondary); font-size: 0.85em; position: relative;
+      overflow: hidden;
+    }
+    .draw-area svg { width: 100%; height: auto; }
+
+    /* ── Solutions ── */
+    .sol-toggle {
+      text-align: center; margin: 40px 0 20px;
+    }
+    .sol-btn {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white; padding: 14px 36px; border: none; border-radius: 14px;
+      font-family: inherit; font-weight: 700; font-size: 1.05em; cursor: pointer;
+      transition: all 0.3s; box-shadow: 0 4px 20px rgba(124,58,237,0.25);
+    }
+    .sol-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,58,237,0.35); }
+
+    #solutionsSection {
+      display: none; animation: fadeIn 0.5s ease;
+    }
+    #solutionsSection.show { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .sol-section {
+      background: var(--card); border: 1px solid rgba(16,185,129,0.2);
+      border-radius: 20px; padding: 36px; margin-bottom: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+    .sol-section h3 {
+      color: var(--success); font-size: 1.2em; margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .sol-answer {
+      background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.15);
+      border-radius: 10px; padding: 14px 18px; margin: 10px 0;
+      font-size: 0.92em; line-height: 1.8;
+    }
+    .sol-answer strong { color: var(--success); }
+    .sol-answer .formula { font-family: 'Courier New', monospace; color: var(--primary); }
+    .sol-step {
+      display: flex; gap: 10px; align-items: baseline; margin: 6px 0;
+    }
+    .sol-step .step-num {
+      background: rgba(124,58,237,0.1); color: var(--primary);
+      width: 22px; height: 22px; border-radius: 50%; font-size: 0.7em;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; flex-shrink: 0;
+    }
+    .sol-highlight {
+      background: rgba(124,58,237,0.06); border-left: 3px solid var(--primary);
+      padding: 10px 16px; border-radius: 0 10px 10px 0; margin: 10px 0;
+    }
+
+    /* ── SVG Diagrams ── */
+    .diagram-container {
+      background: rgba(124,58,237,0.03); border-radius: 14px; padding: 16px;
+      margin: 16px 0; text-align: center; border: 1px solid var(--border);
+    }
+    .diagram-container svg { max-width: 100%; height: auto; }
+    .diagram-caption {
+      font-size: 0.8em; color: var(--secondary); margin-top: 8px; text-align: center;
+    }
+
+    /* ── Chemistry colored eq ── */
+    .chem-eq { font-size: 1.05em; line-height: 2; }
+    .chem-eq .ox { color: #EF4444; font-weight: 600; }
+    .chem-eq .red { color: #7C3AED; font-weight: 600; }
+    .chem-eq .oz { font-size: 0.75em; vertical-align: super; font-weight: 700; }
+    .chem-eq .arrow { color: var(--secondary); margin: 0 6px; }
+    sub { font-size: 0.75em; } sup { font-size: 0.75em; }
+
+    /* ── Separator ── */
+    .sep { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+    /* ── Print ── */
+    @media print {
+      body { background: #fff; color: #222; }
+      .timer-bar, .sol-toggle { display: none; }
+      .section, .exam-header { border: 1px solid #ccc; background: #fff; box-shadow: none; }
+      .answer-field { border: 1px solid #999; min-height: 60px; }
+      .section-head h2, .q-title { color: #111; }
+      .part-label { color: #6D28D9; }
+    }
+
+    @media (max-width: 600px) {
+      .exam-header h1 { font-size: 1.6em; }
+      .section { padding: 20px; }
+      .exam-meta { gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ═══ HEADER ═══ -->
+  <div class="exam-header">
+    <h1>🔬 Abschlussklausur NaWi A</h1>
+    <p class="subtitle">Naturwissenschaften · Physik & Chemie</p>
+    <div class="exam-meta">
+      <span>⏱ <strong>60 Minuten</strong></span>
+      <span>📊 <strong>90 Punkte</strong></span>
+      <span>📅 <strong>Klausur A</strong></span>
+    </div>
+  </div>
+
+  <!-- ═══ TIMER ═══ -->
+  <div class="timer-bar">
+    <div>
+      <span style="color:var(--secondary); font-size:0.85em;">⏱ Restzeit:</span>
+      <span class="timer-display" id="timerDisplay">60:00</span>
+    </div>
+    <button class="timer-btn" id="timerBtn" onclick="toggleTimer()">▶ Timer starten</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       TEIL A: OPTIK (18 Punkte)
+       ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon">🔦</div>
+      <h2>Teil A: Optik</h2>
+      <span class="pts">18 Punkte</span>
+    </div>
+
+    <!-- A1: Lichtbrechung & Snellius -->
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">1</span>
+        <span class="q-title">Lichtbrechung & Snellius'sches Brechungsgesetz</span>
+        <span class="q-pts">10 P</span>
+      </div>
+      <p>Ein Lichtstrahl trifft unter einem Einfallswinkel von <strong>α = 40°</strong> aus der <strong>Luft (n₁ = 1,0)</strong> auf eine <strong>Glasoberfläche (n₂ = 1,5)</strong>.</p>
+
+      <div class="part">
+        <div class="part-label">a) Brechungsrichtung (1 Punkt)</div>
+        <p>In welche Richtung wird der Lichtstrahl beim Eintritt in das Glas gebrochen? Begründen Sie kurz.</p>
+        <div class="answer-field">
+          <textarea class="answer-input" rows="2" placeholder="Richtung und Begründung..."></textarea>
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Brechungswinkel berechnen (2 Punkte)</div>
+        <p>Berechnen Sie den Brechungswinkel β mithilfe des Snellius'schen Brechungsgesetzes:</p>
+        <div class="eq-box">n₁ · sin(α) = n₂ · sin(β)</div>
+        <div class="calc-row">
+          <label>sin(40°) ≈</label>
+          <input type="text" class="calc-input" placeholder="?">
+        </div>
+        <div class="calc-row">
+          <label>β ≈</label>
+          <input type="text" class="calc-input" placeholder="? °">
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">c) Grenzwinkel der Totalreflexion (3 Punkte)</div>
+        <p>Der Lichtstrahl soll nun <strong>von Glas zurück in die Luft</strong> treten. Berechnen Sie den <strong>Grenzwinkel α<sub>c</sub></strong>, ab dem Totalreflexion auftritt.</p>
+        <div class="hint">💡 Bei Totalreflexion gilt: sin(α<sub>c</sub>) = n₂ / n₁ (wenn n₁ > n₂ ist das Startmedium)</div>
+        <div class="calc-row">
+          <label>α<sub>c</sub> ≈</label>
+          <input type="text" class="calc-input" placeholder="? °">
+        </div>
+        <p style="margin-top:8px;">Erklären Sie in einem Satz, was bei Totalreflexion passiert:</p>
+        <div class="answer-field">
+          <textarea class="answer-input" rows="2" placeholder="Erklärung..."></textarea>
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">d) Alltagsbeispiele (2 Punkte)</div>
+        <p>Nennen Sie <strong>zwei Alltagsbeispiele</strong>, in denen Lichtbrechung beobachtet werden kann:</p>
+        <div class="answer-field">
+          <textarea class="answer-input" rows="2" placeholder="1) ...\n2) ..."></textarea>
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">e) Strohhalm-Phänomen (2 Punkte)</div>
+        <p>Erklären Sie mit Hilfe der Lichtbrechung, warum ein Strohhalm in einem Wasserglas <strong>„geknickt"</strong> aussieht.</p>
+        <div class="answer-field">
+          <textarea class="answer-input" rows="3" placeholder="Erklärung..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <!-- A2: Zeichenaufgabe -->
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">2</span>
+        <span class="q-title">Zeichenaufgabe: Reflexion & Schatten</span>
+        <span class="q-pts">8 P</span>
+      </div>
+
+      <div class="part">
+        <div class="part-label">a) Reflexion am ebenen Spiegel (4 Punkte)</div>
+        <p>Ein Lichtstrahl trifft unter einem Winkel von <strong>50° zur Spiegeloberfläche</strong> auf einen ebenen Spiegel.</p>
+        <p>Zeichnen Sie in das Feld:</p>
+        <ul style="margin:8px 0 8px 20px; font-size:0.9em;">
+          <li>Das <strong>Lot</strong> (senkrecht zur Spiegeloberfläche)</li>
+          <li>Den <strong>Einfallswinkel</strong> (zum Lot!) und seinen Wert</li>
+          <li>Den <strong>reflektierten Strahl</strong> mit dem Ausfallswinkel</li>
+        </ul>
+        <div class="hint">💡 Achtung: 50° zur Oberfläche ≠ 50° zum Lot! Der Einfallswinkel wird immer zum Lot gemessen.</div>
+        <div class="draw-area" style="min-height:260px;">
+          <svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg">
+            <rect x="80" y="170" width="440" height="8" rx="2" fill="#64ffda" opacity="0.3"/>
+            <text x="300" y="198" text-anchor="middle" fill="#8892b0" font-size="13" font-family="Inter">Spiegeloberfläche</text>
+            <line x1="200" y1="40" x2="300" y2="170" stroke="#ffd700" stroke-width="2.5" stroke-dasharray="0"/>
+            <polygon points="295,162 290,170 300,170" fill="#ffd700"/>
+            <text x="180" y="35" fill="#ffd700" font-size="12" font-family="Inter">Einfallender Strahl</text>
+            <text x="320" y="80" fill="#555" font-size="12" font-family="Inter" font-style="italic">Zeichne hier →</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Schattenbildung (4 Punkte)</div>
+        <p>Eine <strong>Punktlichtquelle</strong> beleuchtet einen undurchsichtigen <strong>Gegenstand</strong>. Dahinter befindet sich ein <strong>Schirm</strong>.</p>
+        <p>Zeichnen Sie:</p>
+        <ul style="margin:8px 0 8px 20px; font-size:0.9em;">
+          <li>Die <strong>Randstrahlen</strong> von der Lichtquelle am Gegenstand vorbei</li>
+          <li>Den <strong>Schattenbereich</strong> auf dem Schirm (schraffiert)</li>
+          <li>Beschriften Sie <strong>Kernschatten</strong></li>
+        </ul>
+        <div class="draw-area" style="min-height:260px;">
+          <svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="80" cy="130" r="14" fill="#ffd700"/>
+            <text x="60" y="170" fill="#ffd700" font-size="11" font-family="Inter">Lichtquelle</text>
+            <rect x="270" y="70" width="16" height="120" rx="3" fill="#e74c3c" opacity="0.7"/>
+            <text x="255" y="58" fill="#e74c3c" font-size="11" font-family="Inter">Gegenstand</text>
+            <rect x="500" y="20" width="10" height="220" rx="2" fill="#48a9fe" opacity="0.3"/>
+            <text x="490" y="16" fill="#48a9fe" font-size="11" font-family="Inter">Schirm</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       TEIL B: ELEKTRIZITÄTSLEHRE (16 Punkte)
+       ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon">⚡</div>
+      <h2>Teil B: Elektrizitätslehre</h2>
+      <span class="pts">16 Punkte</span>
+    </div>
+
+    <!-- B1: Reihenschaltung -->
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">3</span>
+        <span class="q-title">Reihenschaltung – Berechnung</span>
+        <span class="q-pts">10 P</span>
+      </div>
+      <p>Drei Widerstände <strong>R₁ = 15 Ω</strong>, <strong>R₂ = 25 Ω</strong> und <strong>R₃ = 10 Ω</strong> sind <strong>in Reihe</strong> an eine Spannungsquelle mit <strong>U = 20 V</strong> angeschlossen.</p>
+
+      <div class="part">
+        <div class="part-label">a) Gesamtwiderstand (1 Punkt)</div>
+        <div class="calc-row">
+          <label>R<sub>ges</sub> =</label>
+          <input type="text" class="calc-input" placeholder="? Ω">
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Stromstärke (2 Punkte)</div>
+        <p style="font-size:0.9em;">Berechnen Sie die Stromstärke I im Stromkreis.</p>
+        <div class="calc-row">
+          <label>I =</label>
+          <input type="text" class="calc-input" placeholder="? A">
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">c) Teilspannungen (3 Punkte)</div>
+        <p style="font-size:0.9em;">Berechnen Sie die Spannung an jedem Widerstand.</p>
+        <div class="calc-row">
+          <label>U₁ (an R₁) =</label>
+          <input type="text" class="calc-input" placeholder="? V">
+        </div>
+        <div class="calc-row">
+          <label>U₂ (an R₂) =</label>
+          <input type="text" class="calc-input" placeholder="? V">
+        </div>
+        <div class="calc-row">
+          <label>U₃ (an R₃) =</label>
+          <input type="text" class="calc-input" placeholder="? V">
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">d) Gesamtleistung (2 Punkte)</div>
+        <div class="calc-row">
+          <label>P<sub>ges</sub> =</label>
+          <input type="text" class="calc-input" placeholder="? W">
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">e) Praxisaufgabe: Heizlüfter (2 Punkte)</div>
+        <p style="font-size:0.9em;">Ein Heizlüfter mit <strong>P = 2000 W</strong> wird an <strong>230 V</strong> betrieben und läuft <strong>3 Stunden</strong>. Der Strompreis beträgt <strong>0,35 €/kWh</strong>.</p>
+        <div class="calc-row">
+          <label>Kosten =</label>
+          <input type="text" class="calc-input" placeholder="? €">
+        </div>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <!-- B2: Verständnis -->
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">4</span>
+        <span class="q-title">Verständnis: Elektrizität im Alltag</span>
+        <span class="q-pts">6 P</span>
+      </div>
+
+      <div class="part">
+        <div class="part-label">a) Wasser-Analogie (3 Punkte)</div>
+        <p>Erklären Sie die elektrischen Größen <strong>Spannung</strong>, <strong>Stromstärke</strong> und <strong>Widerstand</strong> mithilfe des <strong>Wasserkreislauf-Modells</strong>.</p>
+        <table class="q-table">
+          <tr><th>Elektrische Größe</th><th>Entsprechung im Wassermodell</th></tr>
+          <tr><td>Spannung (U)</td><td><input type="text" class="calc-input" style="width:100%" placeholder="entspricht..."></td></tr>
+          <tr><td>Stromstärke (I)</td><td><input type="text" class="calc-input" style="width:100%" placeholder="entspricht..."></td></tr>
+          <tr><td>Widerstand (R)</td><td><input type="text" class="calc-input" style="width:100%" placeholder="entspricht..."></td></tr>
+        </table>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Nasse Hände (1 Punkt)</div>
+        <p>Warum ist es <strong>gefährlich</strong>, mit nassen Händen an Steckdosen zu greifen?</p>
+        <div class="answer-field">
+          <textarea class="answer-input" rows="2" placeholder="Erklärung..."></textarea>
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">c) Sicherung (2 Punkte)</div>
+        <p>Erklären Sie die <strong>Funktion einer Sicherung</strong> im Haushaltsstromkreis. Welcher Sicherungswert ist für eine normale Steckdose typisch?</p>
+        <div class="answer-field">
+          <textarea class="answer-input" rows="3" placeholder="Funktion + typischer Wert..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       TEIL C: MAGNETISMUS (10 Punkte)
+       ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon">🧲</div>
+      <h2>Teil C: Magnetismus</h2>
+      <span class="pts">10 Punkte</span>
+    </div>
+
+    <!-- C1: Verständnis -->
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">5</span>
+        <span class="q-title">Elementarmagnete & Magnetisierung</span>
+        <span class="q-pts">5 P</span>
+      </div>
+
+      <div class="part">
+        <div class="part-label">a) Modell der Elementarmagnete (2 Punkte)</div>
+        <p>Beschreiben Sie das <strong>Elementarmagnetenmodell</strong>. Was passiert mit den Elementarmagneten, wenn ein Eisenstück magnetisiert wird?</p>
+        <div class="answer-field">
+          <textarea class="answer-input" rows="3" placeholder="Beschreibung des Modells..."></textarea>
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Teilen eines Magneten (1 Punkt)</div>
+        <p>Warum hat jedes Bruchstück eines zerbrochenen Magneten <strong>immer noch zwei Pole</strong>?</p>
+        <div class="answer-field">
+          <textarea class="answer-input" rows="2" placeholder="Begründung..."></textarea>
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">c) Entmagnetisierung (2 Punkte)</div>
+        <p>Nennen Sie <strong>zwei verschiedene Methoden</strong>, um einen magnetisierten Eisennagel zu entmagnetisieren. Erklären Sie <strong>eine</strong> davon.</p>
+        <div class="answer-field">
+          <textarea class="answer-input" rows="3" placeholder="Methode 1: ...\nMethode 2: ...\nErklärung: ..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <!-- C2: Richtig/Falsch -->
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">6</span>
+        <span class="q-title">Magnetismus – Richtig oder Falsch?</span>
+        <span class="q-pts">5 P</span>
+      </div>
+      <p>Kreuzen Sie an und <strong>korrigieren Sie falsche Aussagen</strong>:</p>
+
+      <table class="q-table rf-table" style="margin-top:14px;">
+        <tr><th>Aussage</th><th>R</th><th>F</th><th>Korrektur (falls falsch)</th></tr>
+        <tr>
+          <td>Gleichnamige Pole ziehen sich an.</td>
+          <td><input type="radio" name="rf1" value="r"></td>
+          <td><input type="radio" name="rf1" value="f"></td>
+          <td><input type="text" class="calc-input" style="width:100%" placeholder="..."></td>
+        </tr>
+        <tr>
+          <td>Eisen, Cobalt und Nickel sind ferromagnetisch.</td>
+          <td><input type="radio" name="rf2" value="r"></td>
+          <td><input type="radio" name="rf2" value="f"></td>
+          <td><input type="text" class="calc-input" style="width:100%" placeholder="..."></td>
+        </tr>
+        <tr>
+          <td>Der geographische Nordpol ist ein magnetischer Nordpol.</td>
+          <td><input type="radio" name="rf3" value="r"></td>
+          <td><input type="radio" name="rf3" value="f"></td>
+          <td><input type="text" class="calc-input" style="width:100%" placeholder="..."></td>
+        </tr>
+        <tr>
+          <td>Magnetfeldlinien verlaufen außen von Nord nach Süd.</td>
+          <td><input type="radio" name="rf4" value="r"></td>
+          <td><input type="radio" name="rf4" value="f"></td>
+          <td><input type="text" class="calc-input" style="width:100%" placeholder="..."></td>
+        </tr>
+        <tr>
+          <td>Aluminium ist ferromagnetisch.</td>
+          <td><input type="radio" name="rf5" value="r"></td>
+          <td><input type="radio" name="rf5" value="f"></td>
+          <td><input type="text" class="calc-input" style="width:100%" placeholder="..."></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       TEIL D: CHEMIE (32 Punkte)
+       ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon">⚗️</div>
+      <h2>Teil D: Chemie</h2>
+      <span class="pts">32 Punkte</span>
+    </div>
+
+    <!-- D1: Begriffe zuordnen -->
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">7</span>
+        <span class="q-title">Begriffsdefinitionen – Zuordnung</span>
+        <span class="q-pts">6 P</span>
+      </div>
+      <p>Ordnen Sie jedem Begriff die richtige Definition zu:</p>
+      <table class="q-table">
+        <tr><th>Begriff</th><th>Definition</th></tr>
+        <tr>
+          <td><strong>Oxidation</strong></td>
+          <td>
+            <select><option value="">– auswählen –</option>
+              <option>Elektronenabgabe, OZ steigt</option>
+              <option>Elektronenaufnahme, OZ sinkt</option>
+              <option>Protonenabgabe</option>
+              <option>Protonenaufnahme</option>
+              <option>Stoff, der Reaktion beschleunigt</option>
+              <option>Reaktion gibt Wärme ab</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Reduktion</strong></td>
+          <td>
+            <select><option value="">– auswählen –</option>
+              <option>Elektronenabgabe, OZ steigt</option>
+              <option>Elektronenaufnahme, OZ sinkt</option>
+              <option>Protonenabgabe</option>
+              <option>Protonenaufnahme</option>
+              <option>Stoff, der Reaktion beschleunigt</option>
+              <option>Reaktion gibt Wärme ab</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Säure (Brønsted)</strong></td>
+          <td>
+            <select><option value="">– auswählen –</option>
+              <option>Elektronenabgabe, OZ steigt</option>
+              <option>Elektronenaufnahme, OZ sinkt</option>
+              <option>Protonendonator (gibt H⁺ ab)</option>
+              <option>Protonenakzeptor (nimmt H⁺ auf)</option>
+              <option>Stoff, der Reaktion beschleunigt</option>
+              <option>Reaktion gibt Wärme ab</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Base (Brønsted)</strong></td>
+          <td>
+            <select><option value="">– auswählen –</option>
+              <option>Elektronenabgabe, OZ steigt</option>
+              <option>Elektronenaufnahme, OZ sinkt</option>
+              <option>Protonendonator (gibt H⁺ ab)</option>
+              <option>Protonenakzeptor (nimmt H⁺ auf)</option>
+              <option>Stoff, der Reaktion beschleunigt</option>
+              <option>Reaktion gibt Wärme ab</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Katalysator</strong></td>
+          <td>
+            <select><option value="">– auswählen –</option>
+              <option>Elektronenabgabe, OZ steigt</option>
+              <option>Elektronenaufnahme, OZ sinkt</option>
+              <option>Protonendonator (gibt H⁺ ab)</option>
+              <option>Protonenakzeptor (nimmt H⁺ auf)</option>
+              <option>Stoff, der Reaktion beschleunigt, ohne selbst verbraucht zu werden</option>
+              <option>Reaktion gibt Wärme ab</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Exotherm</strong></td>
+          <td>
+            <select><option value="">– auswählen –</option>
+              <option>Elektronenabgabe, OZ steigt</option>
+              <option>Elektronenaufnahme, OZ sinkt</option>
+              <option>Protonendonator (gibt H⁺ ab)</option>
+              <option>Protonenakzeptor (nimmt H⁺ auf)</option>
+              <option>Stoff, der Reaktion beschleunigt</option>
+              <option>Reaktion, bei der Wärme freigesetzt wird</option>
+            </select>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <hr class="sep">
+
+    <!-- D2: Redoxreaktion -->
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">8</span>
+        <span class="q-title">Redoxreaktion: Eisen + Sauerstoff</span>
+        <span class="q-pts">8 P</span>
+      </div>
+      <p>Eisen reagiert mit Sauerstoff zu Eisen(III)-oxid (Fe₂O₃). Dies ist eine alltägliche Reaktion – das <strong>Rosten</strong> von Eisen.</p>
+
+      <div class="part">
+        <div class="part-label">a) Oxidationszahlen bestimmen (2 Punkte)</div>
+        <p>Bestimmen Sie die Oxidationszahlen der Elemente in den <strong>Edukten</strong> und <strong>Produkten</strong>:</p>
+        <div class="calc-row"><label>Fe (Edukt) =</label><input type="text" class="calc-input" placeholder="?"></div>
+        <div class="calc-row"><label>O₂ (Edukt) =</label><input type="text" class="calc-input" placeholder="?"></div>
+        <div class="calc-row"><label>Fe in Fe₂O₃ =</label><input type="text" class="calc-input" placeholder="?"></div>
+        <div class="calc-row"><label>O in Fe₂O₃ =</label><input type="text" class="calc-input" placeholder="?"></div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Teilgleichungen aufstellen (3 Punkte)</div>
+        <p><strong>Oxidation</strong> (Fe gibt Elektronen ab):</p>
+        <div class="answer-field">
+          <input type="text" class="answer-input" placeholder="Fe → ...">
+        </div>
+        <p style="margin-top:8px;"><strong>Reduktion</strong> (O₂ nimmt Elektronen auf):</p>
+        <div class="answer-field">
+          <input type="text" class="answer-input" placeholder="O₂ + ... → ...">
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">c) Gesamtgleichung (2 Punkte)</div>
+        <p>Stellen Sie die <strong>ausgeglichene Gesamtgleichung</strong> auf:</p>
+        <div class="answer-field">
+          <input type="text" class="answer-input" placeholder="... Fe + ... O₂ → ... Fe₂O₃">
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">d) Oxidations- und Reduktionsmittel (1 Punkt)</div>
+        <div class="calc-row"><label>Oxidationsmittel:</label><input type="text" class="calc-input" style="width:160px" placeholder="?"></div>
+        <div class="calc-row"><label>Reduktionsmittel:</label><input type="text" class="calc-input" style="width:160px" placeholder="?"></div>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <!-- D3: Säure-Base -->
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">9</span>
+        <span class="q-title">Säure-Base-Reaktion & Neutralisation</span>
+        <span class="q-pts">8 P</span>
+      </div>
+
+      <div class="part">
+        <div class="part-label">a) HNO₃ reagiert mit Wasser (2 Punkte)</div>
+        <p>Vervollständigen Sie die Reaktionsgleichung:</p>
+        <div class="eq-box">
+          HNO₃ + H₂O → <input type="text" class="calc-input" style="width:200px" placeholder="Produkte?">
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Korrespondierende Säure-Base-Paare (3 Punkte)</div>
+        <p>Benennen Sie die <strong>korrespondierenden Säure-Base-Paare</strong> aus der Reaktion in a).</p>
+        <div class="calc-row"><label>Paar 1 (Säure/korr. Base):</label><input type="text" class="calc-input" style="width:220px" placeholder="... / ..."></div>
+        <div class="calc-row"><label>Paar 2 (Base/korr. Säure):</label><input type="text" class="calc-input" style="width:220px" placeholder="... / ..."></div>
+        <p style="margin-top:8px;">Wer ist in dieser Reaktion Protonendonator, wer Protonenakzeptor?</p>
+        <div class="answer-field">
+          <textarea class="answer-input" rows="2" placeholder="Donator: ... / Akzeptor: ..."></textarea>
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">c) Neutralisation (3 Punkte)</div>
+        <p>Stellen Sie die Neutralisationsreaktion von <strong>Salpetersäure (HNO₃)</strong> mit <strong>Calciumhydroxid (Ca(OH)₂)</strong> auf:</p>
+        <div class="answer-field">
+          <input type="text" class="answer-input" placeholder="... HNO₃ + ... Ca(OH)₂ → ... + ...">
+        </div>
+        <p style="margin-top:8px; font-size:0.85em;">Hinweis: Achten Sie auf die Stöchiometrie – Calcium ist zweiwertig!</p>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <!-- D4: Funktionelle Gruppen -->
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">10</span>
+        <span class="q-title">Funktionelle Gruppen & Veresterung</span>
+        <span class="q-pts">5 P</span>
+      </div>
+
+      <div class="part">
+        <div class="part-label">a) Funktionelle Gruppen erkennen (3 Punkte)</div>
+        <p>Ordnen Sie jeder Stoffklasse die richtige funktionelle Gruppe zu:</p>
+        <table class="q-table">
+          <tr><th>Stoffklasse</th><th>Funktionelle Gruppe</th></tr>
+          <tr><td>Alkohole</td><td><select><option value="">–</option><option>−OH (Hydroxylgruppe)</option><option>−COOH (Carboxylgruppe)</option><option>−COO− (Estergruppe)</option><option>−NH₂ (Aminogruppe)</option><option>C=C (Doppelbindung)</option></select></td></tr>
+          <tr><td>Carbonsäuren</td><td><select><option value="">–</option><option>−OH (Hydroxylgruppe)</option><option>−COOH (Carboxylgruppe)</option><option>−COO− (Estergruppe)</option><option>−NH₂ (Aminogruppe)</option><option>C=C (Doppelbindung)</option></select></td></tr>
+          <tr><td>Ester</td><td><select><option value="">–</option><option>−OH (Hydroxylgruppe)</option><option>−COOH (Carboxylgruppe)</option><option>−COO− (Estergruppe)</option><option>−NH₂ (Aminogruppe)</option><option>C=C (Doppelbindung)</option></select></td></tr>
+        </table>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Veresterung (2 Punkte)</div>
+        <p>Propansäure reagiert mit Methanol. Welcher <strong>Reaktionstyp</strong> liegt vor? Benennen Sie das <strong>Hauptprodukt</strong> und das <strong>Nebenprodukt</strong>.</p>
+        <div class="calc-row"><label>Reaktionstyp:</label><input type="text" class="calc-input" style="width:180px" placeholder="?"></div>
+        <div class="calc-row"><label>Hauptprodukt:</label><input type="text" class="calc-input" style="width:220px" placeholder="?"></div>
+        <div class="calc-row"><label>Nebenprodukt:</label><input type="text" class="calc-input" style="width:180px" placeholder="?"></div>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <!-- D5: Reaktionsgleichungen -->
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">11</span>
+        <span class="q-title">Reaktionsgleichungen aufstellen</span>
+        <span class="q-pts">5 P</span>
+      </div>
+
+      <div class="part">
+        <div class="part-label">a) Verbrennung von Methan (2 Punkte)</div>
+        <p>Stellen Sie die vollständige Verbrennungsgleichung von Methan (CH₄) auf:</p>
+        <div class="answer-field">
+          <input type="text" class="answer-input" placeholder="CH₄ + ... → ... + ...">
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Natrium reagiert mit Wasser (3 Punkte)</div>
+        <p>Stellen Sie die Reaktionsgleichung auf und benennen Sie die entstehenden Produkte:</p>
+        <div class="answer-field">
+          <input type="text" class="answer-input" placeholder="Na + H₂O → ... + ...">
+        </div>
+        <div class="calc-row"><label>Produkt 1:</label><input type="text" class="calc-input" style="width:200px" placeholder="Name?"></div>
+        <div class="calc-row"><label>Produkt 2:</label><input type="text" class="calc-input" style="width:200px" placeholder="Name?"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       TEIL E: NACHHALTIGKEIT (14 Punkte)
+       ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon">🌱</div>
+      <h2>Teil E: Nachhaltige Entwicklung</h2>
+      <span class="pts">14 Punkte</span>
+    </div>
+
+    <!-- E1: Kunststoffe -->
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">12</span>
+        <span class="q-title">Kunststoffe & Recycling</span>
+        <span class="q-pts">7 P</span>
+      </div>
+
+      <div class="part">
+        <div class="part-label">a) Kunststoffklassen (3 Punkte)</div>
+        <p>Beschreiben Sie die drei Kunststoffklassen und nennen Sie je ein Beispiel:</p>
+        <table class="q-table">
+          <tr><th>Klasse</th><th>Verhalten beim Erhitzen</th><th>Beispiel</th></tr>
+          <tr><td><strong>Thermoplast</strong></td><td><input type="text" class="calc-input" style="width:100%" placeholder="..."></td><td><input type="text" class="calc-input" style="width:100%" placeholder="z.B. ..."></td></tr>
+          <tr><td><strong>Duroplast</strong></td><td><input type="text" class="calc-input" style="width:100%" placeholder="..."></td><td><input type="text" class="calc-input" style="width:100%" placeholder="z.B. ..."></td></tr>
+          <tr><td><strong>Elastomer</strong></td><td><input type="text" class="calc-input" style="width:100%" placeholder="..."></td><td><input type="text" class="calc-input" style="width:100%" placeholder="z.B. ..."></td></tr>
+        </table>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Werkstoffliches vs. rohstoffliches Recycling (2 Punkte)</div>
+        <p>Erklären Sie den Unterschied:</p>
+        <div class="answer-field">
+          <textarea class="answer-input" rows="3" placeholder="Werkstofflich: ...\nRohstofflich: ..."></textarea>
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">c) Cradle-to-Cradle (2 Punkte)</div>
+        <p>Erklären Sie das <strong>Cradle-to-Cradle</strong>-Konzept und warum es dem einfachen Recycling überlegen sein kann.</p>
+        <div class="answer-field">
+          <textarea class="answer-input" rows="3" placeholder="Erklärung..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <!-- E2: Grüne Chemie -->
+    <div class="question">
+      <div class="q-head">
+        <span class="q-num">13</span>
+        <span class="q-title">Grüne Chemie & CO₂-Fußabdruck</span>
+        <span class="q-pts">7 P</span>
+      </div>
+
+      <div class="part">
+        <div class="part-label">a) Prinzipien der Grünen Chemie (3 Punkte)</div>
+        <p>Nennen Sie <strong>drei Prinzipien</strong> der nachhaltigen (Grünen) Chemie:</p>
+        <div class="answer-field">
+          <textarea class="answer-input" rows="3" placeholder="1) ...\n2) ...\n3) ..."></textarea>
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">b) Bioethanol vs. Benzin (2 Punkte)</div>
+        <p>Vergleichen Sie <strong>Bioethanol</strong> mit <strong>fossilem Benzin</strong>. Nennen Sie je einen Vor- und Nachteil von Bioethanol.</p>
+        <div class="answer-field">
+          <textarea class="answer-input" rows="3" placeholder="Vorteil: ...\nNachteil: ..."></textarea>
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="part-label">c) CO₂-Fußabdruck (2 Punkte)</div>
+        <p>Was versteht man unter dem <strong>CO₂-Fußabdruck</strong> eines Produkts? Nennen Sie ein Beispiel.</p>
+        <div class="answer-field">
+          <textarea class="answer-input" rows="3" placeholder="Definition + Beispiel..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ LÖSUNGEN TOGGLE ═══ -->
+  <div class="sol-toggle">
+    <button class="sol-btn" onclick="toggleSolutions()">📋 Musterlösungen anzeigen</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       LÖSUNGSABSCHNITT MIT VISUALISIERUNGEN
+       ═══════════════════════════════════════════════════ -->
+  <div id="solutionsSection">
+
+    <!-- ── Lösung A: Optik ── -->
+    <div class="sol-section">
+      <h3>🔦 Teil A: Optik – Lösungen</h3>
+
+      <p><strong>Aufgabe 1: Lichtbrechung & Snellius</strong></p>
+
+      <div class="sol-answer">
+        <strong>a)</strong> Der Lichtstrahl wird <strong>zum Lot hin</strong> gebrochen, da er von einem optisch dünneren Medium (Luft, n=1,0) in ein optisch dichteres Medium (Glas, n=1,5) übergeht. Beim Übergang dünn→dicht wird der Lichtstrahl zum Lot hin gebrochen.
+      </div>
+
+      <div class="sol-answer">
+        <strong>b) Berechnung des Brechungswinkels β:</strong>
+        <div class="sol-step"><span class="step-num">1</span><span>n₁ · sin(α) = n₂ · sin(β)</span></div>
+        <div class="sol-step"><span class="step-num">2</span><span>1,0 · sin(40°) = 1,5 · sin(β)</span></div>
+        <div class="sol-step"><span class="step-num">3</span><span>sin(β) = sin(40°) / 1,5 = 0,6428 / 1,5 = 0,4285</span></div>
+        <div class="sol-step"><span class="step-num">4</span><span><strong>β = arcsin(0,4285) ≈ 25,4°</strong></span></div>
+      </div>
+
+      <!-- SVG: Brechungsdiagramm -->
+      <div class="diagram-container">
+        <svg viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg">
+          <!-- Medien -->
+          <rect x="0" y="0" width="520" height="170" fill="#0d2137" opacity="0.5"/>
+          <rect x="0" y="170" width="520" height="170" fill="#1a3a5f" opacity="0.5"/>
+          <text x="30" y="30" fill="#8892b0" font-size="14" font-family="Inter">Luft (n = 1,0)</text>
+          <text x="30" y="320" fill="#8892b0" font-size="14" font-family="Inter">Glas (n = 1,5)</text>
+
+          <!-- Grenzfläche -->
+          <line x1="0" y1="170" x2="520" y2="170" stroke="#64ffda" stroke-width="2" opacity="0.5"/>
+          <text x="420" y="164" fill="#64ffda" font-size="12" font-family="Inter">Grenzfläche</text>
+
+          <!-- Lot (vertikal, gestrichelt) -->
+          <line x1="260" y1="20" x2="260" y2="320" stroke="#fff" stroke-width="1" stroke-dasharray="6,4" opacity="0.3"/>
+          <text x="265" y="18" fill="#fff" font-size="11" font-family="Inter" opacity="0.5">Lot</text>
+
+          <!-- Einfallender Strahl -->
+          <line x1="140" y1="32" x2="260" y2="170" stroke="#ffd700" stroke-width="2.5"/>
+          <polygon points="253,162 248,170 258,170" fill="#ffd700"/>
+          <text x="140" y="25" fill="#ffd700" font-size="12" font-family="Inter" font-weight="600">Einfallender Strahl</text>
+
+          <!-- Reflektierter Strahl (leicht) -->
+          <line x1="260" y1="170" x2="380" y2="32" stroke="#ffd700" stroke-width="1" stroke-dasharray="4,3" opacity="0.3"/>
+          <text x="360" y="25" fill="#ffd700" font-size="10" font-family="Inter" opacity="0.4">(reflektierter Anteil)</text>
+
+          <!-- Gebrochener Strahl -->
+          <line x1="260" y1="170" x2="320" y2="320" stroke="#2ecc71" stroke-width="2.5"/>
+          <polygon points="317,312 314,321 323,318" fill="#2ecc71"/>
+          <text x="325" y="290" fill="#2ecc71" font-size="12" font-family="Inter" font-weight="600">Gebrochener Strahl</text>
+
+          <!-- Winkelbögen -->
+          <path d="M 260,130 A 40,40 0 0 1 235,163" fill="none" stroke="#ffd700" stroke-width="1.5"/>
+          <text x="220" y="138" fill="#ffd700" font-size="13" font-family="Inter" font-weight="700">α=40°</text>
+
+          <path d="M 260,210 A 40,40 0 0 0 272,208" fill="none" stroke="#2ecc71" stroke-width="1.5"/>
+          <text x="275" y="220" fill="#2ecc71" font-size="13" font-family="Inter" font-weight="700">β≈25,4°</text>
+        </svg>
+        <div class="diagram-caption">Brechung am Übergang Luft → Glas nach Snellius</div>
+      </div>
+
+      <div class="sol-answer">
+        <strong>c) Grenzwinkel der Totalreflexion (Glas→Luft):</strong>
+        <div class="sol-step"><span class="step-num">1</span><span>sin(α<sub>c</sub>) = n<sub>dünn</sub> / n<sub>dicht</sub> = 1,0 / 1,5 = 0,6667</span></div>
+        <div class="sol-step"><span class="step-num">2</span><span><strong>α<sub>c</sub> = arcsin(0,6667) ≈ 41,8°</strong></span></div>
+        <p style="margin-top:8px;">Bei Totalreflexion wird das gesamte Licht an der Grenzfläche reflektiert und tritt nicht in das andere Medium über. Dies passiert nur beim Übergang von optisch dichterem zu optisch dünnerem Medium, wenn der Einfallswinkel den Grenzwinkel überschreitet.</p>
+      </div>
+
+      <div class="sol-answer">
+        <strong>d) Alltagsbeispiele:</strong><br>
+        1) Strohhalm im Wasserglas erscheint „geknickt"<br>
+        2) Münze am Beckenboden erscheint näher an der Oberfläche<br>
+        (auch: Regenbogen, „Fata Morgana", Lupe, Brille)
+      </div>
+
+      <div class="sol-answer">
+        <strong>e) Strohhalm-Phänomen:</strong> Das Licht, das vom Strohhalm unter Wasser ausgeht, wird beim Übergang Wasser→Luft vom Lot weg gebrochen. Dadurch sieht unser Auge den Unterwasserteil des Strohhalms an einer anderen Stelle als den Teil über Wasser → der Strohhalm erscheint „abgeknickt".
+      </div>
+
+      <hr class="sep">
+      <p><strong>Aufgabe 2: Zeichenaufgabe</strong></p>
+
+      <div class="sol-answer">
+        <strong>a) Reflexion:</strong> 50° zur Oberfläche = 90° − 50° = <strong>40° zum Lot</strong> (Einfallswinkel).<br>
+        Reflexionsgesetz: Einfallswinkel = Ausfallswinkel → Ausfallswinkel = 40° zum Lot.
+      </div>
+
+      <div class="diagram-container">
+        <svg viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg">
+          <!-- Spiegel -->
+          <rect x="60" y="180" width="400" height="8" rx="2" fill="#64ffda" opacity="0.4"/>
+          <text x="230" y="210" fill="#64ffda" font-size="12" font-family="Inter">Spiegel</text>
+          <!-- Lot -->
+          <line x1="260" y1="40" x2="260" y2="175" stroke="#fff" stroke-width="1" stroke-dasharray="5,3" opacity="0.4"/>
+          <text x="265" y="50" fill="#fff" font-size="10" font-family="Inter" opacity="0.5">Lot</text>
+          <!-- Einfallender Strahl -->
+          <line x1="110" y1="55" x2="260" y2="180" stroke="#ffd700" stroke-width="2.5"/>
+          <polygon points="255,173 250,181 258,180" fill="#ffd700"/>
+          <text x="85" y="48" fill="#ffd700" font-size="11" font-family="Inter">Einfallend</text>
+          <!-- Reflektierter Strahl -->
+          <line x1="260" y1="180" x2="410" y2="55" stroke="#2ecc71" stroke-width="2.5"/>
+          <polygon points="406,60 411,53 404,56" fill="#2ecc71"/>
+          <text x="380" y="48" fill="#2ecc71" font-size="11" font-family="Inter">Reflektiert</text>
+          <!-- Winkel -->
+          <path d="M 260,140 A 40,40 0 0 1 235,170" fill="none" stroke="#ffd700" stroke-width="1.5"/>
+          <text x="218" y="148" fill="#ffd700" font-size="12" font-family="Inter" font-weight="700">40°</text>
+          <path d="M 260,140 A 40,40 0 0 0 285,170" fill="none" stroke="#2ecc71" stroke-width="1.5"/>
+          <text x="290" y="148" fill="#2ecc71" font-size="12" font-family="Inter" font-weight="700">40°</text>
+          <!-- Winkel zur Oberfläche -->
+          <path d="M 220,180 A 40,40 0 0 1 235,170" fill="none" stroke="#ffd700" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="195" y="172" fill="#ffd700" font-size="10" font-family="Inter">50°</text>
+        </svg>
+        <div class="diagram-caption">Reflexion am ebenen Spiegel: Einfallswinkel = Ausfallswinkel (zum Lot!)</div>
+      </div>
+
+      <div class="sol-answer">
+        <strong>b) Schattenbildung:</strong> Randstrahlen werden von der Punktlichtquelle tangential am Gegenstand vorbei gezeichnet. Der Bereich hinter dem Gegenstand, der von keinem Lichtstrahl erreicht wird, ist der <strong>Kernschatten</strong>.
+      </div>
+
+      <div class="diagram-container">
+        <svg viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg">
+          <!-- Lichtquelle -->
+          <circle cx="60" cy="130" r="12" fill="#ffd700"/>
+          <text x="40" y="105" fill="#ffd700" font-size="11" font-family="Inter">Lichtquelle</text>
+          <!-- Gegenstand -->
+          <rect x="220" y="70" width="14" height="120" rx="2" fill="#e74c3c" opacity="0.8"/>
+          <text x="205" y="60" fill="#e74c3c" font-size="11" font-family="Inter">Gegenstand</text>
+          <!-- Schirm -->
+          <rect x="440" y="10" width="8" height="240" rx="2" fill="#48a9fe" opacity="0.4"/>
+          <text x="425" y="8" fill="#48a9fe" font-size="11" font-family="Inter">Schirm</text>
+          <!-- Randstrahl oben -->
+          <line x1="60" y1="130" x2="220" y2="70" stroke="#ffd700" stroke-width="1.5"/>
+          <line x1="220" y1="70" x2="445" y2="-5" stroke="#ffd700" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <!-- Randstrahl unten -->
+          <line x1="60" y1="130" x2="220" y2="190" stroke="#ffd700" stroke-width="1.5"/>
+          <line x1="220" y1="190" x2="445" y2="265" stroke="#ffd700" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <!-- Durchgezogene Strahlen zum Schirm -->
+          <line x1="220" y1="70" x2="445" y2="20" stroke="#ffd700" stroke-width="1" opacity="0.4"/>
+          <line x1="220" y1="190" x2="445" y2="240" stroke="#ffd700" stroke-width="1" opacity="0.4"/>
+          <!-- Schatten auf Schirm -->
+          <rect x="440" y="20" width="12" height="220" fill="#333" opacity="0.6" rx="1"/>
+          <text x="456" y="135" fill="#aaa" font-size="11" font-family="Inter" font-weight="600">Kernschatten</text>
+        </svg>
+        <div class="diagram-caption">Schattenbildung bei einer Punktlichtquelle: Nur Kernschatten entsteht</div>
+      </div>
+    </div>
+
+    <!-- ── Lösung B: E-Lehre ── -->
+    <div class="sol-section">
+      <h3>⚡ Teil B: Elektrizitätslehre – Lösungen</h3>
+
+      <p><strong>Aufgabe 3: Reihenschaltung</strong></p>
+
+      <div class="diagram-container">
+        <svg viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg">
+          <!-- Leitung oben -->
+          <line x1="40" y1="40" x2="480" y2="40" stroke="#64ffda" stroke-width="2"/>
+          <!-- Leitung unten -->
+          <line x1="40" y1="120" x2="480" y2="120" stroke="#64ffda" stroke-width="2"/>
+          <!-- Seitenleitungen -->
+          <line x1="40" y1="40" x2="40" y2="120" stroke="#64ffda" stroke-width="2"/>
+          <line x1="480" y1="40" x2="480" y2="120" stroke="#64ffda" stroke-width="2"/>
+          <!-- Batterie -->
+          <line x1="32" y1="65" x2="48" y2="65" stroke="#ffd700" stroke-width="3"/>
+          <line x1="36" y1="75" x2="44" y2="75" stroke="#ffd700" stroke-width="1.5"/>
+          <text x="15" y="58" fill="#ffd700" font-size="10" font-family="Inter">+</text>
+          <text x="18" y="88" fill="#ffd700" font-size="10" font-family="Inter">−</text>
+          <text x="5" y="105" fill="#ffd700" font-size="11" font-family="Inter">U=20V</text>
+          <!-- R1 -->
+          <rect x="100" y="30" width="80" height="20" rx="4" fill="none" stroke="#ff6b6b" stroke-width="2"/>
+          <text x="120" y="44" fill="#ff6b6b" font-size="11" font-family="Inter" font-weight="600">R₁=15Ω</text>
+          <!-- R2 -->
+          <rect x="220" y="30" width="80" height="20" rx="4" fill="none" stroke="#48a9fe" stroke-width="2"/>
+          <text x="240" y="44" fill="#48a9fe" font-size="11" font-family="Inter" font-weight="600">R₂=25Ω</text>
+          <!-- R3 -->
+          <rect x="340" y="30" width="80" height="20" rx="4" fill="none" stroke="#2ecc71" stroke-width="2"/>
+          <text x="360" y="44" fill="#2ecc71" font-size="11" font-family="Inter" font-weight="600">R₃=10Ω</text>
+          <!-- Strom -->
+          <text x="230" y="143" fill="#64ffda" font-size="12" font-family="Inter">I →</text>
+        </svg>
+        <div class="diagram-caption">Schaltbild: Reihenschaltung mit drei Widerständen</div>
+      </div>
+
+      <div class="sol-answer">
+        <strong>a)</strong> R<sub>ges</sub> = R₁ + R₂ + R₃ = 15 + 25 + 10 = <strong>50 Ω</strong>
+      </div>
+      <div class="sol-answer">
+        <strong>b)</strong> I = U / R<sub>ges</sub> = 20 / 50 = <strong>0,4 A</strong>
+      </div>
+      <div class="sol-answer">
+        <strong>c)</strong><br>
+        U₁ = I · R₁ = 0,4 · 15 = <strong>6 V</strong><br>
+        U₂ = I · R₂ = 0,4 · 25 = <strong>10 V</strong><br>
+        U₃ = I · R₃ = 0,4 · 10 = <strong>4 V</strong><br>
+        <span style="color:var(--secondary);">Probe: 6 + 10 + 4 = 20 V ✓</span>
+      </div>
+      <div class="sol-answer">
+        <strong>d)</strong> P<sub>ges</sub> = U · I = 20 · 0,4 = <strong>8 W</strong>
+      </div>
+      <div class="sol-answer">
+        <strong>e) Heizlüfter:</strong>
+        <div class="sol-step"><span class="step-num">1</span><span>E = P · t = 2000 W · 3 h = 6000 Wh = <strong>6 kWh</strong></span></div>
+        <div class="sol-step"><span class="step-num">2</span><span>Kosten = 6 kWh · 0,35 €/kWh = <strong>2,10 €</strong></span></div>
+      </div>
+
+      <hr class="sep">
+      <p><strong>Aufgabe 4: Verständnis</strong></p>
+      <div class="sol-answer">
+        <strong>a) Wassermodell:</strong><br>
+        • <strong>Spannung U</strong> ≙ Druckunterschied / Höhenunterschied (treibende Kraft)<br>
+        • <strong>Stromstärke I</strong> ≙ Wassermenge pro Zeit (Durchfluss)<br>
+        • <strong>Widerstand R</strong> ≙ Rohrverengung / Hindernis (bremst den Fluss)
+      </div>
+      <div class="sol-answer">
+        <strong>b)</strong> Wasser senkt den elektrischen Widerstand der Haut stark (von ~100 kΩ auf wenige kΩ). Dadurch fließt bei Berührung spannungsführender Teile ein viel höherer Strom durch den Körper → <strong>Lebensgefahr!</strong>
+      </div>
+      <div class="sol-answer">
+        <strong>c)</strong> Die Sicherung schützt die Leitung vor Überlastung und Brand. Bei zu hohem Strom (Kurzschluss oder zu viele Geräte) unterbricht sie den Stromkreis.<br>
+        Typisch im Haushalt: <strong>16 A</strong> (Schuko-Steckdose) bzw. 10 A (Licht).
+      </div>
+    </div>
+
+    <!-- ── Lösung C: Magnetismus ── -->
+    <div class="sol-section">
+      <h3>🧲 Teil C: Magnetismus – Lösungen</h3>
+
+      <p><strong>Aufgabe 5: Elementarmagnete</strong></p>
+      <div class="sol-answer">
+        <strong>a)</strong> Jeder Stoff besteht aus winzigen Elementarmagneten (Atome/Moleküle mit magn. Moment). In unmagnetisiertem Eisen sind sie <strong>ungeordnet</strong> → kein Gesamtmagnetfeld. Beim Magnetisieren werden sie <strong>ausgerichtet</strong> → das Material wird zum Magneten.
+      </div>
+
+      <div class="diagram-container">
+        <svg viewBox="0 0 520 120" xmlns="http://www.w3.org/2000/svg">
+          <!-- Ungeordnet -->
+          <rect x="20" y="20" width="200" height="80" rx="10" fill="rgba(100,255,218,0.05)" stroke="#64ffda" stroke-width="1" opacity="0.5"/>
+          <text x="65" y="16" fill="#8892b0" font-size="11" font-family="Inter">Unmagnetisiert</text>
+          <text x="40" y="50" fill="#ff6b6b" font-size="16" transform="rotate(45,50,45)">→</text>
+          <text x="90" y="70" fill="#ff6b6b" font-size="16" transform="rotate(-30,95,65)">→</text>
+          <text x="140" y="50" fill="#ff6b6b" font-size="16" transform="rotate(120,145,45)">→</text>
+          <text x="60" y="85" fill="#ff6b6b" font-size="16" transform="rotate(200,65,80)">→</text>
+          <text x="120" y="85" fill="#ff6b6b" font-size="16" transform="rotate(-80,125,80)">→</text>
+          <text x="160" y="70" fill="#ff6b6b" font-size="16" transform="rotate(60,165,65)">→</text>
+          <!-- Geordnet -->
+          <rect x="300" y="20" width="200" height="80" rx="10" fill="rgba(100,255,218,0.05)" stroke="#64ffda" stroke-width="1" opacity="0.5"/>
+          <text x="350" y="16" fill="#8892b0" font-size="11" font-family="Inter">Magnetisiert</text>
+          <text x="320" y="55" fill="#2ecc71" font-size="16">→</text>
+          <text x="350" y="55" fill="#2ecc71" font-size="16">→</text>
+          <text x="380" y="55" fill="#2ecc71" font-size="16">→</text>
+          <text x="410" y="55" fill="#2ecc71" font-size="16">→</text>
+          <text x="440" y="55" fill="#2ecc71" font-size="16">→</text>
+          <text x="320" y="80" fill="#2ecc71" font-size="16">→</text>
+          <text x="350" y="80" fill="#2ecc71" font-size="16">→</text>
+          <text x="380" y="80" fill="#2ecc71" font-size="16">→</text>
+          <text x="410" y="80" fill="#2ecc71" font-size="16">→</text>
+          <text x="440" y="80" fill="#2ecc71" font-size="16">→</text>
+          <!-- Pfeil -->
+          <text x="240" y="68" fill="#ffd700" font-size="22">⟹</text>
+          <!-- Pole -->
+          <text x="300" y="112" fill="#ff6b6b" font-size="12" font-family="Inter" font-weight="700">S</text>
+          <text x="490" y="112" fill="#2ecc71" font-size="12" font-family="Inter" font-weight="700">N</text>
+        </svg>
+        <div class="diagram-caption">Elementarmagnetenmodell: ungeordnet → ausgerichtet</div>
+      </div>
+
+      <div class="sol-answer">
+        <strong>b)</strong> Jeder einzelne Elementarmagnet hat selbst einen Nord- und einen Südpol. Beim Teilen behält jeder Elementarmagnet seine Pole → jedes Bruchstück hat <strong>immer Nord- und Südpol</strong>.
+      </div>
+      <div class="sol-answer">
+        <strong>c)</strong> Methoden: (1) <strong>Erhitzen</strong> über die Curie-Temperatur, (2) <strong>Erschütterung</strong> (Hämmern).<br>
+        Erklärung Erhitzen: Die thermische Energie bringt die Elementarmagnete in Unordnung, da sie sich durch die Bewegung nicht mehr gemeinsam ausrichten können → der Magnet verliert seine Magnetisierung.
+      </div>
+
+      <hr class="sep">
+      <p><strong>Aufgabe 6: Richtig/Falsch</strong></p>
+      <div class="sol-answer">
+        <strong>1.</strong> Gleichnamige Pole ziehen sich an → <strong>FALSCH</strong>. Gleichnamige Pole stoßen sich ab, ungleichnamige ziehen sich an.<br>
+        <strong>2.</strong> Eisen, Cobalt und Nickel sind ferromagnetisch → <strong>RICHTIG</strong>.<br>
+        <strong>3.</strong> Geographischer Nordpol = magnetischer Nordpol → <strong>FALSCH</strong>. Am geogr. Nordpol liegt der magnetische Südpol der Erde.<br>
+        <strong>4.</strong> Feldlinien außen von Nord nach Süd → <strong>RICHTIG</strong>. (Innen von Süd nach Nord.)<br>
+        <strong>5.</strong> Aluminium ist ferromagnetisch → <strong>FALSCH</strong>. Aluminium ist paramagnetisch, nicht ferromagnetisch.
+      </div>
+    </div>
+
+    <!-- ── Lösung D: Chemie ── -->
+    <div class="sol-section">
+      <h3>⚗️ Teil D: Chemie – Lösungen</h3>
+
+      <p><strong>Aufgabe 7: Begriffe</strong></p>
+      <div class="sol-answer">
+        • <strong>Oxidation</strong> = Elektronenabgabe (OZ steigt)<br>
+        • <strong>Reduktion</strong> = Elektronenaufnahme (OZ sinkt)<br>
+        • <strong>Säure (Brønsted)</strong> = Protonendonator (gibt H⁺ ab)<br>
+        • <strong>Base (Brønsted)</strong> = Protonenakzeptor (nimmt H⁺ auf)<br>
+        • <strong>Katalysator</strong> = Stoff, der Reaktion beschleunigt, ohne selbst verbraucht zu werden<br>
+        • <strong>Exotherm</strong> = Reaktion, bei der Wärme freigesetzt wird
+      </div>
+
+      <hr class="sep">
+      <p><strong>Aufgabe 8: Redox – Eisen + Sauerstoff</strong></p>
+
+      <div class="sol-answer">
+        <strong>a) Oxidationszahlen:</strong><br>
+        <span class="chem-eq">
+          <span class="ox">Fe</span><span class="oz">0</span> (elementar) →
+          <span class="ox">Fe</span><span class="oz">+III</span> in Fe₂O₃<br>
+          <span class="red">O</span><span class="oz">0</span> (elementar) →
+          <span class="red">O</span><span class="oz">−II</span> in Fe₂O₃
+        </span>
+      </div>
+
+      <div class="sol-answer">
+        <strong>b) Teilgleichungen:</strong><br>
+        <span class="chem-eq">
+          <strong>Oxidation:</strong> <span class="ox">Fe → Fe³⁺ + 3 e⁻</span> (×4)<br>
+          <strong>Reduktion:</strong> <span class="red">O₂ + 4 e⁻ → 2 O²⁻</span> (×3)
+        </span>
+        <div class="sol-highlight" style="margin-top:8px;">
+          Elektronenbilanz: 4 × 3 = 12 e⁻ abgegeben = 3 × 4 = 12 e⁻ aufgenommen ✓
+        </div>
+      </div>
+
+      <div class="sol-answer">
+        <strong>c) Gesamtgleichung:</strong>
+        <div class="eq-box" style="background:rgba(46,204,113,0.08); border-color:rgba(46,204,113,0.2);">
+          4 Fe + 3 O₂ → 2 Fe₂O₃
+        </div>
+      </div>
+
+      <div class="sol-answer">
+        <strong>d)</strong> Oxidationsmittel: <strong>O₂</strong> (nimmt Elektronen auf)<br>
+        Reduktionsmittel: <strong>Fe</strong> (gibt Elektronen ab)
+      </div>
+
+      <hr class="sep">
+      <p><strong>Aufgabe 9: Säure-Base</strong></p>
+
+      <div class="sol-answer">
+        <strong>a) Reaktionsgleichung:</strong>
+        <div class="eq-box" style="background:rgba(46,204,113,0.08); border-color:rgba(46,204,113,0.2);">
+          HNO₃ + H₂O → H₃O⁺ + NO₃⁻
+        </div>
+      </div>
+
+      <div class="sol-answer">
+        <strong>b) Korrespondierende Paare:</strong>
+        <div class="sol-highlight">
+          <span style="color:#ff6b6b;">Paar 1 (Säure/korr. Base):</span> <strong>HNO₃ / NO₃⁻</strong><br>
+          <span style="color:#48a9fe;">Paar 2 (Base/korr. Säure):</span> <strong>H₂O / H₃O⁺</strong>
+        </div>
+        <strong>Protonendonator:</strong> HNO₃ (gibt H⁺ ab → wird zu NO₃⁻)<br>
+        <strong>Protonenakzeptor:</strong> H₂O (nimmt H⁺ auf → wird zu H₃O⁺)
+      </div>
+
+      <div class="sol-answer">
+        <strong>c) Neutralisation:</strong>
+        <div class="eq-box" style="background:rgba(46,204,113,0.08); border-color:rgba(46,204,113,0.2);">
+          2 HNO₃ + Ca(OH)₂ → Ca(NO₃)₂ + 2 H₂O
+        </div>
+        Ca ist zweiwertig → benötigt 2 HNO₃ pro Ca(OH)₂.
+      </div>
+
+      <hr class="sep">
+      <p><strong>Aufgabe 10: Funktionelle Gruppen</strong></p>
+      <div class="sol-answer">
+        <strong>a)</strong><br>
+        • Alkohole → <strong>−OH</strong> (Hydroxylgruppe)<br>
+        • Carbonsäuren → <strong>−COOH</strong> (Carboxylgruppe)<br>
+        • Ester → <strong>−COO−</strong> (Estergruppe)
+      </div>
+      <div class="sol-answer">
+        <strong>b)</strong> Reaktionstyp: <strong>Veresterung</strong> (= Kondensation)<br>
+        Hauptprodukt: <strong>Propansäuremethylester</strong><br>
+        Nebenprodukt: <strong>Wasser (H₂O)</strong>
+        <div class="eq-box" style="background:rgba(46,204,113,0.08); border-color:rgba(46,204,113,0.2);">
+          CH₃CH₂COOH + CH₃OH → CH₃CH₂COOCH₃ + H₂O
+        </div>
+      </div>
+
+      <hr class="sep">
+      <p><strong>Aufgabe 11: Reaktionsgleichungen</strong></p>
+      <div class="sol-answer">
+        <strong>a) Verbrennung von Methan:</strong>
+        <div class="eq-box" style="background:rgba(46,204,113,0.08); border-color:rgba(46,204,113,0.2);">
+          CH₄ + 2 O₂ → CO₂ + 2 H₂O
+        </div>
+      </div>
+      <div class="sol-answer">
+        <strong>b) Natrium + Wasser:</strong>
+        <div class="eq-box" style="background:rgba(46,204,113,0.08); border-color:rgba(46,204,113,0.2);">
+          2 Na + 2 H₂O → 2 NaOH + H₂↑
+        </div>
+        Produkt 1: <strong>Natriumhydroxid (NaOH)</strong> – Natronlauge<br>
+        Produkt 2: <strong>Wasserstoff (H₂)</strong> – brennbares Gas (Knallgasprobe!)
+      </div>
+    </div>
+
+    <!-- ── Lösung E: Nachhaltigkeit ── -->
+    <div class="sol-section">
+      <h3>🌱 Teil E: Nachhaltigkeit – Lösungen</h3>
+
+      <p><strong>Aufgabe 12: Kunststoffe</strong></p>
+      <div class="sol-answer">
+        <strong>a) Kunststoffklassen:</strong>
+        <table class="q-table" style="background:rgba(46,204,113,0.03);">
+          <tr><th>Klasse</th><th>Verhalten</th><th>Beispiel</th></tr>
+          <tr><td>Thermoplast</td><td>Wird weich, verformbar, wieder fest beim Abkühlen. Wiederholbar.</td><td>PET, PE, PP</td></tr>
+          <tr><td>Duroplast</td><td>Zersetzt sich, nicht verformbar (stark vernetzt)</td><td>Bakelit, Epoxidharz</td></tr>
+          <tr><td>Elastomer</td><td>Elastisch, kehrt in Ausgangsform zurück</td><td>Gummi, Silikon</td></tr>
+        </table>
+      </div>
+      <div class="sol-answer">
+        <strong>b)</strong> <strong>Werkstofflich:</strong> Kunststoff wird eingeschmolzen und zu neuem Produkt geformt (z.B. PET-Flasche → Fleecejacke). Nur bei Thermoplasten.<br>
+        <strong>Rohstofflich:</strong> Kunststoff wird chemisch in Monomere/Grundstoffe zerlegt und neu aufgebaut. Höherer Aufwand, aber Qualitätserhalt.
+      </div>
+      <div class="sol-answer">
+        <strong>c) Cradle-to-Cradle:</strong> Produkte werden von Anfang an so designt, dass alle Materialien nach Gebrauch vollständig in neue Produkte gleicher Qualität überführt werden können. Biologische Materialien → biologischer Kreislauf; technische Materialien → technischer Kreislauf. Überlegen gegenüber klassischem Recycling, da kein Downcycling stattfindet.
+      </div>
+
+      <hr class="sep">
+      <p><strong>Aufgabe 13: Grüne Chemie</strong></p>
+      <div class="sol-answer">
+        <strong>a) Drei Prinzipien der Grünen Chemie:</strong><br>
+        1) <strong>Abfallvermeidung</strong> – möglichst wenig Nebenprodukte / Abfall erzeugen<br>
+        2) <strong>Atomökonomie</strong> – möglichst alle Atome der Edukte im Produkt wiederfinden<br>
+        3) <strong>Verwendung ungiftiger Lösungsmittel</strong> – Wasser statt organischer Lösungsmittel<br>
+        <span style="color:var(--secondary); font-size:0.85em;">(Auch: Erneuerbare Rohstoffe nutzen, Energieeffizienz, katalytische statt stöchiometrische Reagenzien)</span>
+      </div>
+      <div class="sol-answer">
+        <strong>b) Bioethanol vs. Benzin:</strong><br>
+        <strong>Vorteil:</strong> Bioethanol ist CO₂-neutral in der Bilanz (die Pflanzen nehmen beim Wachsen CO₂ auf, das bei der Verbrennung wieder frei wird) → nachwachsender Rohstoff.<br>
+        <strong>Nachteil:</strong> Konkurrenz zur Nahrungsmittelproduktion („Tank vs. Teller"), großer Flächenverbrauch, Wasser- und Düngemittelbedarf.
+      </div>
+      <div class="sol-answer">
+        <strong>c) CO₂-Fußabdruck:</strong> Die Gesamtmenge an CO₂-Emissionen (in kg CO₂-Äquivalenten), die bei Herstellung, Transport, Nutzung und Entsorgung eines Produkts entstehen → <strong>Lebenszyklusanalyse</strong>.<br>
+        Beispiel: Eine Plastiktüte hat ca. 40 g CO₂-Äquivalent, ein Baumwollbeutel ca. 600 g → der Beutel muss oft benutzt werden, um besser abzuschneiden.
+      </div>
+    </div>
+
+  </div> <!-- /solutionsSection -->
+
+</div> <!-- /container -->
+
+<script>
+// ═══ TIMER ═══
+let timerRunning = false;
+let timeLeft = 60 * 60; // 60 min in seconds
+let timerInterval;
+
+function toggleTimer() {
+  const btn = document.getElementById('timerBtn');
+  if (!timerRunning) {
+    timerRunning = true;
+    btn.textContent = '⏸ Pause';
+    timerInterval = setInterval(updateTimer, 1000);
+  } else {
+    timerRunning = false;
+    btn.textContent = '▶ Weiter';
+    clearInterval(timerInterval);
+  }
+}
+
+function updateTimer() {
+  timeLeft--;
+  if (timeLeft <= 0) {
+    clearInterval(timerInterval);
+    timeLeft = 0;
+    document.getElementById('timerDisplay').textContent = '00:00';
+    document.getElementById('timerDisplay').classList.add('danger');
+    alert('⏰ Die Zeit ist abgelaufen!');
+    return;
+  }
+  const m = Math.floor(timeLeft / 60);
+  const s = timeLeft % 60;
+  const display = document.getElementById('timerDisplay');
+  display.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  display.classList.remove('warning','danger');
+  if (timeLeft <= 300) display.classList.add('danger');
+  else if (timeLeft <= 600) display.classList.add('warning');
+}
+
+// ═══ SOLUTIONS ═══
+function toggleSolutions() {
+  const section = document.getElementById('solutionsSection');
+  const btn = document.querySelector('.sol-btn');
+  if (section.classList.contains('show')) {
+    section.classList.remove('show');
+    btn.textContent = '📋 Musterlösungen anzeigen';
+  } else {
+    if (!confirm('Bist du sicher? Die Lösungen sollten erst nach der Bearbeitung angezeigt werden.')) return;
+    section.classList.add('show');
+    btn.textContent = '🙈 Lösungen ausblenden';
+    section.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+</script>
+</body>
+</html>

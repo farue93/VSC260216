@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#F0EFF6">
+  <title>OCTRION | Messe Experience</title>
+  <style>
+/* ═══════════════════════════════════════════════════
+   OCTRION Messe Experience — Interactive Tablet Kiosk
+   Brand: #4c30a8 · #ff9b37 · #ffd026 · #424248
+   Tablet-optimized · Offline-First · Original PNG Logo
+   ═══════════════════════════════════════════════════ */
+
+:root {
+  --purple:        #4c30a8;
+  --purple-dark:   #3a2480;
+  --purple-deep:   #2d1b66;
+  --purple-light:  #7a63c7;
+  --purple-bg:     rgba(76,48,168,0.06);
+  --purple-10:     rgba(76,48,168,0.10);
+  --purple-15:     rgba(76,48,168,0.15);
+  --purple-20:     rgba(76,48,168,0.20);
+  --orange:        #ff9b37;
+  --orange-dark:   #e8872a;
+  --orange-bg:     rgba(255,155,55,0.10);
+  --yellow:        #ffd026;
+  --yellow-bg:     rgba(255,208,38,0.12);
+  --green:         #10B981;
+  --green-light:   #34D399;
+  --green-bg:      rgba(16,185,129,0.08);
+  --red:           #EF4444;
+  --blue:          #3B82F6;
+  --blue-bg:       rgba(59,130,246,0.08);
+  --bg:            #F0EFF6;
+  --bg-subtle:     #E8E6F0;
+  --card:          #FFFFFF;
+  --border:        #E0DDE9;
+  --text:          #424248;
+  --text-sec:      #6B6B73;
+  --text-muted:    #9898A0;
+  --input-bg:      #F5F4FA;
+  --shadow-sm:     0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow:        0 4px 12px rgba(0,0,0,0.06);
+  --shadow-lg:     0 8px 28px rgba(0,0,0,0.08);
+  --shadow-purple: 0 4px 16px rgba(76,48,168,0.22);
+  --shadow-glow:   0 0 40px rgba(76,48,168,0.3);
+  --radius:        12px;
+  --radius-lg:     16px;
+  --radius-xl:     20px;
+  --transition:    all 0.2s cubic-bezier(0.4,0,0.2,1);
+  --transition-spring: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ═══════════════════════════════════════════════════
+   SPLASH / LANDING SCREEN — White BG · Purple Logo
+   ═══════════════════════════════════════════════════ */
+.splash {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #FFFFFF;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.splash.fade-out {
+  opacity: 0; transform: scale(1.1);
+  pointer-events: none;
+}
+
+/* Subtle animated background */
+.splash::before {
+  content: ''; position: absolute; inset: -50%;
+  background: 
+    radial-gradient(circle at 30% 40%, rgba(76,48,168,0.04) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(255,155,55,0.03) 0%, transparent 50%),
+    radial-gradient(circle at 50% 80%, rgba(76,48,168,0.05) 0%, transparent 40%);
+  animation: splashGlow 4s ease-in-out infinite alternate;
+}
+@keyframes splashGlow {
+  0% { opacity: 0.5; transform: scale(1) rotate(0deg); }
+  100% { opacity: 1; transform: scale(1.08) rotate(2deg); }
+}
+
+/* Floating orbs (subtle purple on white) */
+.splash-orb {
+  position: absolute; border-radius: 50%;
+  background: rgba(76,48,168,0.025);
+  animation: floatOrb linear infinite;
+}
+.splash-orb:nth-child(1) { width: 200px; height: 200px; top: 10%; left: 5%; animation-duration: 18s; }
+.splash-orb:nth-child(2) { width: 120px; height: 120px; top: 60%; right: 10%; animation-duration: 14s; animation-delay: -4s; }
+.splash-orb:nth-child(3) { width: 80px; height: 80px; top: 30%; right: 20%; animation-duration: 22s; animation-delay: -8s; }
+.splash-orb:nth-child(4) { width: 160px; height: 160px; bottom: 15%; left: 15%; animation-duration: 20s; animation-delay: -2s; }
+@keyframes floatOrb {
+  0% { transform: translateY(0) translateX(0) scale(1); }
+  33% { transform: translateY(-40px) translateX(20px) scale(1.1); }
+  66% { transform: translateY(20px) translateX(-30px) scale(0.95); }
+  100% { transform: translateY(0) translateX(0) scale(1); }
+}
+
+/* ─── Splash main content area (logo + wordmark in a row) ─── */
+.splash-content {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  position: relative; z-index: 2;
+  gap: 0;
+}
+
+/* Logo + Wordmark row */
+.splash-wordmark {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0;
+}
+
+/* The O logo mark — large, breathing, then shrinks on activate */
+.splash-o {
+  position: relative;
+  width: 320px; height: 320px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  animation: splashBreathe 5s ease-in-out infinite;
+  transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1),
+              height 0.8s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 2;
+}
+.splash-o img {
+  width: 100%; height: 100%; object-fit: contain;
+  filter: drop-shadow(0 8px 30px rgba(76,48,168,0.15));
+}
+.splash-o.activated {
+  animation: none;
+  width: 100px; height: 100px;
+}
+
+@keyframes splashBreathe {
+  0%   { opacity: 1; transform: scale(1); }
+  50%  { opacity: 0.3; transform: scale(0.97); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* 3 clickable tentacle buttons — positioned over the 3 bottom shapes */
+.tentacle-btn {
+  position: absolute;
+  border: none; background: transparent;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 5;
+}
+/* Size scales with the logo */
+.tentacle-btn { width: 72px; height: 72px; }
+.splash-o.activated .tentacle-btn { display: none; }
+
+.tentacle-btn::before {
+  content: ''; position: absolute; inset: 6px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(76,48,168,0.18);
+  animation: breathe 2.6s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+.tentacle-btn::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(76,48,168,0.03), transparent);
+  transition: all 0.3s ease;
+}
+.tentacle-btn:hover::after {
+  background: radial-gradient(circle, rgba(76,48,168,0.12), transparent);
+  transform: scale(1.2);
+}
+.tentacle-btn:hover::before {
+  border-color: var(--purple);
+  border-width: 3px;
+}
+.tentacle-btn:active {
+  transform: scale(0.82);
+}
+.tentacle-btn:active::after {
+  background: radial-gradient(circle, rgba(255,155,55,0.35), transparent);
+}
+
+/* Exact positions over the original 3 bottom shapes of the OCTRION logo */
+.tentacle-btn.t-left   { bottom: 8%; left: 15%; }
+.tentacle-btn.t-center { bottom: 2%;  left: 50%; transform: translateX(-50%); }
+.tentacle-btn.t-right  { bottom: 8%; right: 15%; }
+.tentacle-btn.t-center:active { transform: translateX(-50%) scale(0.82); }
+
+/* Tentacle labels */
+.tentacle-label {
+  position: absolute; bottom: -22px; left: 50%;
+  transform: translateX(-50%); white-space: nowrap;
+  font-size: 10px; font-weight: 700; color: rgba(76,48,168,0.3);
+  letter-spacing: 1.5px; text-transform: uppercase;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+.tentacle-btn:hover .tentacle-label {
+  color: var(--purple);
+  transform: translateX(-50%) translateY(3px);
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.25; transform: scale(1.06); }
+}
+.tentacle-btn.t-center::before { animation-delay: 0.8s; }
+.tentacle-btn.t-right::before  { animation-delay: 1.6s; }
+
+/* ─── CTRION letters (fly in beside the logo) ─── */
+.splash-letters {
+  display: flex; align-items: center;
+  overflow: hidden; height: 100px;
+  max-width: 0;
+  transition: max-width 0.8s cubic-bezier(0.34,1.56,0.64,1);
+}
+.splash-letters.expand {
+  max-width: 600px;
+}
+.splash-letter {
+  font-size: 80px; font-weight: 900; color: var(--purple);
+  letter-spacing: 4px; line-height: 1;
+  display: inline-block;
+  opacity: 0;
+  transform: translateX(-60px);
+  transition: none;
+}
+.splash-letter.fly-in {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1),
+              transform 0.45s cubic-bezier(0.16,1,0.3,1);
+}
+
+/* Subtitle under the wordmark */
+.splash-sub {
+  font-size: 14px; color: var(--text-muted);
+  font-weight: 600; letter-spacing: 6px; text-transform: uppercase;
+  margin-top: 16px; position: relative; z-index: 2;
+  opacity: 0; transition: opacity 0.5s ease 0.3s;
+}
+.splash-sub.show { opacity: 1; }
+
+/* Hint pulsing at bottom */
+.splash-hint {
+  position: absolute; bottom: 40px; z-index: 2;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.splash-hint-text {
+  font-size: 11px; font-weight: 600; color: rgba(76,48,168,0.3);
+  letter-spacing: 2px; text-transform: uppercase;
+  animation: hintPulse 2s ease-in-out infinite;
+}
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+}
+.splash-hint-arrows {
+  display: flex; gap: 10px;
+}
+.splash-hint-arrow {
+  width: 8px; height: 8px; border-right: 2px solid rgba(76,48,168,0.25);
+  border-bottom: 2px solid rgba(76,48,168,0.25);
+  transform: rotate(45deg);
+  animation: hintBounce 1.8s ease-in-out infinite;
+}
+.splash-hint-arrow:nth-child(2) { animation-delay: 0.2s; }
+.splash-hint-arrow:nth-child(3) { animation-delay: 0.4s; }
+@keyframes hintBounce {
+  0%, 100% { transform: rotate(45deg) translate(0,0); opacity: 0.3; }
+  50% { transform: rotate(45deg) translate(4px,4px); opacity: 1; }
+}
+
+/* Ripple effect on tentacle click */
+.ripple {
+  position: absolute; border-radius: 50%;
+  background: rgba(76,48,168,0.15);
+  animation: rippleOut 0.6s ease-out forwards;
+  pointer-events: none; z-index: 1;
+}
+@keyframes rippleOut {
+  0% { width: 0; height: 0; opacity: 1; }
+  100% { width: 200px; height: 200px; opacity: 0; margin-top: -100px; margin-left: -100px; }
+}
+
+/* ═══════════════════════════════════════════════════
+   APP FRAME — Tablet Kiosk Layout
+   ═══════════════════════════════════════════════════ */
+.frame {
+  position: relative;
+  display: flex; flex-direction: column;
+  height: 100vh; width: 100vw;
+  max-width: 1200px; margin: 0 auto;
+  background: var(--card);
+  overflow: hidden;
+}
+
+/* ═══ TOPBAR ══════════════════════════════════ */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--card);
+  padding: 0 24px; height: 60px;
+  display: flex; align-items: center; gap: 16px;
+  box-shadow: var(--shadow-sm);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.logo {
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.logo-icon { width: 36px; height: 36px; }
+.logo-icon img { width: 100%; height: 100%; object-fit: contain; }
+.logo-text {
+  font-size: 20px; font-weight: 900;
+  color: var(--purple); letter-spacing: 2px;
+}
+
+.tb-sep { width: 1px; height: 28px; background: var(--border); }
+.tb-spacer { flex: 1; }
+
+.event-pill {
+  font-size: 10px; font-weight: 700;
+  color: var(--purple); letter-spacing: 0.5px;
+  background: var(--purple-bg);
+  padding: 5px 12px; border-radius: 20px;
+  text-transform: uppercase; white-space: nowrap;
+}
+
+/* Tab navigation — TOP placement */
+.top-tabs {
+  display: flex; gap: 4px;
+  height: 100%;
+  align-items: stretch;
+}
+.tab-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 0 18px; height: 100%;
+  border: none; background: none;
+  color: var(--text-muted);
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 0.5px; text-transform: uppercase;
+  cursor: pointer; transition: var(--transition);
+  position: relative; font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: var(--purple); background: var(--purple-bg); }
+.tab-btn.active { color: var(--purple); }
+.tab-btn.active::after {
+  content: ''; position: absolute; bottom: 0;
+  left: 15%; right: 15%; height: 3px;
+  background: var(--purple);
+  border-radius: 3px 3px 0 0;
+}
+.tab-icon { width: 18px; height: 18px; flex-shrink: 0; }
+.tab-icon svg { width: 100%; height: 100%; fill: currentColor; }
+
+/* Back to splash */
+.back-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--card); cursor: pointer;
+  font-family: inherit; font-size: 11px; font-weight: 700;
+  color: var(--text-sec); transition: var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+.back-btn:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-bg); }
+.back-btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+/* ═══ MAIN CONTENT ════════════════════════════ */
+.main {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 28px 32px;
+  background: var(--bg);
+}
+
+.section { display: none; }
+.section.active {
+  display: flex; flex-direction: column; flex: 1 0 auto;
+  animation: fadeUp 0.35s ease;
+  gap: 20px;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══ SECTION HERO HEADER ═════════════════════ */
+.section-hero {
+  background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%);
+  border-radius: var(--radius-xl);
+  padding: 36px 40px;
+  color: #fff;
+  position: relative; overflow: hidden;
+}
+.section-hero::before {
+  content: ''; position: absolute; top: -50%; right: -20%;
+  width: 300px; height: 300px; border-radius: 50%;
+  background: rgba(255,155,55,0.08);
+}
+.section-hero::after {
+  content: ''; position: absolute; bottom: -40%; left: -10%;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: rgba(255,208,38,0.06);
+}
+.section-hero h1 {
+  font-size: 28px; font-weight: 900; letter-spacing: 1px;
+  position: relative; z-index: 1;
+}
+.section-hero h1 span { color: var(--orange); }
+.section-hero p {
+  font-size: 14px; margin-top: 8px;
+  color: rgba(255,255,255,0.7);
+  position: relative; z-index: 1;
+  max-width: 600px;
+}
+
+/* ═══ SUB-TABS (inside sections) ══════════════ */
+.sub-tabs {
+  display: flex; gap: 8px;
+  flex-wrap: wrap;
+}
+.sub-tab {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 20px; border-radius: var(--radius);
+  border: 2px solid var(--border);
+  background: var(--card);
+  cursor: pointer; transition: var(--transition-spring);
+  font-family: inherit; font-size: 13px; font-weight: 700;
+  color: var(--text-sec);
+  -webkit-tap-highlight-color: transparent;
+}
+.sub-tab:hover {
+  border-color: var(--purple-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.sub-tab.active {
+  border-color: var(--purple);
+  background: var(--purple);
+  color: #fff;
+  box-shadow: var(--shadow-purple);
+}
+.sub-tab-icon { font-size: 18px; }
+
+/* ═══ CONTENT CARDS ═══════════════════════════ */
+.content-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 20px; align-items: start;
+}
+.content-grid.triple { grid-template-columns: 1fr 1fr 1fr; }
+.content-grid .full-width { grid-column: 1 / -1; }
+
+.info-card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: var(--transition-spring);
+}
+.info-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+.info-card-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.info-card-icon {
+  width: 40px; height: 40px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.info-card-icon.purple { background: var(--purple-bg); }
+.info-card-icon.orange { background: var(--orange-bg); }
+.info-card-icon.green  { background: var(--green-bg); }
+.info-card-icon.blue   { background: var(--blue-bg); }
+.info-card-header h3 {
+  font-size: 15px; font-weight: 700; color: var(--text);
+}
+.info-card-header p {
+  font-size: 11px; color: var(--text-muted); margin-top: 2px;
+}
+.info-card-body { padding: 20px; }
+
+/* Interactive stat display */
+.stat-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.stat-label { flex: 1; font-size: 13px; font-weight: 600; color: var(--text-sec); }
+.stat-value { font-size: 15px; font-weight: 800; color: var(--purple); }
+.stat-bar-wrap {
+  flex: 1; height: 6px; background: var(--purple-10);
+  border-radius: 3px; overflow: hidden;
+}
+.stat-bar {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, var(--purple), var(--purple-light));
+  transition: width 1.2s cubic-bezier(0.34,1.56,0.64,1);
+  width: 0;
+}
+.stat-bar.orange { background: linear-gradient(90deg, var(--orange), var(--yellow)); }
+.stat-bar.green  { background: linear-gradient(90deg, var(--green), var(--green-light)); }
+
+/* Feature showcase tiles */
+.feature-tile {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  padding: 28px 24px;
+  text-align: center;
+  transition: var(--transition-spring);
+  cursor: pointer;
+  position: relative; overflow: hidden;
+}
+.feature-tile::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--purple-bg), transparent);
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.feature-tile:hover::before { opacity: 1; }
+.feature-tile:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--purple-light);
+}
+.feature-tile:active {
+  transform: scale(0.97);
+}
+.feature-icon {
+  width: 56px; height: 56px; margin: 0 auto 12px;
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; position: relative; z-index: 1;
+}
+.feature-icon.purple { background: linear-gradient(135deg, var(--purple), var(--purple-dark)); color: #fff; }
+.feature-icon.orange { background: linear-gradient(135deg, var(--orange), var(--orange-dark)); color: #fff; }
+.feature-icon.green  { background: linear-gradient(135deg, var(--green), #0d9668); color: #fff; }
+.feature-icon.blue   { background: linear-gradient(135deg, var(--blue), #2563eb); color: #fff; }
+.feature-tile h4 {
+  font-size: 14px; font-weight: 800; color: var(--text);
+  margin-bottom: 4px; position: relative; z-index: 1;
+}
+.feature-tile p {
+  font-size: 12px; color: var(--text-muted);
+  position: relative; z-index: 1;
+}
+
+/* KPI Counters */
+.kpi-strip {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.kpi-card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  padding: 20px;
+  text-align: center;
+  transition: var(--transition-spring);
+  box-shadow: var(--shadow-sm);
+}
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.kpi-value {
+  font-size: 32px; font-weight: 900;
+  background: linear-gradient(135deg, var(--purple), var(--purple-light));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.kpi-value.orange {
+  background: linear-gradient(135deg, var(--orange), var(--yellow));
+  -webkit-background-clip: text; background-clip: text;
+}
+.kpi-value.green {
+  background: linear-gradient(135deg, var(--green), var(--green-light));
+  -webkit-background-clip: text; background-clip: text;
+}
+.kpi-label {
+  font-size: 10px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;
+}
+
+/* Timeline / Process steps */
+.process-timeline {
+  display: flex; gap: 0; align-items: flex-start;
+  position: relative; padding: 20px 0;
+}
+.process-step {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; text-align: center;
+  position: relative; z-index: 1;
+  cursor: pointer; transition: var(--transition);
+}
+.process-step:hover { transform: translateY(-2px); }
+.process-line {
+  position: absolute; top: 24px;
+  left: 15%; right: 15%; height: 3px;
+  background: var(--border);
+  z-index: 0;
+}
+.process-line-fill {
+  height: 100%; width: 0;
+  background: linear-gradient(90deg, var(--purple), var(--orange));
+  border-radius: 2px;
+  transition: width 1.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+.process-dot {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--card);
+  border: 3px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; transition: var(--transition-spring);
+  box-shadow: var(--shadow-sm);
+}
+.process-step.active .process-dot {
+  border-color: var(--purple);
+  background: var(--purple);
+  color: #fff;
+  box-shadow: var(--shadow-purple);
+  transform: scale(1.1);
+}
+.process-step.completed .process-dot {
+  border-color: var(--green);
+  background: var(--green);
+  color: #fff;
+}
+.process-step-title {
+  font-size: 12px; font-weight: 700; color: var(--text);
+  margin-top: 10px;
+}
+.process-step-desc {
+  font-size: 11px; color: var(--text-muted);
+  margin-top: 2px; max-width: 120px;
+}
+
+/* Animated badge/chip */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.badge.purple { background: var(--purple-bg); color: var(--purple); }
+.badge.orange { background: var(--orange-bg); color: var(--orange); }
+.badge.green  { background: var(--green-bg); color: var(--green); }
+.badge.blue   { background: var(--blue-bg); color: var(--blue); }
+
+/* Interactive showcase */
+.showcase-panel {
+  background: var(--card);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  padding: 32px;
+  box-shadow: var(--shadow);
+  min-height: 200px;
+}
+
+/* Animated counters */
+.counter-animated {
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+/* Pulse dot */
+.live-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--green); display: inline-block;
+  animation: livePulse 2s ease-in-out infinite;
+}
+@keyframes livePulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16,185,129,0.4); }
+  50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(16,185,129,0); }
+}
+
+/* Sub-tab content panels */
+.sub-content { display: none; }
+.sub-content.active {
+  display: block;
+  animation: fadeUp 0.3s ease;
+}
+
+/* Scrollbar styling */
+.main::-webkit-scrollbar { width: 6px; }
+.main::-webkit-scrollbar-track { background: transparent; }
+.main::-webkit-scrollbar-thumb { background: var(--purple-15); border-radius: 3px; }
+.main::-webkit-scrollbar-thumb:hover { background: var(--purple-20); }
+
+/* CTA button */
+.cta-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 28px; border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+  color: #fff; font-family: inherit;
+  font-size: 14px; font-weight: 700;
+  border: none; cursor: pointer;
+  transition: var(--transition-spring);
+  box-shadow: var(--shadow-purple);
+  letter-spacing: 0.5px;
+}
+.cta-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 24px rgba(76,48,168,0.35);
+}
+.cta-btn:active { transform: scale(0.96); }
+.cta-btn.orange {
+  background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+  box-shadow: 0 4px 16px rgba(255,155,55,0.3);
+}
+
+/* Idle / screensaver overlay */
+.idle-overlay {
+  position: fixed; inset: 0; z-index: 8000;
+  background: linear-gradient(145deg, #4c30a8ee 0%, #2d1b66ee 100%);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+.idle-overlay.active {
+  opacity: 1; pointer-events: auto;
+}
+.idle-text {
+  font-size: 24px; font-weight: 900; color: #fff;
+  letter-spacing: 3px; text-transform: uppercase;
+  animation: idlePulseText 3s ease-in-out infinite;
+}
+@keyframes idlePulseText {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.03); }
+}
+.idle-sub {
+  font-size: 14px; color: rgba(255,255,255,0.4);
+  margin-top: 12px; letter-spacing: 2px;
+}
+
+/* Particle canvas for splash background */
+#particleCanvas {
+  position: absolute; inset: 0; z-index: 1;
+  pointer-events: none;
+}
+
+/* Toast */
+.toast {
+  position: fixed; top: 70px; left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  z-index: 200; padding: 10px 20px;
+  background: var(--card);
+  border-radius: 28px; box-shadow: var(--shadow-lg);
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; font-weight: 600;
+  opacity: 0; transition: var(--transition-spring);
+  border: 1px solid var(--border);
+}
+.toast.show {
+  transform: translateX(-50%) translateY(0); opacity: 1;
+}
+
+/* ═══ RESPONSIVE ══════════════════════════════ */
+@media (max-width: 900px) {
+  .content-grid { grid-template-columns: 1fr; }
+  .content-grid.triple { grid-template-columns: 1fr 1fr; }
+  .kpi-strip { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .topbar { padding: 0 12px; height: 52px; }
+  .main { padding: 16px; }
+  .section-hero { padding: 24px; }
+  .section-hero h1 { font-size: 22px; }
+  .kpi-strip { grid-template-columns: 1fr; }
+  .tab-btn span { display: none; }
+  .tab-btn { padding: 0 12px; }
+}
+
+/* Page enter animation */
+.animate-in {
+  animation: slideUpReveal 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes slideUpReveal {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.delay-1 { animation-delay: 0.05s; }
+.delay-2 { animation-delay: 0.10s; }
+.delay-3 { animation-delay: 0.15s; }
+.delay-4 { animation-delay: 0.20s; }
+.delay-5 { animation-delay: 0.25s; }
+.delay-6 { animation-delay: 0.30s; }
+
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     SPLASH — Large OCTRION Logo · 3 Bottom Shapes = Buttons
+     Logo = the "O" in OCTRION wordmark · Purple on White
+     ═══════════════════════════════════════════════════ -->
+<div class="splash" id="splash">
+  <!-- Floating orbs background -->
+  <div class="splash-orb"></div>
+  <div class="splash-orb"></div>
+  <div class="splash-orb"></div>
+  <div class="splash-orb"></div>
+
+  <!-- Particle canvas -->
+  <canvas id="particleCanvas"></canvas>
+
+  <!-- Main content -->
+  <div class="splash-content" id="splashContent">
+
+    <!-- Logo (big, centered, breathing) + CTRION wordmark row -->
+    <div class="splash-wordmark">
+      <!-- The "O" = original OCTRION Bildmarke -->
+      <div class="splash-o" id="splashO">
+        <img src="../13459_OCTRION_Bildmarke_RGB_lila.png" alt="OCTRION">
+
+        <!-- 3 Clickable buttons on the bottom tentacle shapes -->
+        <button class="tentacle-btn t-left" onclick="openSection('solutions')" aria-label="Lösungen">
+          <span class="tentacle-label">Lösungen</span>
+        </button>
+        <button class="tentacle-btn t-center" onclick="openSection('showcase')" aria-label="Showcase">
+          <span class="tentacle-label">Showcase</span>
+        </button>
+        <button class="tentacle-btn t-right" onclick="openSection('contact')" aria-label="Kontakt">
+          <span class="tentacle-label">Kontakt</span>
+        </button>
+      </div>
+
+      <!-- Letters C T R I O N fly in after logo -->
+      <div class="splash-letters" id="splashLetters">
+        <span class="splash-letter">C</span>
+        <span class="splash-letter">T</span>
+        <span class="splash-letter">R</span>
+        <span class="splash-letter">I</span>
+        <span class="splash-letter">O</span>
+        <span class="splash-letter">N</span>
+      </div>
+    </div>
+
+    <div class="splash-sub" id="splashSub">Digitalisierung. Vernetzt. Intelligent.</div>
+  </div>
+
+  <!-- Hint -->
+  <div class="splash-hint" id="splashHint">
+    <span class="splash-hint-text">Berühren zum Entdecken</span>
+    <div class="splash-hint-arrows">
+      <div class="splash-hint-arrow"></div>
+      <div class="splash-hint-arrow"></div>
+      <div class="splash-hint-arrow"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     IDLE OVERLAY — Returns to splash after inactivity
+     ═══════════════════════════════════════════════════ -->
+<div class="idle-overlay" id="idleOverlay">
+  <img src="../13459_OCTRION_Bildmarke_RGB_lila.png" alt="OCTRION" style="width: 80px; height: 80px; object-fit: contain; filter: brightness(0) invert(1); margin-bottom: 20px; opacity: 0.8;">
+  <div class="idle-text">Berühren zum Starten</div>
+  <div class="idle-sub">OCTRION Messe Experience</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     APP FRAME
+     ═══════════════════════════════════════════════════ -->
+<div class="frame" id="appFrame" style="display: none;">
+  
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="logo" onclick="backToSplash()">
+      <div class="logo-icon">
+        <img src="../13459_OCTRION_Bildmarke_RGB_lila.png" alt="OCTRION">
+      </div>
+      <span class="logo-text">OCTRION</span>
+    </div>
+    <div class="tb-sep"></div>
+    <span class="event-pill">🎪 Messe 2026</span>
+    <div class="tb-spacer"></div>
+
+    <!-- Top Tab Navigation -->
+    <nav class="top-tabs" id="topTabs">
+      <button class="tab-btn" data-section="solutions" onclick="switchSection('solutions')">
+        <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+        <span>Lösungen</span>
+      </button>
+      <button class="tab-btn" data-section="showcase" onclick="switchSection('showcase')">
+        <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <span>Showcase</span>
+      </button>
+      <button class="tab-btn" data-section="contact" onclick="switchSection('contact')">
+        <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div>
+        <span>Kontakt</span>
+      </button>
+    </nav>
+
+    <div class="tb-sep"></div>
+    <button class="back-btn" onclick="backToSplash()">
+      <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      Start
+    </button>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main" id="mainContent">
+
+    <!-- ═══ SECTION 1: LÖSUNGEN ═══════════════════ -->
+    <div class="section" id="sec-solutions">
+      
+      <div class="section-hero animate-in">
+        <h1>Unsere <span>Lösungen</span></h1>
+        <p>Entdecken Sie, wie OKTOPUS Ihr Unternehmen mit intelligenter Digitalisierung transformiert — von der Prozessoptimierung bis zur KI-gestützten Analyse.</p>
+      </div>
+
+      <!-- Sub-Tabs -->
+      <div class="sub-tabs animate-in delay-1">
+        <button class="sub-tab active" onclick="switchSubTab('solutions', 'overview')">
+          <span class="sub-tab-icon">🔭</span> Übersicht
+        </button>
+        <button class="sub-tab" onclick="switchSubTab('solutions', 'automation')">
+          <span class="sub-tab-icon">⚡</span> Automatisierung
+        </button>
+        <button class="sub-tab" onclick="switchSubTab('solutions', 'analytics')">
+          <span class="sub-tab-icon">📊</span> Analytics
+        </button>
+        <button class="sub-tab" onclick="switchSubTab('solutions', 'integration')">
+          <span class="sub-tab-icon">🔗</span> Integration
+        </button>
+      </div>
+
+      <!-- Sub-Tab: Overview -->
+      <div class="sub-content active" id="sub-solutions-overview">
+        <div class="kpi-strip animate-in delay-2">
+          <div class="kpi-card">
+            <div class="kpi-value" data-count="147">0</div>
+            <div class="kpi-label">Projekte Live</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value orange" data-count="98" data-suffix="%">0%</div>
+            <div class="kpi-label">Kundenzufriedenheit</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value green" data-count="42" data-suffix="x">0x</div>
+            <div class="kpi-label">ROI Durchschnitt</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value" data-count="24" data-suffix="/7">0/7</div>
+            <div class="kpi-label">Support</div>
+          </div>
+        </div>
+        <div class="content-grid triple animate-in delay-3">
+          <div class="feature-tile" onclick="switchSubTab('solutions','automation')">
+            <div class="feature-icon purple">⚡</div>
+            <h4>Prozess-Automation</h4>
+            <p>Workflows automatisieren & beschleunigen</p>
+          </div>
+          <div class="feature-tile" onclick="switchSubTab('solutions','analytics')">
+            <div class="feature-icon orange">📊</div>
+            <h4>Smart Analytics</h4>
+            <p>KI-gestützte Datenanalyse in Echtzeit</p>
+          </div>
+          <div class="feature-tile" onclick="switchSubTab('solutions','integration')">
+            <div class="feature-icon green">🔗</div>
+            <h4>System Integration</h4>
+            <p>Nahtlose Anbindung aller Systeme</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-Tab: Automatisierung -->
+      <div class="sub-content" id="sub-solutions-automation">
+        <div class="content-grid animate-in delay-2">
+          <div class="info-card">
+            <div class="info-card-header">
+              <div class="info-card-icon purple">⚙️</div>
+              <div>
+                <h3>Workflow Engine</h3>
+                <p>Visuelle Prozessgestaltung ohne Code</p>
+              </div>
+            </div>
+            <div class="info-card-body">
+              <div class="stat-row"><div class="stat-dot" style="background:var(--purple)"></div><span class="stat-label">Zeitersparnis</span><div class="stat-bar-wrap"><div class="stat-bar" data-width="85"></div></div><span class="stat-value">85%</span></div>
+              <div class="stat-row"><div class="stat-dot" style="background:var(--orange)"></div><span class="stat-label">Fehlerrate reduziert</span><div class="stat-bar-wrap"><div class="stat-bar orange" data-width="92"></div></div><span class="stat-value">92%</span></div>
+              <div class="stat-row"><div class="stat-dot" style="background:var(--green)"></div><span class="stat-label">ROI nach 6 Monaten</span><div class="stat-bar-wrap"><div class="stat-bar green" data-width="78"></div></div><span class="stat-value">340%</span></div>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-header">
+              <div class="info-card-icon orange">🤖</div>
+              <div>
+                <h3>KI-Assistent</h3>
+                <p>Intelligente Entscheidungsunterstützung</p>
+              </div>
+            </div>
+            <div class="info-card-body">
+              <div class="process-timeline" id="timeline-auto">
+                <div class="process-line"><div class="process-line-fill"></div></div>
+                <div class="process-step completed"><div class="process-dot">📥</div><div class="process-step-title">Daten erfassen</div><div class="process-step-desc">Automatisch</div></div>
+                <div class="process-step completed"><div class="process-dot">🧠</div><div class="process-step-title">KI Analyse</div><div class="process-step-desc">Echtzeit</div></div>
+                <div class="process-step active"><div class="process-dot">📋</div><div class="process-step-title">Empfehlung</div><div class="process-step-desc">Actionable</div></div>
+                <div class="process-step"><div class="process-dot">🚀</div><div class="process-step-title">Umsetzung</div><div class="process-step-desc">One-Click</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-Tab: Analytics -->
+      <div class="sub-content" id="sub-solutions-analytics">
+        <div class="content-grid animate-in delay-2">
+          <div class="info-card full-width">
+            <div class="info-card-header">
+              <div class="info-card-icon blue">📈</div>
+              <div>
+                <h3>Echtzeit-Dashboard</h3>
+                <p>Alle KPIs auf einen Blick — live & interaktiv</p>
+              </div>
+              <div style="margin-left:auto"><span class="badge green"><span class="live-dot"></span> Live</span></div>
+            </div>
+            <div class="info-card-body">
+              <div class="kpi-strip">
+                <div class="kpi-card"><div class="kpi-value" data-count="1284">0</div><div class="kpi-label">Datenpunkte/Sek</div></div>
+                <div class="kpi-card"><div class="kpi-value orange" data-count="23" data-suffix="ms">0ms</div><div class="kpi-label">Latenz</div></div>
+                <div class="kpi-card"><div class="kpi-value green" data-count="99" data-suffix=".9%">0%</div><div class="kpi-label">Uptime</div></div>
+                <div class="kpi-card"><div class="kpi-value" data-count="16">0</div><div class="kpi-label">Datenquellen</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="feature-tile">
+            <div class="feature-icon purple">🎯</div>
+            <h4>Predictive Analytics</h4>
+            <p>Trends erkennen bevor sie entstehen</p>
+          </div>
+          <div class="feature-tile">
+            <div class="feature-icon blue">🗂️</div>
+            <h4>Custom Reports</h4>
+            <p>Berichte automatisch generieren</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-Tab: Integration -->
+      <div class="sub-content" id="sub-solutions-integration">
+        <div class="content-grid triple animate-in delay-2">
+          <div class="feature-tile">
+            <div class="feature-icon purple">☁️</div>
+            <h4>Cloud & On-Premise</h4>
+            <p>Flexible Deployment-Optionen</p>
+          </div>
+          <div class="feature-tile">
+            <div class="feature-icon orange">🔌</div>
+            <h4>API Gateway</h4>
+            <p>REST, GraphQL, Webhooks</p>
+          </div>
+          <div class="feature-tile">
+            <div class="feature-icon green">🛡️</div>
+            <h4>Enterprise Security</h4>
+            <p>ISO 27001 zertifiziert</p>
+          </div>
+          <div class="feature-tile">
+            <div class="feature-icon blue">📱</div>
+            <h4>Mobile First</h4>
+            <p>Native Apps & responsive Web</p>
+          </div>
+          <div class="feature-tile">
+            <div class="feature-icon purple">🔄</div>
+            <h4>ERP Connector</h4>
+            <p>SAP, MS Dynamics, Sage & mehr</p>
+          </div>
+          <div class="feature-tile">
+            <div class="feature-icon orange">📧</div>
+            <h4>MS 365 Integration</h4>
+            <p>Teams, Outlook, SharePoint</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION 2: SHOWCASE ═══════════════════ -->
+    <div class="section" id="sec-showcase">
+      
+      <div class="section-hero animate-in" style="background: linear-gradient(135deg, #ff9b37 0%, #e8872a 100%);">
+        <h1>Live <span style="color:#fff;">Showcase</span></h1>
+        <p>Erleben Sie unsere Technologie in Aktion. Interaktive Demos, Erfolgsgeschichten und die Zukunft der Digitalisierung — zum Anfassen.</p>
+      </div>
+
+      <!-- Sub-Tabs -->
+      <div class="sub-tabs animate-in delay-1">
+        <button class="sub-tab active" onclick="switchSubTab('showcase', 'demos')">
+          <span class="sub-tab-icon">🎮</span> Live Demos
+        </button>
+        <button class="sub-tab" onclick="switchSubTab('showcase', 'cases')">
+          <span class="sub-tab-icon">🏆</span> Success Stories
+        </button>
+        <button class="sub-tab" onclick="switchSubTab('showcase', 'roadmap')">
+          <span class="sub-tab-icon">🗺️</span> Roadmap
+        </button>
+      </div>
+
+      <!-- Sub-Tab: Live Demos -->
+      <div class="sub-content active" id="sub-showcase-demos">
+        <div class="content-grid animate-in delay-2">
+          <div class="info-card">
+            <div class="info-card-header">
+              <div class="info-card-icon purple">🎯</div>
+              <div>
+                <h3>Lead Capture Demo</h3>
+                <p>Visitenkarten scannen & CRM-Sync</p>
+              </div>
+              <div style="margin-left:auto"><span class="badge green"><span class="live-dot"></span> Interaktiv</span></div>
+            </div>
+            <div class="info-card-body" style="text-align:center; padding: 30px;">
+              <div class="feature-icon purple" style="margin: 0 auto 16px; width: 64px; height: 64px; font-size: 32px;">📸</div>
+              <h4 style="margin-bottom: 8px;">Visitenkarte scannen</h4>
+              <p style="color: var(--text-muted); margin-bottom: 16px; font-size: 13px;">Einfach abfotografieren — KI erkennt alle Kontaktdaten automatisch</p>
+              <button class="cta-btn" onclick="simulateDemo('scan')">
+                ▶ Demo starten
+              </button>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-header">
+              <div class="info-card-icon orange">📊</div>
+              <div>
+                <h3>Dashboard Demo</h3>
+                <p>Real-time Analytics erleben</p>
+              </div>
+              <div style="margin-left:auto"><span class="badge orange">Neu</span></div>
+            </div>
+            <div class="info-card-body" style="text-align:center; padding: 30px;">
+              <div class="feature-icon orange" style="margin: 0 auto 16px; width: 64px; height: 64px; font-size: 32px;">📈</div>
+              <h4 style="margin-bottom: 8px;">Live-Daten visualisiert</h4>
+              <p style="color: var(--text-muted); margin-bottom: 16px; font-size: 13px;">Sehen Sie Echtzeit-Datenströme in interaktiven Charts</p>
+              <button class="cta-btn orange" onclick="simulateDemo('dashboard')">
+                ▶ Demo starten
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Demo output area -->
+        <div class="showcase-panel animate-in delay-3" id="demoOutput" style="display:none;">
+          <div id="demoContent"></div>
+        </div>
+      </div>
+
+      <!-- Sub-Tab: Success Stories -->
+      <div class="sub-content" id="sub-showcase-cases">
+        <div class="content-grid animate-in delay-2">
+          <div class="info-card">
+            <div class="info-card-header">
+              <div class="info-card-icon green">🏭</div>
+              <div>
+                <h3>Industrie GmbH</h3>
+                <p>Fertigungsautomatisierung</p>
+              </div>
+              <div style="margin-left:auto"><span class="badge green">+340% ROI</span></div>
+            </div>
+            <div class="info-card-body">
+              <div class="stat-row"><div class="stat-dot" style="background:var(--green)"></div><span class="stat-label">Produktivität</span><div class="stat-bar-wrap"><div class="stat-bar green" data-width="89"></div></div><span class="stat-value">+89%</span></div>
+              <div class="stat-row"><div class="stat-dot" style="background:var(--orange)"></div><span class="stat-label">Kosten reduziert</span><div class="stat-bar-wrap"><div class="stat-bar orange" data-width="45"></div></div><span class="stat-value">-45%</span></div>
+              <div class="stat-row"><div class="stat-dot" style="background:var(--purple)"></div><span class="stat-label">Time-to-Market</span><div class="stat-bar-wrap"><div class="stat-bar" data-width="67"></div></div><span class="stat-value">-67%</span></div>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-header">
+              <div class="info-card-icon blue">🏥</div>
+              <div>
+                <h3>MedTech Solutions</h3>
+                <p>Digitale Patientenakte</p>
+              </div>
+              <div style="margin-left:auto"><span class="badge blue">Healthcare</span></div>
+            </div>
+            <div class="info-card-body">
+              <div class="stat-row"><div class="stat-dot" style="background:var(--blue)"></div><span class="stat-label">Digitalisierungsgrad</span><div class="stat-bar-wrap"><div class="stat-bar" data-width="95" style="background: linear-gradient(90deg, var(--blue), #60a5fa);"></div></div><span class="stat-value">95%</span></div>
+              <div class="stat-row"><div class="stat-dot" style="background:var(--green)"></div><span class="stat-label">Patientenzufriedenheit</span><div class="stat-bar-wrap"><div class="stat-bar green" data-width="91"></div></div><span class="stat-value">+91%</span></div>
+              <div class="stat-row"><div class="stat-dot" style="background:var(--orange)"></div><span class="stat-label">Verwaltungsaufwand</span><div class="stat-bar-wrap"><div class="stat-bar orange" data-width="60"></div></div><span class="stat-value">-60%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-Tab: Roadmap -->
+      <div class="sub-content" id="sub-showcase-roadmap">
+        <div class="info-card full-width animate-in delay-2">
+          <div class="info-card-header">
+            <div class="info-card-icon purple">🗺️</div>
+            <div>
+              <h3>Produkt-Roadmap 2026</h3>
+              <p>Was kommt als Nächstes</p>
+            </div>
+          </div>
+          <div class="info-card-body">
+            <div class="process-timeline" id="timeline-roadmap">
+              <div class="process-line"><div class="process-line-fill" data-width="62"></div></div>
+              <div class="process-step completed"><div class="process-dot">✅</div><div class="process-step-title">Q1 2026</div><div class="process-step-desc">KI Engine v3</div></div>
+              <div class="process-step completed"><div class="process-dot">✅</div><div class="process-step-title">Q2 2026</div><div class="process-step-desc">Mobile Suite</div></div>
+              <div class="process-step active"><div class="process-dot">🔄</div><div class="process-step-title">Q3 2026</div><div class="process-step-desc">IoT Platform</div></div>
+              <div class="process-step"><div class="process-dot">🎯</div><div class="process-step-title">Q4 2026</div><div class="process-step-desc">AR Interface</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="content-grid triple animate-in delay-3">
+          <div class="feature-tile">
+            <div class="feature-icon purple">🧠</div>
+            <h4>KI Engine v3</h4>
+            <p>Nächste Generation ML-Modelle</p>
+          </div>
+          <div class="feature-tile">
+            <div class="feature-icon orange">📱</div>
+            <h4>Mobile Suite</h4>
+            <p>Native iOS & Android Apps</p>
+          </div>
+          <div class="feature-tile">
+            <div class="feature-icon green">🌐</div>
+            <h4>IoT Platform</h4>
+            <p>Sensor-Daten in Echtzeit</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION 3: KONTAKT ═══════════════════ -->
+    <div class="section" id="sec-contact">
+      
+      <div class="section-hero animate-in" style="background: linear-gradient(135deg, #10B981 0%, #0d9668 100%);">
+        <h1>Sprechen Sie <span style="color:#fff;">mit uns</span></h1>
+        <p>Wir freuen uns auf den persönlichen Austausch. Lassen Sie uns gemeinsam herausfinden, wie OKTOPUS Ihr Unternehmen voranbringt.</p>
+      </div>
+
+      <!-- Sub-Tabs -->
+      <div class="sub-tabs animate-in delay-1">
+        <button class="sub-tab active" onclick="switchSubTab('contact', 'team')">
+          <span class="sub-tab-icon">👥</span> Unser Team
+        </button>
+        <button class="sub-tab" onclick="switchSubTab('contact', 'form')">
+          <span class="sub-tab-icon">✉️</span> Nachricht
+        </button>
+        <button class="sub-tab" onclick="switchSubTab('contact', 'meeting')">
+          <span class="sub-tab-icon">📅</span> Termin buchen
+        </button>
+      </div>
+
+      <!-- Sub-Tab: Team -->
+      <div class="sub-content active" id="sub-contact-team">
+        <div class="content-grid triple animate-in delay-2">
+          <div class="info-card" style="text-align:center;">
+            <div class="info-card-body" style="padding: 28px;">
+              <div style="width:72px; height:72px; border-radius:50%; background: linear-gradient(135deg,var(--purple),var(--purple-dark)); margin: 0 auto 12px; display:flex; align-items:center; justify-content:center; font-size:28px; color:#fff; box-shadow: var(--shadow-purple);">👨‍💼</div>
+              <h4 style="font-size:15px; font-weight:800;">Max Mustermann</h4>
+              <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">CEO & Gründer</p>
+              <div style="margin-top:12px; display:flex; gap:6px; justify-content:center;">
+                <span class="badge purple">Strategie</span>
+                <span class="badge orange">Innovation</span>
+              </div>
+            </div>
+          </div>
+          <div class="info-card" style="text-align:center;">
+            <div class="info-card-body" style="padding: 28px;">
+              <div style="width:72px; height:72px; border-radius:50%; background: linear-gradient(135deg,var(--orange),var(--orange-dark)); margin: 0 auto 12px; display:flex; align-items:center; justify-content:center; font-size:28px; color:#fff; box-shadow: 0 4px 16px rgba(255,155,55,0.3);">👩‍💻</div>
+              <h4 style="font-size:15px; font-weight:800;">Lisa Technik</h4>
+              <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">CTO</p>
+              <div style="margin-top:12px; display:flex; gap:6px; justify-content:center;">
+                <span class="badge purple">Architektur</span>
+                <span class="badge green">DevOps</span>
+              </div>
+            </div>
+          </div>
+          <div class="info-card" style="text-align:center;">
+            <div class="info-card-body" style="padding: 28px;">
+              <div style="width:72px; height:72px; border-radius:50%; background: linear-gradient(135deg,var(--green),#0d9668); margin: 0 auto 12px; display:flex; align-items:center; justify-content:center; font-size:28px; color:#fff; box-shadow: 0 4px 16px rgba(16,185,129,0.3);">👨‍🔬</div>
+              <h4 style="font-size:15px; font-weight:800;">Tom Berater</h4>
+              <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Head of Consulting</p>
+              <div style="margin-top:12px; display:flex; gap:6px; justify-content:center;">
+                <span class="badge blue">Beratung</span>
+                <span class="badge orange">Projekte</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-Tab: Nachricht -->
+      <div class="sub-content" id="sub-contact-form">
+        <div class="content-grid animate-in delay-2">
+          <div class="info-card full-width">
+            <div class="info-card-header">
+              <div class="info-card-icon green">✉️</div>
+              <div>
+                <h3>Nachricht hinterlassen</h3>
+                <p>Wir melden uns innerhalb von 24 Stunden</p>
+              </div>
+            </div>
+            <div class="info-card-body">
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                <div>
+                  <label style="font-size:11px; font-weight:700; color:var(--text-sec); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:4px;">Vorname</label>
+                  <input type="text" placeholder="Ihr Vorname" style="width:100%; padding:10px 12px; background:var(--input-bg); border:1.5px solid var(--border); border-radius:var(--radius); font-size:14px; color:var(--text); font-family:inherit; outline:none; transition: var(--transition);" onfocus="this.style.borderColor='var(--purple)'; this.style.boxShadow='0 0 0 3px var(--purple-10)'" onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none'">
+                </div>
+                <div>
+                  <label style="font-size:11px; font-weight:700; color:var(--text-sec); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:4px;">Nachname</label>
+                  <input type="text" placeholder="Ihr Nachname" style="width:100%; padding:10px 12px; background:var(--input-bg); border:1.5px solid var(--border); border-radius:var(--radius); font-size:14px; color:var(--text); font-family:inherit; outline:none; transition: var(--transition);" onfocus="this.style.borderColor='var(--purple)'; this.style.boxShadow='0 0 0 3px var(--purple-10)'" onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none'">
+                </div>
+              </div>
+              <div style="margin-bottom: 12px;">
+                <label style="font-size:11px; font-weight:700; color:var(--text-sec); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:4px;">E-Mail</label>
+                <input type="email" placeholder="ihre@email.de" style="width:100%; padding:10px 12px; background:var(--input-bg); border:1.5px solid var(--border); border-radius:var(--radius); font-size:14px; color:var(--text); font-family:inherit; outline:none; transition: var(--transition);" onfocus="this.style.borderColor='var(--purple)'; this.style.boxShadow='0 0 0 3px var(--purple-10)'" onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none'">
+              </div>
+              <div style="margin-bottom: 12px;">
+                <label style="font-size:11px; font-weight:700; color:var(--text-sec); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:4px;">Unternehmen</label>
+                <input type="text" placeholder="Ihr Unternehmen" style="width:100%; padding:10px 12px; background:var(--input-bg); border:1.5px solid var(--border); border-radius:var(--radius); font-size:14px; color:var(--text); font-family:inherit; outline:none; transition: var(--transition);" onfocus="this.style.borderColor='var(--purple)'; this.style.boxShadow='0 0 0 3px var(--purple-10)'" onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none'">
+              </div>
+              <div style="margin-bottom: 16px;">
+                <label style="font-size:11px; font-weight:700; color:var(--text-sec); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:4px;">Nachricht</label>
+                <textarea placeholder="Wie können wir Ihnen helfen?" rows="4" style="width:100%; padding:10px 12px; background:var(--input-bg); border:1.5px solid var(--border); border-radius:var(--radius); font-size:14px; color:var(--text); font-family:inherit; outline:none; resize:vertical; transition: var(--transition);" onfocus="this.style.borderColor='var(--purple)'; this.style.boxShadow='0 0 0 3px var(--purple-10)'" onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none'"></textarea>
+              </div>
+              <button class="cta-btn" onclick="showToast('Nachricht gesendet! Wir melden uns bei Ihnen.', 'success')" style="width:100%; justify-content:center;">
+                ✉️ Nachricht senden
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-Tab: Termin buchen -->
+      <div class="sub-content" id="sub-contact-meeting">
+        <div class="content-grid triple animate-in delay-2">
+          <div class="feature-tile" onclick="showToast('Termin-Slot gewählt: Vormittag', 'success')">
+            <div class="feature-icon purple">🌅</div>
+            <h4>Vormittag</h4>
+            <p>09:00 – 12:00 Uhr</p>
+          </div>
+          <div class="feature-tile" onclick="showToast('Termin-Slot gewählt: Nachmittag', 'success')">
+            <div class="feature-icon orange">☀️</div>
+            <h4>Nachmittag</h4>
+            <p>13:00 – 17:00 Uhr</p>
+          </div>
+          <div class="feature-tile" onclick="showToast('Termin-Slot gewählt: Individuell', 'success')">
+            <div class="feature-icon green">🕐</div>
+            <h4>Individuell</h4>
+            <p>Wunschtermin vereinbaren</p>
+          </div>
+        </div>
+        <div class="info-card animate-in delay-3">
+          <div class="info-card-header">
+            <div class="info-card-icon purple">📅</div>
+            <div>
+              <h3>Verfügbare Termine</h3>
+              <p>Wählen Sie einen passenden Zeitraum</p>
+            </div>
+          </div>
+          <div class="info-card-body">
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+              <button class="cta-btn" onclick="showToast('Termin Di 10:00 vorgemerkt!', 'success')" style="font-size:12px; padding:10px 14px; justify-content:center;">Di 10:00</button>
+              <button class="cta-btn" onclick="showToast('Termin Di 14:00 vorgemerkt!', 'success')" style="font-size:12px; padding:10px 14px; justify-content:center;">Di 14:00</button>
+              <button class="cta-btn" onclick="showToast('Termin Mi 09:00 vorgemerkt!', 'success')" style="font-size:12px; padding:10px 14px; justify-content:center;">Mi 09:00</button>
+              <button class="cta-btn orange" onclick="showToast('Termin Mi 15:00 vorgemerkt!', 'success')" style="font-size:12px; padding:10px 14px; justify-content:center;">Mi 15:00</button>
+              <button class="cta-btn orange" onclick="showToast('Termin Do 11:00 vorgemerkt!', 'success')" style="font-size:12px; padding:10px 14px; justify-content:center;">Do 11:00</button>
+              <button class="cta-btn orange" onclick="showToast('Termin Do 16:00 vorgemerkt!', 'success')" style="font-size:12px; padding:10px 14px; justify-content:center;">Do 16:00</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /frame -->
+
+<!-- Toast container -->
+<div class="toast" id="toast">
+  <div class="toast-icon" id="toastIcon"></div>
+  <span class="toast-text" id="toastText"></span>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     JAVASCRIPT — Offline · No Dependencies
+     ═══════════════════════════════════════════════════ -->
+<script>
+(function() {
+  'use strict';
+
+  // ─── State ──────────────────────────────────
+  let currentSection = null;
+  let idleTimer = null;
+  let splashActivated = false;
+  const IDLE_TIMEOUT = 120000; // 2 min idle → screensaver
+
+  // ─── Splash activation (like lead app) ─────
+  // First click/tap: Logo stops breathing, shrinks, CTRION letters fly in
+  // The 3 tentacle buttons open their sections directly
+  document.getElementById('splash').addEventListener('click', function(e) {
+    // If a tentacle button was clicked, let it handle itself
+    if (e.target.closest('.tentacle-btn')) return;
+    activateSplash();
+  });
+
+  function activateSplash() {
+    if (splashActivated) return;
+    splashActivated = true;
+
+    // Hide hint
+    const hint = document.getElementById('splashHint');
+    if (hint) hint.style.opacity = '0';
+
+    // Stop breathing, shrink logo to wordmark size
+    const oLogo = document.getElementById('splashO');
+    oLogo.classList.add('activated');
+    oLogo.style.opacity = '1';
+
+    // Expand letters container
+    document.getElementById('splashLetters').classList.add('expand');
+
+    // Fly in letters one by one
+    const letters = document.querySelectorAll('#splashLetters .splash-letter');
+    letters.forEach((el, i) => {
+      setTimeout(() => {
+        el.classList.add('fly-in');
+      }, 150 + i * 130);
+    });
+
+    // Show subtitle
+    setTimeout(() => {
+      document.getElementById('splashSub').classList.add('show');
+    }, 150 + letters.length * 130 + 200);
+  }
+
+  // ─── Tentacle click → open section ─────────
+  window.openSection = function(section) {
+    // Ripple on tentacle
+    const btn = event.currentTarget;
+    const ripple = document.createElement('div');
+    ripple.className = 'ripple';
+    ripple.style.left = '50%'; ripple.style.top = '50%';
+    btn.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+
+    // Transition to app
+    setTimeout(() => {
+      document.getElementById('splash').classList.add('fade-out');
+      setTimeout(() => {
+        document.getElementById('splash').style.display = 'none';
+        document.getElementById('appFrame').style.display = 'flex';
+        switchSection(section);
+        resetIdle();
+      }, 700);
+    }, 200);
+  };
+
+  // ─── Section switching (top tabs) ──────────
+  window.switchSection = function(section) {
+    currentSection = section;
+    
+    // Update tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.section === section);
+    });
+
+    // Show section
+    document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+    const target = document.getElementById('sec-' + section);
+    if (target) {
+      target.classList.add('active');
+      animateBars(target);
+      animateCounters(target);
+      animateTimelines(target);
+    }
+
+    resetIdle();
+  };
+
+  // ─── Sub-tab switching ─────────────────────
+  window.switchSubTab = function(section, tab) {
+    // Update sub-tab buttons within the section
+    const sec = document.getElementById('sec-' + section);
+    if (!sec) return;
+
+    sec.querySelectorAll('.sub-tab').forEach(btn => {
+      const tabName = btn.onclick.toString().match(/'(\w+)'\s*\)/);
+      if (tabName) {
+        btn.classList.toggle('active', tabName[1] === tab);
+      }
+    });
+
+    // Show sub-content
+    sec.querySelectorAll('.sub-content').forEach(sc => sc.classList.remove('active'));
+    const target = document.getElementById('sub-' + section + '-' + tab);
+    if (target) {
+      target.classList.add('active');
+      // Re-trigger animations
+      setTimeout(() => {
+        animateBars(target);
+        animateCounters(target);
+        animateTimelines(target);
+      }, 100);
+    }
+
+    resetIdle();
+  };
+
+  // ─── Back to splash ────────────────────────
+  window.backToSplash = function() {
+    document.getElementById('appFrame').style.display = 'none';
+    const splash = document.getElementById('splash');
+    splash.style.display = 'flex';
+    splash.classList.remove('fade-out');
+
+    // Reset splash state
+    splashActivated = false;
+    const oLogo = document.getElementById('splashO');
+    oLogo.classList.remove('activated');
+    oLogo.style.opacity = '';
+    document.getElementById('splashLetters').classList.remove('expand');
+    document.querySelectorAll('#splashLetters .splash-letter').forEach(el => {
+      el.classList.remove('fly-in');
+    });
+    document.getElementById('splashSub').classList.remove('show');
+    const hint = document.getElementById('splashHint');
+    if (hint) hint.style.opacity = '';
+
+    currentSection = null;
+    resetIdle();
+  };
+
+  // ─── Animate stat bars ─────────────────────
+  function animateBars(container) {
+    const bars = container.querySelectorAll('.stat-bar[data-width]');
+    bars.forEach((bar, i) => {
+      bar.style.width = '0';
+      setTimeout(() => {
+        bar.style.width = bar.dataset.width + '%';
+      }, 100 + i * 80);
+    });
+  }
+
+  // ─── Animate counters ─────────────────────
+  function animateCounters(container) {
+    const counters = container.querySelectorAll('.kpi-value[data-count]');
+    counters.forEach(el => {
+      const target = parseInt(el.dataset.count);
+      const suffix = el.dataset.suffix || '';
+      let current = 0;
+      const step = Math.max(1, Math.floor(target / 40));
+      const interval = setInterval(() => {
+        current += step;
+        if (current >= target) {
+          current = target;
+          clearInterval(interval);
+        }
+        el.textContent = current + suffix;
+      }, 30);
+    });
+  }
+
+  // ─── Animate timelines ─────────────────────
+  function animateTimelines(container) {
+    const fills = container.querySelectorAll('.process-line-fill');
+    fills.forEach(fill => {
+      const w = fill.dataset.width || '62';
+      fill.style.width = '0';
+      setTimeout(() => { fill.style.width = w + '%'; }, 300);
+    });
+  }
+
+  // ─── Demo simulation ──────────────────────
+  window.simulateDemo = function(type) {
+    const output = document.getElementById('demoOutput');
+    const content = document.getElementById('demoContent');
+    output.style.display = 'block';
+
+    if (type === 'scan') {
+      content.innerHTML = `
+        <div style="text-align:center; padding: 20px 0;">
+          <div style="width:60px; height:60px; border-radius:50%; border:3px solid var(--purple-15); border-top-color:var(--purple); animation: spin 0.8s linear infinite; margin: 0 auto 16px;"></div>
+          <h4 style="color:var(--purple); margin-bottom:8px;">📸 Kamera wird aktiviert...</h4>
+          <p style="color:var(--text-muted); font-size:13px;">Visitenkarte in den Rahmen halten</p>
+        </div>
+      `;
+      setTimeout(() => {
+        content.innerHTML = `
+          <div style="text-align:center; padding: 20px 0;">
+            <div style="font-size:48px; margin-bottom:12px;">✅</div>
+            <h4 style="color:var(--green); margin-bottom:12px;">Kontaktdaten erkannt!</h4>
+            <div style="background:var(--green-bg); border-radius:var(--radius); padding:16px; text-align:left; max-width:360px; margin:0 auto;">
+              <div style="font-size:13px; color:var(--text); margin-bottom:6px;"><strong>Name:</strong> Dr. Sarah Schmidt</div>
+              <div style="font-size:13px; color:var(--text); margin-bottom:6px;"><strong>Firma:</strong> TechVision GmbH</div>
+              <div style="font-size:13px; color:var(--text); margin-bottom:6px;"><strong>E-Mail:</strong> s.schmidt@techvision.de</div>
+              <div style="font-size:13px; color:var(--text);"><strong>Tel:</strong> +49 123 456789</div>
+            </div>
+            <button class="cta-btn" style="margin-top:16px;" onclick="showToast('Kontakt im CRM gespeichert!', 'success')">
+              💾 Im CRM speichern
+            </button>
+          </div>
+        `;
+      }, 2000);
+    } else if (type === 'dashboard') {
+      content.innerHTML = `
+        <div style="padding: 20px 0;">
+          <h4 style="color:var(--orange); margin-bottom:16px; text-align:center;">📊 Live-Dashboard Simulation</h4>
+          <div class="kpi-strip" style="margin-bottom: 20px;">
+            <div class="kpi-card"><div class="kpi-value" data-count="2847" style="font-size:24px;">0</div><div class="kpi-label">Besucher heute</div></div>
+            <div class="kpi-card"><div class="kpi-value orange" data-count="156" style="font-size:24px;">0</div><div class="kpi-label">Leads erfasst</div></div>
+            <div class="kpi-card"><div class="kpi-value green" data-count="89" data-suffix="%" style="font-size:24px;">0%</div><div class="kpi-label">Conversion</div></div>
+            <div class="kpi-card"><div class="kpi-value" data-count="42" style="font-size:24px;">0</div><div class="kpi-label">Demos heute</div></div>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+            <div style="background:var(--purple-bg); border-radius:var(--radius); padding:16px;">
+              <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">Top Interesse</div>
+              <div style="font-size:15px; font-weight:800; color:var(--purple);">⚡ Automatisierung</div>
+            </div>
+            <div style="background:var(--orange-bg); border-radius:var(--radius); padding:16px;">
+              <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">Beliebteste Demo</div>
+              <div style="font-size:15px; font-weight:800; color:var(--orange);">📸 Lead Capture</div>
+            </div>
+          </div>
+        </div>
+      `;
+      setTimeout(() => animateCounters(content), 200);
+    }
+
+    resetIdle();
+  };
+
+  // ─── Toast ─────────────────────────────────
+  window.showToast = function(msg, type) {
+    const toast = document.getElementById('toast');
+    const icon = document.getElementById('toastIcon');
+    const text = document.getElementById('toastText');
+    text.textContent = msg;
+    
+    const icons = {
+      success: { bg: 'var(--green)', svg: '<svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' },
+      error:   { bg: 'var(--red)', svg: '<svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>' },
+      info:    { bg: 'var(--purple)', svg: '<svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>' }
+    };
+    const i = icons[type] || icons.info;
+    icon.style.background = i.bg;
+    icon.innerHTML = i.svg;
+
+    toast.className = 'toast show';
+    setTimeout(() => { toast.className = 'toast'; }, 3000);
+  };
+
+  // ─── Idle / Screensaver ────────────────────
+  function resetIdle() {
+    clearTimeout(idleTimer);
+    document.getElementById('idleOverlay').classList.remove('active');
+    idleTimer = setTimeout(goIdle, IDLE_TIMEOUT);
+  }
+
+  function goIdle() {
+    if (!currentSection) return; // Already on splash
+    document.getElementById('idleOverlay').classList.add('active');
+  }
+
+  // Touch/click on idle → back to splash
+  document.getElementById('idleOverlay').addEventListener('click', function() {
+    this.classList.remove('active');
+    backToSplash();
+  });
+
+  // Reset idle on any interaction
+  ['touchstart', 'click', 'mousemove', 'scroll'].forEach(evt => {
+    document.addEventListener(evt, resetIdle, { passive: true });
+  });
+
+  // ─── Particle animation on splash ─────────
+  function initParticles() {
+    const canvas = document.getElementById('particleCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [];
+
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    class Particle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * W;
+        this.y = Math.random() * H;
+        this.r = Math.random() * 2 + 0.5;
+        this.dx = (Math.random() - 0.5) * 0.4;
+        this.dy = (Math.random() - 0.5) * 0.4;
+        this.alpha = Math.random() * 0.3 + 0.05;
+      }
+      update() {
+        this.x += this.dx;
+        this.y += this.dy;
+        if (this.x < 0 || this.x > W) this.dx *= -1;
+        if (this.y < 0 || this.y > H) this.dy *= -1;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(76,48,168,${this.alpha * 0.4})`;
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < 60; i++) particles.push(new Particle());
+
+    function animate() {
+      ctx.clearRect(0, 0, W, H);
+      particles.forEach(p => { p.update(); p.draw(); });
+
+      // Draw connections
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(76,48,168,${0.04 * (1 - dist / 120)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+  }
+
+  // ─── Spin animation (used in demo) ────────
+  const spinStyle = document.createElement('style');
+  spinStyle.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+  document.head.appendChild(spinStyle);
+
+  // ─── Init ──────────────────────────────────
+  initParticles();
+  resetIdle();
+
+})();
+</script>
+</body>
+</html>

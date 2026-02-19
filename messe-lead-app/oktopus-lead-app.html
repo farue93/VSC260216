@@ -1,0 +1,4434 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#F0EFF6">
+  <title>OKTOPUS | Kontakt Manager</title>
+  <!-- OFFLINE-FIRST: No CDN dependencies. Tesseract loaded locally for offline OCR. -->
+  <script src="tesseract/tesseract.min.js"></script>
+  <style>
+/* ═══════════════════════════════════════════════════
+   OKTOPUS Lead Capture — v3 Dashboard Design · Offline
+   #4c30a8 · #ff9b37 · #ffd026 · #424248
+   Tablet-first · Original PNG Logo · Tentacle Nav
+   ═══════════════════════════════════════════════════ */
+
+:root {
+  --purple:        #4c30a8;
+  --purple-dark:   #3a2480;
+  --purple-light:  #7a63c7;
+  --purple-bg:     rgba(76,48,168,0.06);
+  --purple-10:     rgba(76,48,168,0.10);
+  --purple-15:     rgba(76,48,168,0.15);
+  --purple-20:     rgba(76,48,168,0.20);
+  --orange:        #ff9b37;
+  --orange-bg:     rgba(255,155,55,0.10);
+  --yellow:        #ffd026;
+  --yellow-bg:     rgba(255,208,38,0.12);
+  --green:         #10B981;
+  --green-light:   #34D399;
+  --green-bg:      rgba(16,185,129,0.08);
+  --red:           #EF4444;
+  --red-bg:        rgba(239,68,68,0.08);
+  --blue:          #3B82F6;
+  --blue-bg:       rgba(59,130,246,0.08);
+  --bg:            #F0EFF6;
+  --bg-subtle:     #E8E6F0;
+  --card:          #FFFFFF;
+  --border:        #E0DDE9;
+  --border-focus:  var(--purple);
+  --text:          #424248;
+  --text-sec:      #6B6B73;
+  --text-muted:    #9898A0;
+  --input-bg:      #F5F4FA;
+  --shadow-sm:     0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow:        0 4px 12px rgba(0,0,0,0.06);
+  --shadow-lg:     0 8px 28px rgba(0,0,0,0.08);
+  --shadow-purple: 0 4px 16px rgba(76,48,168,0.22);
+  --radius:        12px;
+  --radius-lg:     16px;
+  --radius-xl:     20px;
+  --transition:    all 0.2s cubic-bezier(0.4,0,0.2,1);
+  --transition-spring: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  background: var(--bg); color: var(--text);
+  min-height: 100vh; -webkit-font-smoothing: antialiased;
+  font-size: 14px; line-height: 1.5; overflow-x: hidden;
+}
+
+/* ═══ SPLASH SCREEN ═════════════════════════════ */
+.splash {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #ffffff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  overflow: hidden;
+}
+.splash.fade-out {
+  opacity: 0; transform: scale(1.1);
+  pointer-events: none;
+}
+.splash-hint {
+  position: absolute; bottom: 48px; left: 50%; transform: translateX(-50%);
+  font-size: 11px; color: rgba(76,48,168,0.35); font-weight: 600;
+  letter-spacing: 3px; text-transform: uppercase;
+  animation: hintPulse 2s ease-in-out infinite;
+}
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.7; }
+}
+
+/* Splash content: O logo + letter spans in a row */
+.splash-content {
+  display: flex; align-items: center; justify-content: center;
+  position: relative; z-index: 1;
+  gap: 0;
+}
+
+/* The O logo mark */
+.splash-o {
+  width: 160px; height: 160px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  animation: splashBreathe 6s ease-in-out infinite;
+  transition: width 0.7s cubic-bezier(0.34,1.56,0.64,1),
+              height 0.7s cubic-bezier(0.34,1.56,0.64,1);
+}
+.splash-o img {
+  width: 100%; height: 100%; object-fit: contain;
+}
+.splash-o.slide-left {
+  animation: none;
+  opacity: 1;
+  width: 62px; height: 62px;
+}
+
+@keyframes splashBreathe {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.25; }
+  100% { opacity: 1; }
+}
+
+/* Letters C T R I O N */
+.splash-letters {
+  display: flex; align-items: center;
+  overflow: hidden; height: 80px;
+  max-width: 0;
+  transition: max-width 0.7s cubic-bezier(0.34,1.56,0.64,1);
+}
+.splash-letter {
+  font-size: 64px; font-weight: 900; color: var(--purple);
+  letter-spacing: 3px; line-height: 1;
+  display: inline-block;
+  opacity: 0;
+  transform: translateX(-60px);
+  transition: none;
+}
+.splash-letter.fly-in {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1),
+              transform 0.45s cubic-bezier(0.16,1,0.3,1);
+}
+
+/* ═══ FRAME ═══════════════════════════════════ */
+.frame {
+  position: relative;
+  display: flex; flex-direction: column;
+  height: 100vh; margin: 0 auto;
+  max-width: 1200px;
+  border: 3px solid var(--purple);
+  border-radius: 16px;
+  overflow: hidden;
+  overflow-x: hidden;
+  background: var(--card);
+}
+
+/* Mobile-Mode: narrower frame */
+.frame.mobile-mode {
+  max-width: 480px;
+}
+
+/* ═══ TOPBAR ═════════════════════════════════ */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--card);
+  padding: 0 20px; height: 56px;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+
+.logo {
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+
+.logo-icon {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+}
+.logo-icon img { width: 100%; height: 100%; object-fit: contain; }
+
+.logo-text {
+  font-size: 18px; font-weight: 900;
+  color: var(--purple); letter-spacing: 1.5px;
+}
+.logo-text span { color: var(--purple); }
+
+.tb-sep {
+  width: 1px; height: 24px;
+  background: var(--border);
+}
+
+.event-pill {
+  font-size: 10px; font-weight: 700;
+  color: var(--purple); letter-spacing: 0.5px;
+  background: var(--purple-bg);
+  padding: 4px 10px; border-radius: 20px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.lead-counter {
+  display: flex; align-items: center; gap: 6px;
+}
+.counter-number {
+  font-size: 14px; font-weight: 800; color: var(--purple);
+  white-space: nowrap; max-width: 120px;
+  overflow: hidden; text-overflow: ellipsis;
+}
+
+.tb-spacer { flex: 1; }
+
+
+/* ═══ VIEW TOGGLE ════════════════════════════ */
+.view-toggle-btn {
+  display: flex; align-items: center; gap: 4px;
+  padding: 5px 10px; border-radius: 8px;
+  border: 1.5px solid var(--border); background: var(--card);
+  cursor: pointer; font-family: inherit;
+  font-size: 10px; font-weight: 700; color: var(--text-sec);
+  transition: var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+.view-toggle-btn svg { width: 16px; height: 16px; fill: currentColor; }
+.view-toggle-btn:hover { border-color: var(--purple); color: var(--purple); }
+.view-toggle-btn.active { background: var(--purple-bg); border-color: var(--purple); color: var(--purple); }
+
+/* ═══ TOAST ══════════════════════════════════ */
+.toast {
+  position: fixed; top: 64px; left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  z-index: 200; padding: 10px 20px;
+  background: var(--card);
+  border-radius: 28px; box-shadow: var(--shadow-lg);
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; font-weight: 600;
+  opacity: 0; transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  border: 1px solid var(--border); max-width: 90%;
+}
+.toast.show {
+  transform: translateX(-50%) translateY(0); opacity: 1;
+}
+.toast-icon {
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.toast-icon svg { width: 14px; height: 14px; fill: white; }
+.toast.success .toast-icon { background: var(--green); }
+.toast.error .toast-icon { background: var(--red); }
+.toast.warning .toast-icon { background: var(--orange); }
+.toast.loading .toast-icon { background: var(--purple); }
+.toast-text { color: var(--text); white-space: nowrap; }
+
+/* ═══ TAB NAV ════════════════════════════════ */
+.bottom-nav {
+  background: var(--card);
+  display: flex; height: 52px;
+  box-shadow: 0 -1px 4px rgba(0,0,0,0.03);
+  flex-shrink: 0;
+}
+.nav-tab {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px; border: none; background: none;
+  color: var(--text-muted); font-size: 10px;
+  font-weight: 600; cursor: pointer;
+  transition: var(--transition);
+  position: relative; font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-tab.active { color: var(--purple); }
+.nav-tab.active::before {
+  content: ''; position: absolute; top: 0;
+  left: 25%; right: 25%; height: 3px;
+  background: var(--purple); border-radius: 0 0 3px 3px;
+}
+.nav-icon { width: 22px; height: 22px; }
+.nav-icon svg { width: 100%; height: 100%; fill: currentColor; }
+
+/* ═══ MAIN ═══════════════════════════════════ */
+.main {
+  padding: 20px 24px;
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  max-width: 900px; margin: 8px auto; width: calc(100% - 16px);
+  display: flex; flex-direction: column;
+  background: var(--bg);
+  border-radius: var(--radius-xl);
+}
+.frame.mobile-mode .main {
+  max-width: 100%;
+  padding: 12px;
+  margin: 6px;
+  width: calc(100% - 12px);
+}
+
+.section { display: none; }
+.section.active { display: flex; flex-direction: column; flex: 1 0 auto; animation: fadeUp 0.3s ease; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══ QUICK STATS BAR ═══════════════════════ */
+.quick-stats {
+  display: flex; align-items: center;
+  background: var(--card); border-radius: var(--radius-lg);
+  padding: 14px; margin-bottom: 16px;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+}
+.quick-stat {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 2px;
+}
+.qs-value {
+  font-size: 20px; font-weight: 900; color: var(--purple);
+}
+.qs-value.hot { color: var(--red); }
+.qs-value.sent { color: var(--green); }
+.qs-label {
+  font-size: 10px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  font-weight: 600;
+}
+.qs-divider {
+  width: 1px; height: 28px; background: var(--border);
+}
+
+/* ═══ APP CARDS (dashboard style) ════════════ */
+.app-card {
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow-sm); margin-bottom: 16px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.animate-in {
+  animation: slideUpCard 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes slideUpCard {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.card-header-fancy {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.card-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--purple-bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.card-header-fancy h3 {
+  font-size: 14px; font-weight: 700; color: var(--text);
+}
+.card-header-fancy p {
+  font-size: 11px; color: var(--text-muted);
+  margin-top: 1px;
+}
+/* Card-head actions (dashboard pattern) */
+.card-header-fancy .card-actions {
+  margin-left: auto; display: flex; gap: 4px;
+}
+.card-btn {
+  width: 28px; height: 28px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent; border: none; cursor: pointer;
+  color: var(--text-muted); transition: var(--transition);
+}
+.card-btn:hover { background: var(--purple-bg); color: var(--purple); }
+.card-btn svg { width: 14px; height: 14px; fill: currentColor; }
+.card-body { padding: 16px; }
+
+/* ═══ TABLET GRID LAYOUT ════════════════════ */
+.tablet-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 16px; align-items: start;
+}
+.tablet-grid .full-width { grid-column: 1 / -1; }
+.frame.mobile-mode .tablet-grid {
+  grid-template-columns: 1fr;
+}
+
+/* ═══ CAMERA ═════════════════════════════════ */
+.camera-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg); padding: 32px 20px;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 8px;
+  cursor: pointer; transition: var(--transition);
+}
+.camera-zone:active {
+  border-color: var(--purple);
+  background: var(--purple-bg);
+}
+.camera-zone.active {
+  border-color: var(--green); border-style: solid;
+}
+.camera-ring {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-purple);
+}
+.camera-ring svg { width: 24px; height: 24px; }
+.camera-label {
+  font-weight: 700; color: var(--text); font-size: 14px;
+  margin-top: 4px;
+}
+.camera-sub {
+  font-size: 12px; color: var(--text-muted);
+}
+.camera-preview {
+  border-radius: var(--radius); overflow: hidden;
+  margin-top: 12px; display: none;
+}
+.camera-preview.show { display: block; }
+.camera-preview video,
+.camera-preview img {
+  width: 100%; border-radius: var(--radius);
+}
+.camera-actions {
+  display: flex; gap: 8px; margin-top: 12px;
+}
+
+.ocr-progress {
+  display: none; align-items: center; gap: 10px;
+  padding: 12px; background: var(--purple-bg);
+  border-radius: var(--radius); margin-top: 12px;
+}
+.ocr-progress.show { display: flex; }
+.ocr-ring {
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 3px solid var(--purple-15);
+  border-top-color: var(--purple);
+  animation: spin-slow 0.8s linear infinite;
+}
+.ocr-text { flex: 1; font-size: 12px; font-weight: 600; color: var(--purple); }
+.ocr-percent { font-size: 14px; font-weight: 800; color: var(--purple); }
+
+/* ═══ FORM CONTROLS ══════════════════════════ */
+.form-row {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; margin-bottom: 12px;
+}
+.form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 4px; }
+.form-group label {
+  font-size: 11px; font-weight: 700;
+  color: var(--text-sec); text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.form-control {
+  width: 100%; padding: 10px 12px;
+  background: var(--input-bg); border: 1.5px solid var(--border);
+  border-radius: var(--radius); font-size: 14px;
+  color: var(--text); font-family: inherit;
+  transition: var(--transition); outline: none;
+}
+.form-control:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px var(--purple-10);
+  background: #fff;
+}
+.form-textarea { min-height: 80px; resize: vertical; }
+.form-control.autofilled {
+  border-color: var(--green);
+  background: var(--green-bg);
+  animation: autofillPulse 0.4s ease;
+}
+@keyframes autofillPulse {
+  0% { transform: scale(0.98); }
+  50% { transform: scale(1.01); }
+  100% { transform: scale(1); }
+}
+
+select.form-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%239898A0' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+}
+
+/* ═══ INTEREST CHIPS ═════════════════════════ */
+.interest-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.interest-chip {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px; border-radius: var(--radius);
+  border: 2px solid var(--border);
+  cursor: pointer; transition: var(--transition);
+  background: var(--card);
+}
+.interest-chip input { display: none; }
+.interest-chip.selected {
+  border-color: var(--purple); background: var(--purple-bg);
+}
+.interest-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--purple-15); flex-shrink: 0;
+  transition: var(--transition);
+}
+.interest-chip.selected .interest-dot {
+  background: var(--purple); box-shadow: 0 0 8px var(--purple-20);
+}
+.interest-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.interest-sub { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+
+/* ═══ BANT GRID ══════════════════════════════ */
+.bant-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.bant-card {
+  text-align: center; padding: 14px 8px;
+  border-radius: var(--radius);
+  background: var(--input-bg); border: 1px solid var(--border);
+}
+.bant-emoji { font-size: 24px; margin-bottom: 6px; }
+.bant-title {
+  font-size: 11px; font-weight: 700; color: var(--text);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+.bant-select { text-align: center; font-size: 12px; }
+
+/* ═══ BUTTONS ════════════════════════════════ */
+.btn {
+  padding: 10px 20px; border-radius: var(--radius);
+  font-size: 13px; font-weight: 700; border: none;
+  cursor: pointer; font-family: inherit;
+  transition: var(--transition); display: inline-flex;
+  align-items: center; gap: 6px; justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-accent {
+  background: var(--purple); color: white;
+  box-shadow: var(--shadow-purple);
+}
+.btn-accent:active { transform: scale(0.96); }
+.btn-glow {
+  background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%);
+  color: white; box-shadow: var(--shadow-purple);
+  position: relative; overflow: hidden;
+}
+.btn-glow:active { transform: scale(0.96); }
+.btn-shine {
+  position: absolute; top: 0; left: -75%; width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: shine 3s infinite;
+}
+@keyframes shine {
+  0% { left: -75%; }
+  100% { left: 125%; }
+}
+.btn-ghost {
+  background: transparent; color: var(--purple);
+  border: 1.5px solid var(--border);
+}
+.btn-ghost:active { background: var(--purple-bg); }
+.btn-danger {
+  background: var(--red-bg); color: var(--red);
+  border: 1.5px solid transparent;
+}
+.btn-danger:active { background: #FECACA; }
+.btn-lg { padding: 14px 28px; font-size: 15px; }
+.btn-sm { padding: 7px 14px; font-size: 12px; }
+.btn-block { display: flex; width: 100%; }
+
+.action-bar {
+  display: flex; gap: 12px; margin-top: 16px;
+  padding-bottom: 20px;
+}
+.action-bar .btn { flex: 1; }
+
+/* ═══ PRODUCTS SECTION ══════════════════════ */
+.products-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.products-title {
+  font-size: 22px; font-weight: 900; color: var(--text);
+}
+.products-count {
+  font-size: 12px; color: var(--text-muted); font-weight: 600;
+}
+.products-wrapper {
+  position: relative; overflow: hidden;
+  touch-action: pan-y; user-select: none;
+  margin: 0 -4px;
+  flex: 1; display: flex; flex-direction: column;
+  width: calc(100% + 8px); max-width: calc(100% + 8px);
+}
+#section-products .products-carousel {
+  flex: 1; align-items: stretch;
+}
+#section-products .product-slide {
+  display: flex; flex-direction: column;
+}
+#section-products .product-card {
+  display: flex; flex-direction: column; flex: 1;
+}
+#section-products .product-visual {
+  flex: 1; min-height: 200px; height: auto;
+}
+.products-carousel {
+  display: flex; transition: transform 0.4s cubic-bezier(0.25,0.8,0.25,1);
+  will-change: transform;
+}
+.products-carousel.swiping { transition: none; }
+.product-slide {
+  min-width: 100%; padding: 0 4px; flex-shrink: 0;
+}
+.product-card {
+  background: var(--card); border-radius: var(--radius-xl);
+  box-shadow: var(--shadow); overflow: hidden;
+  border: 1px solid var(--border);
+  transition: var(--transition);
+}
+.product-visual {
+  height: 200px; position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.product-visual-bg {
+  position: absolute; inset: 0;
+}
+.product-visual-icon {
+  font-size: 80px; position: relative; z-index: 1;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
+  animation: floatProduct 3.5s ease-in-out infinite;
+}
+@keyframes floatProduct {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.product-badge {
+  position: absolute; top: 12px; right: 12px; z-index: 2;
+  background: var(--orange); color: #fff;
+  font-size: 10px; font-weight: 800; padding: 4px 10px;
+  border-radius: 20px; text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.product-body { padding: 20px; }
+.product-name {
+  font-size: 18px; font-weight: 800; color: var(--text);
+  margin-bottom: 4px;
+}
+.product-desc {
+  font-size: 13px; color: var(--text-sec); line-height: 1.55;
+  margin-bottom: 14px;
+}
+.product-tags {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px;
+}
+.product-tag {
+  font-size: 10px; font-weight: 700; padding: 4px 10px;
+  border-radius: 20px; letter-spacing: 0.3px;
+}
+.product-tag.purple { background: var(--purple-bg); color: var(--purple); }
+.product-tag.orange { background: var(--orange-bg); color: var(--orange); }
+.product-tag.yellow { background: var(--yellow-bg); color: #b8920d; }
+.product-tag.green { background: var(--green-bg); color: var(--green); }
+
+.product-actions {
+  display: flex; gap: 8px; align-items: center;
+}
+.product-interest-btn {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px; border: 2px solid var(--purple);
+  border-radius: var(--radius); background: transparent;
+  color: var(--purple); font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: var(--transition);
+  font-family: inherit;
+}
+.product-interest-btn:active,
+.product-interest-btn.checked {
+  background: var(--purple); color: #fff;
+}
+.product-interest-btn .check-icon {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid currentColor; display: flex;
+  align-items: center; justify-content: center;
+  transition: var(--transition); flex-shrink: 0;
+}
+.product-interest-btn.checked .check-icon {
+  background: #fff; border-color: #fff;
+}
+.product-interest-btn .check-icon svg {
+  width: 12px; height: 12px; opacity: 0;
+  transition: var(--transition);
+}
+.product-interest-btn.checked .check-icon svg {
+  opacity: 1;
+}
+.product-video-btn {
+  width: 44px; height: 44px; border-radius: var(--radius);
+  border: 2px solid var(--orange); background: transparent;
+  color: var(--orange); font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition); flex-shrink: 0;
+  font-family: inherit;
+}
+.product-video-btn:active {
+  background: var(--orange); color: #fff;
+}
+
+.carousel-dots {
+  display: flex; justify-content: center; gap: 8px;
+  padding: 16px 0 6px;
+}
+.carousel-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--border); border: none; cursor: pointer;
+  transition: var(--transition); padding: 0;
+}
+.carousel-dot.active {
+  width: 24px; border-radius: 4px;
+  background: var(--purple);
+}
+.swipe-hint {
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px; padding: 6px 0; color: var(--text-muted);
+  font-size: 11px; font-weight: 500;
+}
+.swipe-arrow {
+  display: inline-block;
+  animation: swipeHint 1.8s ease-in-out infinite;
+}
+@keyframes swipeHint {
+  0%, 100% { transform: translateX(0); opacity: 0.3; }
+  50% { transform: translateX(5px); opacity: 1; }
+}
+
+/* Carousel edge navigation hints */
+.carousel-nav-hint {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 28px; height: 56px; display: flex; align-items: center; justify-content: center;
+  background: rgba(76, 48, 168, 0.1); backdrop-filter: blur(4px);
+  border-radius: 8px; color: var(--purple); font-size: 22px; font-weight: 300;
+  z-index: 10; pointer-events: none;
+  animation: hintPulse 2.5s ease-in-out infinite;
+}
+.carousel-nav-hint.left { left: 6px; }
+.carousel-nav-hint.right { right: 6px; }
+.carousel-nav-hint.hidden { opacity: 0 !important; animation: none; }
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.75; }
+}
+
+/* Product video embed area */
+.product-video-embed {
+  display: flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, rgba(76,48,168,0.04), rgba(255,155,55,0.07));
+  border-radius: var(--radius); padding: 10px 14px; margin-bottom: 14px;
+  border: 1px dashed rgba(255,155,55,0.3); cursor: pointer;
+  transition: var(--transition);
+}
+.product-video-embed:active { background: rgba(255,155,55,0.12); }
+.product-video-play-icon {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--orange); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(255,155,55,0.3);
+}
+.product-video-info { flex: 1; min-width: 0; }
+.product-video-title {
+  font-size: 12px; font-weight: 700; color: var(--text);
+}
+.product-video-sub {
+  font-size: 11px; color: var(--text-muted);
+}
+
+/* ═══ INTEREST OVERLAY ══════════════════════ */
+.interest-overlay {
+  position: fixed; bottom: 0; left: 50%;
+  transform: translateX(-50%) translateY(100%);
+  width: 100%; max-width: 600px;
+  z-index: 4000;
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+.interest-overlay.show { transform: translateX(-50%) translateY(0); }
+.interest-overlay-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+  z-index: 3999; opacity: 0; transition: opacity 0.3s;
+  pointer-events: none;
+}
+.interest-overlay-backdrop.show { opacity: 1; pointer-events: auto; }
+.interest-overlay-panel {
+  background: var(--card); border-radius: 24px 24px 0 0;
+  padding: 16px 20px 32px; max-height: 55vh; overflow-y: auto;
+  box-shadow: 0 -8px 32px rgba(0,0,0,0.15);
+}
+.interest-overlay-handle {
+  width: 40px; height: 4px; background: var(--border);
+  border-radius: 2px; margin: 0 auto 14px;
+}
+.interest-overlay-title {
+  font-size: 16px; font-weight: 800; color: var(--text);
+  margin-bottom: 2px;
+}
+.interest-overlay-sub {
+  font-size: 12px; color: var(--text-muted); margin-bottom: 14px;
+}
+.interest-overlay-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.io-chip {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px; border-radius: var(--radius);
+  border: 2px solid var(--border); cursor: pointer;
+  transition: var(--transition); background: var(--card);
+}
+.io-chip.selected {
+  border-color: var(--purple); background: var(--purple-bg);
+}
+.io-chip input { display: none; }
+.io-chip-dot {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid var(--border); display: flex;
+  align-items: center; justify-content: center;
+  transition: var(--transition); flex-shrink: 0;
+}
+.io-chip.selected .io-chip-dot {
+  background: var(--purple); border-color: var(--purple);
+}
+.io-chip-dot svg {
+  width: 12px; height: 12px; fill: #fff;
+  opacity: 0; transition: var(--transition);
+}
+.io-chip.selected .io-chip-dot svg { opacity: 1; }
+.io-chip-info {}
+.io-chip-name { font-size: 12px; font-weight: 700; color: var(--text); }
+.io-chip-sub { font-size: 10px; color: var(--text-muted); }
+
+/* ═══ VIDEO MODAL ═══════════════════════════ */
+.video-modal {
+  position: fixed; inset: 0; z-index: 5000;
+  background: rgba(0,0,0,0.92);
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 24px;
+}
+.video-modal.show { display: flex; }
+.video-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255,255,255,0.12); border: none;
+  color: #fff; font-size: 22px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 10; backdrop-filter: blur(8px);
+}
+.video-close:active { background: rgba(255,255,255,0.25); }
+.video-container {
+  width: 100%; max-width: 440px; aspect-ratio: 16/9;
+  border-radius: var(--radius-lg); overflow: hidden;
+  background: #111; position: relative;
+}
+.video-placeholder {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.6); gap: 12px;
+}
+.video-placeholder-icon { font-size: 56px; }
+.video-placeholder-text { font-size: 14px; font-weight: 500; }
+.video-player {
+  width: 100%; height: 100%; object-fit: contain;
+  background: #000; display: block;
+}
+.video-overlay-controls {
+  position: absolute; inset: 0; display: flex;
+  align-items: center; justify-content: center;
+  z-index: 5; cursor: pointer;
+}
+.video-overlay-controls .big-play {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: rgba(76,48,168,0.8); border: 3px solid rgba(255,255,255,0.25);
+  color: #fff; font-size: 28px; display: flex;
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(8px); transition: var(--transition);
+  box-shadow: 0 4px 24px rgba(76,48,168,0.4);
+}
+.video-overlay-controls .big-play:hover { transform: scale(1.1); box-shadow: 0 6px 32px rgba(76,48,168,0.5); }
+.video-overlay-controls.playing .big-play { opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.video-progress-bar {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(transparent 0%, rgba(0,0,0,0.75) 100%);
+  display: flex; align-items: center; padding: 24px 14px 10px; gap: 10px; z-index: 6;
+}
+.video-seek {
+  flex: 1; height: 4px; -webkit-appearance: none; appearance: none;
+  background: rgba(255,255,255,0.3); border-radius: 2px;
+  cursor: pointer; outline: none;
+}
+.video-seek::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 14px; height: 14px;
+  border-radius: 50%; background: var(--orange); cursor: pointer;
+  border: 2px solid #fff;
+}
+.video-time {
+  color: rgba(255,255,255,0.8); font-size: 11px; font-weight: 600;
+  white-space: nowrap; min-width: 65px; text-align: right;
+}
+.video-fullscreen-btn {
+  width: 32px; height: 32px; border: none; background: none;
+  color: rgba(255,255,255,0.7); font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 6px; transition: var(--transition); flex-shrink: 0;
+}
+.video-fullscreen-btn:hover { color: #fff; background: rgba(255,255,255,0.15); }
+.video-container:fullscreen,
+.video-container:-webkit-full-screen { max-width: none; width: 100%; height: 100%; border-radius: 0; }
+.video-title {
+  color: #fff; font-size: 15px; font-weight: 600;
+  margin-top: 12px; text-align: center;
+}
+
+/* CRM Interest Probability */
+/* CRM Tab: 2-column tablet layout */
+.crm-tablet-grid {
+  display: grid; grid-template-columns: 1fr; gap: 8px;
+}
+.frame:not(.mobile-mode) .crm-tablet-grid {
+  grid-template-columns: 1fr 1fr; gap: 10px;
+  align-items: stretch;
+}
+/* Left column: Interests spans full height (2 rows) */
+.frame:not(.mobile-mode) .crm-tablet-grid .crm-interests-card {
+  grid-row: 1 / 3;
+}
+.frame:not(.mobile-mode) .crm-full-width {
+  grid-column: 1 / -1;
+}
+
+.crm-interests-card .crm-interest-row {
+  display: grid;
+  grid-template-columns: 24px 1fr 90px 1fr;
+  align-items: center; gap: 8px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.crm-interests-card .crm-interest-row:last-child { border-bottom: none; }
+.crm-interest-check {
+  width: 18px; height: 18px; accent-color: var(--purple);
+  cursor: pointer; justify-self: center;
+}
+.crm-interest-name {
+  font-size: 13px; font-weight: 600; color: var(--text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.crm-interest-prob {
+  width: 90px;
+}
+.crm-interest-rep {
+  font-size: 11px; color: var(--text-muted);
+  max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* Scrollable interests list */
+.crm-interests-scroll {
+  max-height: 240px; overflow-y: auto; overflow-x: hidden;
+  scrollbar-width: thin;
+}
+.frame:not(.mobile-mode) .crm-interests-scroll {
+  max-height: none; overflow-y: auto; flex: 1;
+}
+.lead-badge.crm-pending {
+  background: var(--orange-bg); color: var(--orange); font-size: 10px;
+}
+.lead-badge.crm-done {
+  background: var(--green-bg); color: var(--green); font-size: 10px;
+}
+
+/* Settings: interest rep mapping */
+.settings-interest-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+}
+.settings-interest-row:last-child { border-bottom: none; }
+.settings-interest-name { font-size: 12px; font-weight: 700; width: 100px; flex-shrink: 0; }
+.settings-interest-repname, .settings-interest-repemail {
+  flex: 1; font-size: 12px; padding: 5px 8px; border: 1px solid var(--border);
+  border-radius: 8px; background: var(--input-bg); font-family: inherit;
+}
+
+/* ═══ LEADS LIST ═════════════════════════════ */
+.leads-hero {
+  display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 16px;
+}
+.leads-title { font-size: 22px; font-weight: 900; }
+.leads-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+.search-bar {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--card); border-radius: var(--radius-lg);
+  padding: 10px 16px; margin-bottom: 16px;
+  border: 1px solid var(--border);
+}
+.search-bar svg { width: 18px; height: 18px; fill: var(--text-muted); flex-shrink: 0; }
+.search-bar input {
+  flex: 1; border: none; background: none;
+  font-size: 14px; color: var(--text);
+  font-family: inherit; outline: none;
+}
+
+.lead-card {
+  background: var(--card); border-radius: var(--radius-lg);
+  padding: 16px; margin-bottom: 10px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm); cursor: pointer;
+  transition: var(--transition);
+}
+.lead-card:active { transform: scale(0.985); }
+.lead-card-top { display: flex; align-items: center; gap: 12px; }
+.lead-avatar {
+  width: 42px; height: 42px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+  color: #fff; font-size: 14px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; letter-spacing: 0.5px;
+}
+.lead-info { flex: 1; min-width: 0; }
+.lead-name {
+  font-size: 14px; font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lead-company {
+  font-size: 12px; color: var(--text-sec);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lead-position { font-size: 11px; color: var(--text-muted); }
+.lead-badges { display: flex; gap: 4px; flex-shrink: 0; }
+.lead-badge {
+  font-size: 10px; font-weight: 700; padding: 3px 8px;
+  border-radius: 20px; letter-spacing: 0.3px;
+}
+.lead-badge.new { background: var(--blue-bg); color: var(--blue); }
+.lead-badge.warm { background: var(--orange-bg); color: var(--orange); }
+.lead-badge.hot { background: var(--red-bg); color: var(--red); }
+.lead-badge.email { background: var(--green-bg); color: var(--green); }
+.lead-tags {
+  display: flex; flex-wrap: wrap; gap: 4px;
+  margin-top: 10px; padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.lead-tag {
+  font-size: 10px; font-weight: 600; color: var(--purple);
+  background: var(--purple-bg); padding: 3px 8px;
+  border-radius: 12px;
+}
+.lead-meta {
+  display: flex; align-items: center; gap: 12px;
+  margin-top: 10px; font-size: 11px; color: var(--text-muted);
+}
+.lead-delete {
+  margin-left: auto; color: var(--red);
+  font-weight: 600; cursor: pointer;
+}
+
+.empty-state {
+  text-align: center; padding: 48px 20px;
+  color: var(--text-muted);
+}
+.empty-state-title {
+  font-size: 18px; font-weight: 700;
+  color: var(--text); margin-bottom: 4px;
+}
+
+/* ═══ SETTINGS ═══════════════════════════════ */
+.settings-group { margin-bottom: 24px; }
+.settings-title {
+  font-size: 13px; font-weight: 700; color: var(--text-sec);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 10px; padding-left: 4px;
+}
+.settings-card {
+  background: var(--card); border-radius: var(--radius-lg);
+  border: 1px solid var(--border); overflow: hidden;
+}
+.sc-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.sc-row:last-child { border-bottom: none; }
+.sc-icon { font-size: 20px; flex-shrink: 0; }
+.sc-content { flex: 1; }
+.sc-label { font-size: 14px; font-weight: 600; }
+.sc-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.sc-value { font-size: 12px; font-weight: 700; }
+.settings-input {
+  margin-top: 4px; font-size: 13px;
+}
+
+.toggle {
+  width: 44px; height: 26px; border-radius: 13px;
+  background: var(--border); cursor: pointer;
+  position: relative; transition: var(--transition);
+  flex-shrink: 0;
+}
+.toggle::after {
+  content: ''; position: absolute;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: white; top: 3px; left: 3px;
+  transition: var(--transition);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.toggle.active { background: var(--purple); }
+.toggle.active::after { left: 21px; }
+
+/* ═══ STATISTICS GRID ═══════════════════════ */
+.stats-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+.stat-box {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 20px 12px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  transition: var(--transition);
+}
+.stat-box:nth-child(2n) { border-right: none; }
+.stat-box:nth-child(n+3) { border-bottom: none; }
+.stat-number {
+  font-size: 28px; font-weight: 800; color: var(--purple);
+  line-height: 1; margin-bottom: 4px;
+}
+.stat-box.hot .stat-number { color: var(--orange); }
+.stat-label {
+  font-size: 11px; color: var(--text-muted);
+  font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ═══ RESPONSIVE ═════════════════════════════ */
+@media (max-width: 768px) {
+  .frame { border: none; border-radius: 0; max-width: 100%; }
+  .tablet-grid { grid-template-columns: 1fr; }
+  .main { padding: 16px; }
+  .topbar { padding: 0 12px; }
+  .event-pill { display: none; }
+  .view-toggle-btn { display: none; }
+  .bottom-nav .nav-tab span { font-size: 9px; }
+  .logo-text { display: none; }
+  .rep-full { display: none; }
+  .rep-initials { display: inline !important; }
+}
+
+@media (max-width: 440px) {
+  .form-row { grid-template-columns: 1fr; }
+  .form-row.triple { grid-template-columns: 1fr 1fr; }
+  .interest-grid { grid-template-columns: 1fr; }
+  .interest-overlay-grid { grid-template-columns: 1fr; }
+  .bant-grid { grid-template-columns: 1fr; }
+  .splash-o { width: 120px; height: 120px; }
+  .splash-letter { font-size: 44px; }
+}
+
+/* ═══ TABLET COMPACT (no-scroll fit) ═════════ */
+.frame:not(.mobile-mode) .main { padding: 10px 16px; max-width: 100%; }
+.frame:not(.mobile-mode) .quick-stats { padding: 8px 12px; margin-bottom: 8px; }
+.frame:not(.mobile-mode) .qs-value { font-size: 16px; }
+.frame:not(.mobile-mode) .qs-divider { height: 22px; }
+.frame:not(.mobile-mode) .card-header-fancy { padding: 8px 12px; }
+.frame:not(.mobile-mode) .card-body { padding: 10px 12px; }
+.frame:not(.mobile-mode) .app-card { margin-bottom: 8px; }
+.frame:not(.mobile-mode) .tablet-grid { gap: 8px; }
+.frame:not(.mobile-mode) .camera-zone { padding: 14px 10px; }
+.frame:not(.mobile-mode) .camera-ring { width: 40px; height: 40px; }
+.frame:not(.mobile-mode) .camera-ring svg { width: 20px; height: 20px; }
+.frame:not(.mobile-mode) .camera-label { font-size: 12px; margin-top: 2px; }
+.frame:not(.mobile-mode) .camera-sub { font-size: 11px; }
+.frame:not(.mobile-mode) .form-row { gap: 6px; margin-bottom: 6px; }
+.frame:not(.mobile-mode) .form-control { padding: 6px 9px; font-size: 13px; }
+.frame:not(.mobile-mode) .form-group label { font-size: 10px; }
+.frame:not(.mobile-mode) .interest-chip { padding: 8px; gap: 8px; }
+.frame:not(.mobile-mode) .interest-name { font-size: 12px; }
+.frame:not(.mobile-mode) .action-bar { margin-top: 8px; padding-bottom: 0; }
+.frame:not(.mobile-mode) .action-bar .btn { padding: 10px 20px; font-size: 13px; }
+.frame:not(.mobile-mode) .products-header { margin-bottom: 6px; }
+.frame:not(.mobile-mode) .products-title { font-size: 18px; }
+.frame:not(.mobile-mode) .carousel-dots { padding: 8px 0 2px; }
+.frame:not(.mobile-mode) .swipe-hint { padding: 2px 0; }
+.frame:not(.mobile-mode) .bant-grid { gap: 6px; }
+.frame:not(.mobile-mode) .bant-card { padding: 10px 6px; }
+.frame:not(.mobile-mode) .bant-emoji { font-size: 20px; margin-bottom: 4px; }
+.frame:not(.mobile-mode) .bant-title { font-size: 10px; margin-bottom: 6px; }
+.frame:not(.mobile-mode) .form-textarea { min-height: 60px; }
+/* CRM interest rows: 2-column on tablet */
+.frame:not(.mobile-mode) .crm-interest-row { padding: 6px 0; gap: 6px; grid-template-columns: 22px 1fr 80px 1fr; }
+.frame:not(.mobile-mode) .crm-interest-name { font-size: 12px; }
+.frame:not(.mobile-mode) .crm-interest-prob { width: 80px; }
+.frame:not(.mobile-mode) .crm-interest-rep { font-size: 10px; max-width: 80px; }
+.frame:not(.mobile-mode) .crm-interests-card .card-header-fancy h3 { font-size: 14px; }
+.frame:not(.mobile-mode) .crm-interests-card .card-header-fancy p { font-size: 11px; }
+.frame:not(.mobile-mode) .settings-group { margin-bottom: 10px; }
+.frame:not(.mobile-mode) .sc-row { padding: 10px 14px; }
+.frame:not(.mobile-mode) .settings-title { font-size: 12px; margin-bottom: 6px; }
+.frame:not(.mobile-mode) .leads-hero { margin-bottom: 10px; }
+.frame:not(.mobile-mode) .search-bar { padding: 8px 14px; margin-bottom: 10px; }
+.frame:not(.mobile-mode) .product-video-embed { padding: 6px 10px; margin-bottom: 8px; }
+.frame:not(.mobile-mode) .carousel-nav-hint { width: 24px; height: 44px; font-size: 18px; }
+
+/* ═══ MOBILE PRODUCT WIDTH FIX ══════════════ */
+.frame.mobile-mode .products-wrapper { margin: 0; width: 100%; max-width: 100%; }
+.frame.mobile-mode .products-carousel { width: 100%; }
+.frame.mobile-mode .product-slide { padding: 0; min-width: 100%; max-width: 100%; width: 100%; }
+.frame.mobile-mode .product-card { box-sizing: border-box; width: 100%; max-width: 100%; }
+.frame.mobile-mode .product-body { padding: 12px; }
+.frame.mobile-mode .product-name { font-size: 16px; }
+.frame.mobile-mode .product-desc { font-size: 12px; margin-bottom: 10px; }
+.frame.mobile-mode .product-visual { height: 120px; min-height: auto; }
+.frame.mobile-mode .product-visual-icon { font-size: 48px; }
+.frame.mobile-mode .product-interest-btn { font-size: 12px; padding: 10px 6px; }
+.frame.mobile-mode .product-tags { gap: 4px; margin-bottom: 10px; }
+.frame.mobile-mode .carousel-dots { padding: 10px 0 4px; }
+.frame.mobile-mode .product-video-embed { padding: 8px 10px; margin-bottom: 10px; }
+.frame.mobile-mode .product-video-play-icon { width: 28px; height: 28px; font-size: 11px; }
+.frame.mobile-mode .product-video-title { font-size: 11px; }
+.frame.mobile-mode .product-video-sub { font-size: 10px; }
+.frame.mobile-mode .carousel-nav-hint { width: 22px; height: 40px; font-size: 16px; }
+.frame.mobile-mode .main { overflow-x: hidden; }
+.frame.mobile-mode #section-products { overflow: hidden; }
+
+/* Tab navigation arrows */
+.tab-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 28px; height: 56px; border: none; border-radius: 8px;
+  background: rgba(76,48,168,0.06); color: var(--purple-light);
+  font-size: 22px; font-weight: 300; cursor: pointer; z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0.35; transition: var(--transition);
+}
+.tab-arrow:hover { opacity: 0.7; background: rgba(76,48,168,0.12); }
+.tab-arrow:active { transform: translateY(-50%) scale(0.9); opacity: 1; }
+.tab-arrow.left { left: 2px; }
+.tab-arrow.right { right: 2px; }
+.tab-arrow.hidden { opacity: 0; pointer-events: none; }
+
+/* Mobile: hide logo text, show only initials for rep */
+.frame.mobile-mode .logo-text { display: none; }
+.frame.mobile-mode .rep-full { display: none; }
+.frame:not(.mobile-mode) .rep-initials { display: none; }
+
+/* --- SCROLLBAR ------------------------------ */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+.spin { animation: spin-slow 1s linear infinite; }
+
+/* ═══ PRODUCT DEMO MODAL ═══════════════════ */
+.demo-modal {
+  position: fixed; inset: 0; z-index: 5000;
+  background: rgba(0,0,0,0.88);
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+.demo-modal.show { display: flex; }
+.demo-close {
+  position: fixed; top: 16px; right: 16px;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255,255,255,0.12); border: none;
+  color: #fff; font-size: 22px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 10; backdrop-filter: blur(8px);
+}
+.demo-close:active { background: rgba(255,255,255,0.25); }
+.demo-container {
+  width: 100%; max-width: 520px;
+  background: var(--card); border-radius: var(--radius-xl);
+  overflow: hidden; box-shadow: 0 25px 80px rgba(0,0,0,0.5);
+  animation: demoSlideIn 0.35s ease;
+}
+@keyframes demoSlideIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.demo-hero {
+  padding: 28px 24px 20px; text-align: center;
+  color: #fff; position: relative;
+}
+.demo-hero-icon { font-size: 48px; margin-bottom: 8px; }
+.demo-hero-title { font-size: 18px; font-weight: 800; }
+.demo-hero-sub { font-size: 12px; opacity: 0.8; margin-top: 4px; }
+.demo-body { padding: 20px; }
+.demo-section-title {
+  font-size: 11px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+/* Demo: gauge row */
+.demo-gauge-row { display: flex; gap: 12px; margin-bottom: 16px; }
+.demo-gauge {
+  flex: 1; text-align: center; padding: 12px 8px;
+  background: var(--bg); border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+.demo-gauge-value {
+  font-size: 22px; font-weight: 900; color: var(--purple);
+}
+.demo-gauge-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+.demo-gauge-bar {
+  height: 4px; border-radius: 2px; background: var(--border);
+  margin-top: 6px; overflow: hidden;
+}
+.demo-gauge-fill { height: 100%; border-radius: 2px; transition: width 1s ease; }
+/* Demo: process steps */
+.demo-steps { margin-bottom: 16px; }
+.demo-step {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.demo-step:last-child { border-bottom: none; }
+.demo-step-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--purple); color: #fff;
+  font-size: 12px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.demo-step-text { font-size: 13px; font-weight: 600; color: var(--text); }
+.demo-step-sub { font-size: 11px; color: var(--text-muted); }
+/* Demo: bar chart */
+.demo-bars { margin-bottom: 16px; }
+.demo-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.demo-bar-label { font-size: 11px; font-weight: 600; width: 80px; color: var(--text-sec); }
+.demo-bar-track { flex: 1; height: 20px; background: var(--bg); border-radius: 10px; overflow: hidden; }
+.demo-bar-fill {
+  height: 100%; border-radius: 10px; display: flex;
+  align-items: center; justify-content: flex-end; padding-right: 8px;
+  font-size: 10px; font-weight: 700; color: #fff;
+  transition: width 1s ease;
+}
+/* Demo: comparison table */
+.demo-table {
+  width: 100%; border-collapse: collapse; margin-bottom: 16px;
+  font-size: 12px;
+}
+.demo-table th {
+  text-align: left; padding: 8px 10px; font-weight: 700;
+  background: var(--purple-bg); color: var(--purple);
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.demo-table td {
+  padding: 8px 10px; border-bottom: 1px solid var(--border);
+}
+.demo-table tr:last-child td { border-bottom: none; }
+.demo-check { color: var(--green); font-weight: 700; }
+.demo-cross { color: var(--red); }
+/* Demo: checklist */
+.demo-checklist { margin-bottom: 16px; }
+.demo-check-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.demo-check-item:last-child { border-bottom: none; }
+.demo-check-icon {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; flex-shrink: 0;
+}
+.demo-check-icon.done { background: var(--green-bg); color: var(--green); }
+.demo-check-icon.warn { background: var(--orange-bg); color: var(--orange); }
+/* Demo: timeline */
+.demo-timeline { margin-bottom: 16px; position: relative; padding-left: 20px; }
+.demo-timeline::before {
+  content: ''; position: absolute; left: 8px; top: 0; bottom: 0;
+  width: 2px; background: var(--border);
+}
+.demo-tl-item {
+  position: relative; padding: 8px 0 16px 16px;
+}
+.demo-tl-item::before {
+  content: ''; position: absolute; left: -16px; top: 12px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--purple); border: 2px solid var(--card);
+}
+.demo-tl-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.demo-tl-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.demo-tl-tag {
+  display: inline-block; font-size: 9px; font-weight: 700;
+  padding: 2px 8px; border-radius: 10px; margin-top: 4px;
+}
+.demo-footer {
+  padding: 12px 20px; background: var(--bg); border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 11px; color: var(--text-muted);
+}
+.demo-footer-badge {
+  font-size: 10px; font-weight: 700; padding: 4px 10px;
+  border-radius: 20px; background: var(--purple-bg); color: var(--purple);
+}
+
+/* ═══ FILTER PILLS ═════════════════════════ */
+.filter-bar {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 12px;
+}
+.filter-pill {
+  font-size: 11px; font-weight: 700; padding: 5px 12px;
+  border-radius: 20px; border: 1.5px solid var(--border);
+  background: var(--card); color: var(--text-sec);
+  cursor: pointer; transition: var(--transition);
+  font-family: inherit;
+}
+.filter-pill:active { transform: scale(0.95); }
+.filter-pill.active {
+  background: var(--purple); color: #fff;
+  border-color: var(--purple);
+}
+.filter-pill.active.hot { background: var(--red); border-color: var(--red); }
+.filter-pill.active.warm { background: var(--orange); border-color: var(--orange); }
+.filter-pill.active.green { background: var(--green); border-color: var(--green); }
+
+/* ═══ COMPACT LEAD CARDS ═══════════════════ */
+.leads-toolbar {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 10px;
+}
+.leads-toolbar .filter-bar { flex: 1; margin-bottom: 0; }
+.view-switch {
+  display: flex; border: 1.5px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  flex-shrink: 0;
+}
+.view-switch-btn {
+  padding: 6px 10px; background: var(--card);
+  border: none; cursor: pointer; font-size: 14px;
+  color: var(--text-muted); transition: var(--transition);
+  font-family: inherit;
+}
+.view-switch-btn.active {
+  background: var(--purple); color: #fff;
+}
+.lead-card.compact {
+  padding: 10px 14px; margin-bottom: 6px;
+}
+.lead-card.compact .lead-card-top { gap: 10px; }
+.lead-card.compact .lead-avatar { width: 32px; height: 32px; font-size: 11px; border-radius: 8px; }
+.lead-card.compact .lead-name { font-size: 13px; }
+.lead-card.compact .lead-company { font-size: 11px; }
+.lead-card.compact .lead-position { display: none; }
+.lead-card.compact .lead-tags { display: none; }
+.lead-card.compact .lead-meta { display: none; }
+.lead-card.compact .lead-badge { font-size: 9px; padding: 2px 6px; }
+
+/* ═══ OFFLINE INFO PANEL ═══════════════════ */
+.offline-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+}
+.offline-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 8px 10px; border-radius: var(--radius);
+  background: var(--bg); font-size: 12px;
+}
+.offline-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.offline-label { font-weight: 600; color: var(--text); }
+.offline-desc { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+
+/* ═══ FULL-WIDTH TABLET / NO-SCROLL ═══════ */
+.frame:not(.mobile-mode) .section.active:not(#section-leads) {
+  flex: 1 1 0; min-height: 0; overflow-y: auto;
+  overflow-x: hidden;
+}
+.frame:not(.mobile-mode) .section.active:not(#section-leads)::-webkit-scrollbar { width: 0; }
+.frame:not(.mobile-mode) #section-leads.active {
+  flex: 1 1 0; min-height: 0; overflow-y: auto;
+}
+
+/* ═══ CONFIRM MODAL ═══════════════════════ */
+.confirm-overlay {
+  position: fixed; inset: 0; z-index: 6000;
+  background: rgba(0,0,0,0.6);
+  display: none; align-items: center; justify-content: center;
+  padding: 20px; backdrop-filter: blur(4px);
+}
+.confirm-overlay.show { display: flex; }
+.confirm-box {
+  background: var(--card); border-radius: var(--radius-xl);
+  max-width: 520px; width: 100%; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: demoSlideIn 0.25s ease;
+  max-height: 90vh; display: flex; flex-direction: column;
+}
+.confirm-body-scroll {
+  overflow-y: auto; flex: 1; min-height: 0;
+}
+.confirm-email-edit {
+  margin: 0 20px 12px; display: none;
+}
+.confirm-email-edit.show { display: block; }
+.confirm-email-edit label {
+  font-size: 11px; font-weight: 700; color: var(--text-sec);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+}
+.confirm-email-edit textarea {
+  width: 100%; min-height: 220px; max-height: 40vh;
+  border: 1.5px solid var(--border); border-radius: var(--radius);
+  padding: 12px; font-size: 12px; font-family: inherit;
+  line-height: 1.6; color: var(--text); background: var(--bg);
+  resize: vertical; box-sizing: border-box;
+}
+.confirm-email-edit textarea:focus {
+  outline: none; border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(76,48,168,0.15);
+}
+.confirm-header {
+  padding: 20px 20px 12px; text-align: center;
+}
+.confirm-icon { font-size: 40px; margin-bottom: 8px; }
+.confirm-title { font-size: 16px; font-weight: 800; color: var(--text); }
+.confirm-desc {
+  font-size: 13px; color: var(--text-sec); margin-top: 6px;
+  line-height: 1.5;
+}
+.confirm-warning {
+  margin: 8px 20px; padding: 10px 14px;
+  background: var(--orange-bg); border-radius: var(--radius);
+  font-size: 12px; font-weight: 600; color: var(--orange);
+  display: flex; align-items: center; gap: 8px;
+}
+.confirm-details {
+  margin: 0 20px 12px; padding: 12px;
+  background: var(--bg); border-radius: var(--radius);
+  font-size: 12px; color: var(--text-sec);
+}
+.confirm-detail-row {
+  display: flex; gap: 8px; padding: 4px 0;
+}
+.confirm-detail-label { font-weight: 700; color: var(--text); min-width: 30px; }
+.confirm-actions {
+  display: flex; gap: 10px; padding: 16px 20px;
+  border-top: 1px solid var(--border);
+}
+.confirm-actions .btn { flex: 1; }
+
+/* Lead card email/calendar actions */
+.lead-actions-row {
+  display: flex; gap: 6px; margin-top: 8px;
+  padding-top: 8px; border-top: 1px solid var(--border);
+}
+.lead-action-btn {
+  flex: 1; padding: 6px 8px; border: 1.5px solid var(--border);
+  border-radius: var(--radius); background: var(--card);
+  font-size: 11px; font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  color: var(--text-sec); transition: var(--transition);
+  font-family: inherit;
+}
+.lead-action-btn:hover { border-color: var(--purple); color: var(--purple); }
+.lead-action-btn:active { transform: scale(0.96); }
+.lead-action-btn.sent { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+.lead-action-btn.pending { background: var(--orange-bg); border-color: var(--orange); color: var(--orange); }
+.lead-card.compact .lead-actions-row { display: none; }
+
+/* Video hold-seek indicator */
+.video-seek-indicator {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  padding: 8px 16px; border-radius: var(--radius);
+  background: rgba(0,0,0,0.7); color: #fff;
+  font-size: 16px; font-weight: 700; z-index: 8;
+  pointer-events: none; opacity: 0; transition: opacity 0.2s;
+}
+.video-seek-indicator.show { opacity: 1; }
+.video-seek-indicator.left { left: 20px; }
+.video-seek-indicator.right { right: 20px; }
+
+/* Demo button on product card */
+.product-demo-btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 8px; border: 1.5px solid var(--border);
+  border-radius: var(--radius); background: var(--card);
+  color: var(--text-sec); font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: var(--transition);
+  font-family: inherit; width: 100%; margin-top: 8px;
+}
+.product-demo-btn:hover { border-color: var(--purple); color: var(--purple); }
+.product-demo-btn:active { transform: scale(0.97); }
+  </style>
+</head>
+<body>
+
+<!-- ═══ SPLASH SCREEN ═══ -->
+<div class="splash" id="splashScreen" onclick="SplashModule.activate()">
+  <div class="splash-content" id="splashContent">
+    <div class="splash-o" id="splashO">
+      <img src="13459_OCTRION_Bildmarke_RGB_lila.png" alt="O">
+    </div>
+    <div class="splash-letters" id="splashLetters">
+      <span class="splash-letter">C</span>
+      <span class="splash-letter">T</span>
+      <span class="splash-letter">R</span>
+      <span class="splash-letter">I</span>
+      <span class="splash-letter">O</span>
+      <span class="splash-letter">N</span>
+    </div>
+  </div>
+  <div class="splash-hint" id="splashHint">Tippen zum Starten</div>
+</div>
+
+<!-- ═══ VIDEO MODAL ═══ -->
+<div class="video-modal" id="videoModal">
+  <button class="video-close" onclick="VideoModule.close()">✕</button>
+  <div class="video-container" id="videoContainer">
+    <video class="video-player" id="videoPlayer" playsinline preload="metadata"
+           src="OCTRION-Image-Video-04.mp4"></video>
+    <div class="video-overlay-controls" id="videoOverlay">
+      <div class="big-play">▶</div>
+    </div>
+    <div class="video-seek-indicator left" id="seekIndicatorLeft">◀◀ -10s</div>
+    <div class="video-seek-indicator right" id="seekIndicatorRight">+10s ▶▶</div>
+    <div class="video-progress-bar">
+      <input type="range" class="video-seek" id="videoSeek" min="0" max="100" value="0" step="0.1"
+             oninput="VideoModule.seek(this.value)">
+      <span class="video-time" id="videoTime">0:00 / 0:00</span>
+      <button class="video-fullscreen-btn" onclick="VideoModule.toggleFullscreen()">⛶</button>
+    </div>
+  </div>
+  <div class="video-title" id="videoTitle">Produktvideo</div>
+</div>
+
+<!-- ═══ PRODUCT DEMO MODAL ═══ -->
+<div class="demo-modal" id="demoModal">
+  <button class="demo-close" onclick="ProductDemoModule.close()">✕</button>
+  <div class="demo-container" id="demoContainer"></div>
+</div>
+
+<!-- ═══ INTEREST OVERLAY (from Products) ═══ -->
+<div class="interest-overlay-backdrop" id="interestBackdrop" onclick="InterestOverlay.close()"></div>
+<div class="interest-overlay" id="interestOverlay">
+  <div class="interest-overlay-panel">
+    <div class="interest-overlay-handle"></div>
+    <div class="interest-overlay-title">Interesse markieren</div>
+    <div class="interest-overlay-sub" id="ioSubtitle">Für den aktuellen Besucher</div>
+    <div class="interest-overlay-grid" id="interestOverlayGrid"></div>
+  </div>
+</div>
+
+<div class="frame">
+
+<!-- ═══ CONFIRM MODAL (Email/Calendar) ═══ -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-header">
+      <div class="confirm-icon" id="confirmIcon">📧</div>
+      <div class="confirm-title" id="confirmTitle">E-Mail senden</div>
+      <div class="confirm-desc" id="confirmDesc"></div>
+    </div>
+    <div class="confirm-body-scroll">
+      <div id="confirmWarning"></div>
+      <div class="confirm-details" id="confirmDetails"></div>
+      <div class="confirm-email-edit" id="confirmEmailEdit">
+        <label>✏️ E-Mail-Text (bearbeitbar)</label>
+        <textarea id="confirmEmailBody" spellcheck="true"></textarea>
+      </div>
+    </div>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost" onclick="App.closeConfirm()">Abbrechen</button>
+      <button class="btn btn-accent" id="confirmActionBtn" onclick="App.executeConfirm()">Senden</button>
+    </div>
+  </div>
+</div>
+
+  <!-- ═══ HEADER (Dashboard Style) ═══ -->
+  <header class="topbar">
+    <div class="logo" onclick="App.showSection('products')">
+      <div class="logo-icon">
+        <img src="13459_OCTRION_Bildmarke_RGB_lila.png" alt="OCTRION">
+      </div>
+      <div class="logo-text">OCTRION</div>
+    </div>
+
+    <div class="tb-sep"></div>
+    <div class="event-pill" id="eventBadge">IFAT Munich 2026</div>
+
+    <div class="lead-counter">
+      <span class="counter-number rep-full" id="repFull">Vertrieb</span>
+      <span class="counter-number rep-initials" id="repInitials">OK</span>
+    </div>
+
+    <div class="tb-spacer"></div>
+
+    <!-- Tablet/Mobile Toggle -->
+    <button class="view-toggle-btn" id="viewToggle" onclick="App.toggleViewMode()" title="Ansicht wechseln">
+      <svg viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
+      <span id="viewToggleLabel">Handy</span>
+    </button>
+
+  </header>
+
+  <!-- Toast -->
+  <div class="toast" id="statusBar">
+    <div class="toast-icon" id="toastIcon">
+      <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+    </div>
+    <span class="toast-text" id="statusText">Gespeichert</span>
+  </div>
+
+  <!-- ═══ MAIN ═══ -->
+  <main class="main">
+
+    <!-- ═══ SECTION: PRODUCTS (NEW FIRST TAB) ═══ -->
+    <section class="section active" id="section-products">
+      <div class="products-header">
+        <div>
+          <div class="products-title">Unsere Produkte</div>
+          <div class="products-count" id="productsCount">6 Produkte</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="InterestOverlay.open()">🎯 Interessen</button>
+      </div>
+
+      <div class="products-wrapper" id="productsWrapper">
+        <div class="carousel-nav-hint left hidden" id="navHintLeft">‹</div>
+        <div class="products-carousel" id="productsCarousel"></div>
+        <div class="carousel-nav-hint right" id="navHintRight">›</div>
+      </div>
+      <div class="carousel-dots" id="carouselDots"></div>
+      <div class="swipe-hint">
+        <span class="swipe-arrow" style="animation-direction:reverse">←</span>
+        Wischen für mehr Produkte
+        <span class="swipe-arrow">→</span>
+      </div>
+    </section>
+
+    <!-- ═══ SECTION: NEUER KONTAKT ═══ -->
+    <section class="section" id="section-new">
+
+      <div class="tablet-grid">
+      <!-- Camera -->
+      <div class="app-card animate-in">
+        <div class="card-header-fancy">
+          <div class="card-icon">📸</div>
+          <div>
+            <h3>Visitenkarte scannen</h3>
+            <p>OCR-Texterkennung direkt im Browser</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="camera-zone" id="cameraZone" onclick="CameraModule.init()">
+            <div class="camera-ring">
+              <svg viewBox="0 0 24 24" fill="white"><path d="M12 15.2a3.2 3.2 0 100-6.4 3.2 3.2 0 000 6.4z"/><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+            </div>
+            <div class="camera-label" id="cameraTitle">Antippen zum Scannen</div>
+            <div class="camera-sub" id="cameraDesc">Visitenkarte ins Bild halten</div>
+          </div>
+          <div class="camera-preview" id="cameraPreview">
+            <video id="cameraVideo" autoplay playsinline></video>
+            <canvas id="cameraCanvas" style="display:none;"></canvas>
+            <img id="capturedImage" style="display:none;">
+          </div>
+          <div class="camera-actions" id="cameraActions" style="display:none;">
+            <button class="btn btn-ghost" onclick="CameraModule.retake()">↺ Neu</button>
+            <button class="btn btn-accent" onclick="CameraModule.capture()">📷 Aufnehmen</button>
+          </div>
+          <div class="ocr-progress" id="ocrProgress">
+            <div class="ocr-ring"></div>
+            <span class="ocr-text" id="ocrText">Texterkennung läuft...</span>
+            <span class="ocr-percent" id="ocrPercent">0%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="app-card animate-in" style="animation-delay:0.05s;">
+        <div class="card-header-fancy">
+          <div class="card-icon">👤</div>
+          <div>
+            <h3>Kontaktdaten</h3>
+            <p>Pflichtfelder sind markiert</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="form-row triple">
+            <div class="form-group">
+              <label>Anrede</label>
+              <select class="form-control" id="salutation">
+                <option value="">—</option>
+                <option value="Herr">Herr</option>
+                <option value="Frau">Frau</option>
+                <option value="Divers">Divers</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Titel</label>
+              <select class="form-control" id="title">
+                <option value="">—</option>
+                <option value="Dr.">Dr.</option>
+                <option value="Prof.">Prof.</option>
+                <option value="Prof. Dr.">Prof. Dr.</option>
+                <option value="Dipl.-Ing.">Dipl.-Ing.</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Vorname *</label>
+              <input type="text" class="form-control" id="firstName" placeholder="Max">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nachname *</label>
+              <input type="text" class="form-control" id="lastName" placeholder="Mustermann">
+            </div>
+            <div class="form-group">
+              <label>Unternehmen *</label>
+              <input type="text" class="form-control" id="company" placeholder="Firma GmbH">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Position</label>
+              <input type="text" class="form-control" id="jobTitle" placeholder="Leiter Einkauf">
+            </div>
+            <div class="form-group">
+              <label>E-Mail *</label>
+              <input type="email" class="form-control" id="email" placeholder="max@firma.de">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Telefon</label>
+              <input type="tel" class="form-control" id="phone" placeholder="+49 89 12345">
+            </div>
+            <div class="form-group">
+              <label>Mobil</label>
+              <input type="tel" class="form-control" id="mobile" placeholder="+49 170 12345">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Website</label>
+              <input type="url" class="form-control" id="website" placeholder="www.firma.de">
+            </div>
+            <div class="form-group">
+              <label>Adresse</label>
+              <input type="text" class="form-control" id="address" placeholder="Musterstr. 1, 80331 München">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interests -->
+      <div class="app-card animate-in" style="animation-delay:0.1s;">
+        <div class="card-header-fancy">
+          <div class="card-icon">🎯</div>
+          <div>
+            <h3>Interesse an</h3>
+            <p>Bestimmt den zuständigen Vertrieb (CC)</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="interest-grid" id="interestsGrid"></div>
+        </div>
+      </div>
+
+      </div><!-- end tablet-grid -->
+
+      <!-- Action Buttons -->
+      <div class="action-bar">
+        <button class="btn btn-ghost btn-lg" onclick="App.resetForm()">↺ Zurücksetzen</button>
+        <button class="btn btn-glow btn-lg" onclick="App.saveLead()" id="saveBtn">
+          <span class="btn-shine"></span>
+          ✨ Kontakt speichern
+        </button>
+      </div>
+    </section>
+
+    <!-- ═══ SECTION: CRM / QUALIFIZIERUNG (internal) ═══ -->
+    <section class="section" id="section-qualify">
+
+      <!-- Current Lead Info Banner -->
+      <div class="app-card" id="qualifyLeadBanner" style="display:none;">
+        <div class="card-body" style="display:flex;align-items:center;gap:12px;padding:12px 16px;">
+          <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--purple),var(--purple-dark));color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;" id="qualifyAvatar">--</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="qualifyName">Kein Kontakt ausgewählt</div>
+            <div style="font-size:12px;color:var(--text-sec);" id="qualifyCompany"></div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="App.showSection('new')">📝 Kontakt</button>
+        </div>
+      </div>
+
+      <div class="crm-tablet-grid">
+
+      <!-- Interest Probability / Kaufwahrscheinlichkeit — LEFT (full height on tablet) -->
+      <div class="app-card animate-in crm-interests-card" style="animation-delay:0.05s; display:flex; flex-direction:column;">
+        <div class="card-header-fancy">
+          <div class="card-icon">🎯</div>
+          <div>
+            <h3>Themen & Wahrscheinlichkeit</h3>
+            <p>Interesse pro Produkt bewerten</p>
+          </div>
+        </div>
+        <div class="card-body crm-interests-scroll" id="crmInterestsGrid" style="flex:1;">
+          <!-- rendered by App.renderCrmInterests() -->
+        </div>
+      </div>
+
+      <!-- BANT — RIGHT TOP -->
+      <div class="app-card animate-in" style="animation-delay:0.08s;">
+        <div class="card-header-fancy">
+          <div class="card-icon">🔥</div>
+          <div>
+            <h3>Bewertung</h3>
+            <p>BANT-Qualifizierung</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="bant-grid">
+            <div class="bant-card">
+              <div class="bant-emoji">💰</div>
+              <div class="bant-title">Budget</div>
+              <select class="form-control bant-select" id="bantBudget">
+                <option value="">—</option>
+                <option value="vorhanden">✅ Vorhanden</option>
+                <option value="geplant">📋 Geplant</option>
+                <option value="offen">❓ Offen</option>
+              </select>
+            </div>
+            <div class="bant-card">
+              <div class="bant-emoji">👑</div>
+              <div class="bant-title">Entscheider</div>
+              <select class="form-control bant-select" id="bantAuthority">
+                <option value="">—</option>
+                <option value="entscheider">⭐ Entscheider</option>
+                <option value="beeinflusser">🔄 Beeinflusser</option>
+                <option value="anwender">👤 Anwender</option>
+              </select>
+            </div>
+            <div class="bant-card">
+              <div class="bant-emoji">📊</div>
+              <div class="bant-title">Bedarf</div>
+              <select class="form-control bant-select" id="bantNeed">
+                <option value="">—</option>
+                <option value="dringend">🔴 Dringend</option>
+                <option value="konkret">🟡 Konkret</option>
+                <option value="zukunft">🟢 Zukünftig</option>
+              </select>
+            </div>
+            <div class="bant-card">
+              <div class="bant-emoji">⏱️</div>
+              <div class="bant-title">Zeitraum</div>
+              <select class="form-control bant-select" id="bantTiming">
+                <option value="">—</option>
+                <option value="sofort">🚀 Sofort</option>
+                <option value="quartal">📅 Dieses Quartal</option>
+                <option value="jahr">📆 Dieses Jahr</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes — RIGHT BOTTOM -->
+      <div class="app-card animate-in" style="animation-delay:0.1s; display:flex; flex-direction:column;">
+        <div class="card-header-fancy">
+          <div class="card-icon">📝</div>
+          <div>
+            <h3>Gesprächsnotizen</h3>
+            <p>Was wurde besprochen?</p>
+          </div>
+        </div>
+        <div class="card-body" style="flex:1; display:flex; flex-direction:column;">
+          <textarea class="form-control form-textarea" id="notes" placeholder="Key Points, nächste Schritte, besondere Anforderungen..." style="min-height:80px; flex:1;"></textarea>
+        </div>
+      </div>
+
+      </div><!-- end crm-tablet-grid -->
+
+      <!-- Action Buttons -->
+      <div class="action-bar">
+        <button class="btn btn-ghost" onclick="App.resetForm()">↺ Reset</button>
+        <button class="btn btn-glow" onclick="App.saveLead()" id="saveBtnQualify">
+          <span class="btn-shine"></span>
+          ✨ Speichern
+        </button>
+        <button class="btn btn-ghost" onclick="App.sendFollowUpEmail()" id="btnSendEmail">
+          📧 Mail
+        </button>
+        <button class="btn btn-ghost" onclick="App.createFollowUpCalendar()" id="btnCalendar">
+          📅 Termin
+        </button>
+      </div>
+    </section>
+
+    <!-- ═══ SECTION: KONTAKTLISTE ═══ -->
+    <section class="section" id="section-leads">
+
+      <!-- Quick Stats -->
+      <div class="quick-stats">
+        <div class="quick-stat">
+          <span class="qs-value" id="qsTotal">0</span>
+          <span class="qs-label">Gesamt</span>
+        </div>
+        <div class="qs-divider"></div>
+        <div class="quick-stat">
+          <span class="qs-value hot" id="qsHot">0</span>
+          <span class="qs-label">Hot</span>
+        </div>
+        <div class="qs-divider"></div>
+        <div class="quick-stat">
+          <span class="qs-value" id="qsToday">0</span>
+          <span class="qs-label">Heute</span>
+        </div>
+        <div class="qs-divider"></div>
+        <div class="quick-stat">
+          <span class="qs-value sent" id="qsEmails">0</span>
+          <span class="qs-label">E-Mails</span>
+        </div>
+      </div>
+
+      <div class="leads-hero">
+        <div>
+          <h2 class="leads-title">Kontakte</h2>
+          <p class="leads-subtitle"><span id="leadsCount">0</span> Kontakte gespeichert</p>
+        </div>
+        <div class="leads-actions">
+          <button class="btn btn-ghost btn-sm" onclick="App.exportCSV()">📥 CSV Export</button>
+        </div>
+      </div>
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="searchInput" placeholder="Name, Firma oder E-Mail suchen..." oninput="App.filterLeads()">
+      </div>
+      <div class="leads-toolbar">
+        <div class="filter-bar" id="filterBar">
+          <button class="filter-pill active" data-filter="all" onclick="App.setFilter('all', this)">Alle</button>
+          <button class="filter-pill hot" data-filter="hot" onclick="App.setFilter('hot', this)">🔥 Hot</button>
+          <button class="filter-pill warm" data-filter="warm" onclick="App.setFilter('warm', this)">Warm</button>
+          <button class="filter-pill" data-filter="new" onclick="App.setFilter('new', this)">Neu</button>
+          <button class="filter-pill green" data-filter="crm-done" onclick="App.setFilter('crm-done', this)">✓ CRM</button>
+          <button class="filter-pill" data-filter="crm-open" onclick="App.setFilter('crm-open', this)">⚠ Offen</button>
+        </div>
+        <div class="view-switch">
+          <button class="view-switch-btn active" id="viewNormal" onclick="App.setContactView('normal')" title="Normalansicht">☰</button>
+          <button class="view-switch-btn" id="viewCompact" onclick="App.setContactView('compact')" title="Kompaktansicht">≡</button>
+        </div>
+      </div>
+      <div id="leadsList"></div>
+    </section>
+
+    <!-- ═══ SECTION: SETTINGS ═══ -->
+    <section class="section" id="section-settings">
+
+      <div class="settings-group">
+        <div class="settings-title">🎪 Veranstaltung</div>
+        <div class="settings-card">
+          <div class="sc-row">
+            <div class="sc-icon">📍</div>
+            <div class="sc-content">
+              <div class="sc-label">Event Name</div>
+              <input type="text" class="form-control settings-input" id="settingsEvent" value="IFAT Munich 2026" onchange="App.saveSettings()">
+            </div>
+          </div>
+          <div class="sc-row">
+            <div class="sc-icon">🏢</div>
+            <div class="sc-content">
+              <div class="sc-label">Standnummer</div>
+              <input type="text" class="form-control settings-input" id="settingsStand" placeholder="Halle 5, Stand A42" onchange="App.saveSettings()">
+            </div>
+          </div>
+          <div class="sc-row">
+            <div class="sc-icon">👤</div>
+            <div class="sc-content">
+              <div class="sc-label">Ihr Name (Vertriebler)</div>
+              <input type="text" class="form-control settings-input" id="settingsRepName" placeholder="Max Mustermann" onchange="App.saveSettings()">
+            </div>
+          </div>
+          <div class="sc-row">
+            <div class="sc-icon">📧</div>
+            <div class="sc-content">
+              <div class="sc-label">Absender E-Mail (Shared Mailbox)</div>
+              <div class="sc-desc">E-Mails werden von dieser Adresse versendet. Vertriebler müssen "Senden als"-Berechtigung auf diese Mailbox haben.</div>
+              <input type="email" class="form-control settings-input" id="settingsSenderEmail" placeholder="vertrieb@oktopus-umwelt.de" onchange="App.saveSettings()">
+            </div>
+          </div>
+          <div class="sc-row">
+            <div class="sc-icon">✉️</div>
+            <div class="sc-content">
+              <div class="sc-label">Absender Name</div>
+              <div class="sc-desc">Persönlicher Absendername für E-Mails</div>
+              <input type="text" class="form-control settings-input" id="settingsSenderName" placeholder="Lisa Winter — OKTOPUS Umwelt" onchange="App.saveSettings()">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-title">🔗 E-Mail Integration</div>
+        <div class="settings-card">
+          <div class="sc-row">
+            <div class="sc-icon">🚀</div>
+            <div class="sc-content">
+              <div class="sc-label">Power Automate Webhook-URL</div>
+              <div class="sc-desc">E-Mails werden direkt über diesen Webhook versendet. Kein Login nötig!</div>
+              <input type="url" class="form-control settings-input" id="settingsWebhookUrl" placeholder="https://prod-xx.westeurope.logic.azure.com:443/workflows/..." onchange="App.saveSettings()" style="font-family:monospace;font-size:11px;">
+            </div>
+          </div>
+          <div class="sc-row" style="background:rgba(76,48,168,0.06);border-radius:8px;margin:4px;">
+            <div class="sc-icon">💡</div>
+            <div class="sc-content">
+              <div class="sc-desc" style="font-size:11px;line-height:1.5;">
+                <strong>Empfohlen:</strong> Power Automate Flow erstellen mit HTTP-Trigger → "E-Mail senden" Aktion. Die generierte URL hier einfügen. Kein Azure AD, kein OAuth, kein Login nötig.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-title">🎯 Vertrieb pro Thema</div>
+        <div class="settings-card">
+          <div id="settingsInterestReps">
+            <!-- rendered by App.renderSettingsInterestReps() -->
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-title">⚡ Automatisierung</div>
+        <div class="settings-card">
+          <div class="sc-row">
+            <div class="sc-icon">📧</div>
+            <div class="sc-content">
+              <div class="sc-label">Auto Willkommens-E-Mail</div>
+              <div class="sc-desc">Vertriebler im CC je nach Interesse</div>
+            </div>
+            <div class="toggle" id="toggleEmail" onclick="App.toggleSetting('email')"></div>
+          </div>
+          <div class="sc-row">
+            <div class="sc-icon">📅</div>
+            <div class="sc-content">
+              <div class="sc-label">Auto Follow-up Termin</div>
+              <div class="sc-desc">Outlook-Termin in 3 Tagen</div>
+            </div>
+            <div class="toggle" id="toggleCalendar" onclick="App.toggleSetting('calendar')"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-title">📊 Statistiken</div>
+        <div class="settings-card">
+          <div class="stats-grid">
+            <div class="stat-box">
+              <div class="stat-number" id="statsTotal">0</div>
+              <div class="stat-label">Gesamt</div>
+            </div>
+            <div class="stat-box hot">
+              <div class="stat-number" id="statsHot">0</div>
+              <div class="stat-label">Top Kontakte</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number" id="statsEmails">0</div>
+              <div class="stat-label">E-Mails</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number" id="statsFollowups">0</div>
+              <div class="stat-label">Follow-ups</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-title">� Offline-Fähigkeit</div>
+        <div class="settings-card">
+          <div class="card-body" style="padding:12px;">
+            <div class="offline-grid">
+              <div class="offline-item">
+                <div class="offline-icon">✅</div>
+                <div>
+                  <div class="offline-label">Kontakt-Formular</div>
+                  <div class="offline-desc">Vollständig offline nutzbar</div>
+                </div>
+              </div>
+              <div class="offline-item">
+                <div class="offline-icon">✅</div>
+                <div>
+                  <div class="offline-label">Lokaler Speicher</div>
+                  <div class="offline-desc">Alle Daten im Browser</div>
+                </div>
+              </div>
+              <div class="offline-item">
+                <div class="offline-icon">✅</div>
+                <div>
+                  <div class="offline-label">Produkt-Katalog</div>
+                  <div class="offline-desc">Eingebettet in die App</div>
+                </div>
+              </div>
+              <div class="offline-item">
+                <div class="offline-icon">✅</div>
+                <div>
+                  <div class="offline-label">CRM & Qualifizierung</div>
+                  <div class="offline-desc">BANT-Bewertung lokal</div>
+                </div>
+              </div>
+              <div class="offline-item">
+                <div class="offline-icon">⚠️</div>
+                <div>
+                  <div class="offline-label">Kamera / OCR</div>
+                  <div class="offline-desc">Kamera: HTTPS nötig. OCR: Tesseract.js muss geladen sein</div>
+                </div>
+              </div>
+              <div class="offline-item">
+                <div class="offline-icon">⚠️</div>
+                <div>
+                  <div class="offline-label">Video</div>
+                  <div class="offline-desc">Funktioniert wenn Datei lokal/im Cache</div>
+                </div>
+              </div>
+              <div class="offline-item">
+                <div class="offline-icon">⚠️</div>
+                <div>
+                  <div class="offline-label">E-Mail-Versand</div>
+                  <div class="offline-desc">Online: direkt via Webhook. Offline: wird in Warteschlange gespeichert und automatisch nachgesendet</div>
+                </div>
+              </div>
+              <div class="offline-item">
+                <div class="offline-icon">💡</div>
+                <div>
+                  <div class="offline-label">Tipp</div>
+                  <div class="offline-desc">CSV-Export funktioniert immer — Daten sichern!</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-title">�🔧 System</div>
+        <div class="settings-card">
+          <div class="sc-row">
+            <div class="sc-icon">💾</div>
+            <div class="sc-content">
+              <div class="sc-label">Lokaler Speicher</div>
+              <div class="sc-desc">Offline-First — Daten im Browser</div>
+            </div>
+            <div class="sc-value" style="color:var(--green);">Aktiv</div>
+          </div>
+        </div>
+        <button class="btn btn-danger btn-block" onclick="App.clearAllData()" style="margin-top:12px;">🗑️ Alle Daten zurücksetzen</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Tab Navigation Arrows -->
+  <button class="tab-arrow left hidden" id="tabArrowLeft" onclick="App.prevTab()">‹</button>
+  <button class="tab-arrow right" id="tabArrowRight" onclick="App.nextTab()">›</button>
+
+  <!-- ═══ BOTTOM NAV ═══ -->
+  <nav class="bottom-nav">
+    <button class="nav-tab active" onclick="App.showSection('products')" data-section="products">
+      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg></div>
+      <span>Produkte</span>
+    </button>
+    <button class="nav-tab" onclick="App.showSection('new')" data-section="new">
+      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg></div>
+      <span>Kontakt</span>
+    </button>
+    <button class="nav-tab" onclick="App.showSection('qualify')" data-section="qualify">
+      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/></svg></div>
+      <span>CRM</span>
+    </button>
+    <button class="nav-tab" onclick="App.showSection('leads')" data-section="leads">
+      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
+      <span>Kontakte</span>
+    </button>
+    <button class="nav-tab" onclick="App.showSection('settings')" data-section="settings">
+      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></div>
+      <span>Einstellungen</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// OKTOPUS APP v3 — Dashboard Design · Offline · Tablet-First
+// ═══════════════════════════════════════════════
+
+// ═══ SPLASH MODULE ═══
+const SplashModule = {
+  activated: false,
+  animationDone: false,
+
+  activate() {
+    if (this.activated) {
+      // Second click — skip to app if animation already running
+      this.dismiss();
+      return;
+    }
+    this.activated = true;
+
+    // Hide hint
+    const hint = document.getElementById('splashHint');
+    if (hint) hint.style.opacity = '0';
+
+    // Stop breathing, shrink O to text size
+    const oLogo = document.getElementById('splashO');
+    oLogo.classList.add('slide-left');
+    oLogo.style.opacity = '1';
+
+    // Expand letters container
+    document.getElementById('splashLetters').style.maxWidth = '500px';
+
+    // Fly in letters one by one
+    const letters = document.querySelectorAll('#splashLetters .splash-letter');
+    letters.forEach((el, i) => {
+      setTimeout(() => {
+        el.classList.add('fly-in');
+      }, 120 + i * 120);
+    });
+
+    // After all letters are in, wait 1.5s then open app
+    const totalTime = 120 + letters.length * 120 + 1500;
+    setTimeout(() => {
+      this.animationDone = true;
+      this.dismiss();
+    }, totalTime);
+  },
+
+  dismiss() {
+    const splash = document.getElementById('splashScreen');
+    if (splash.classList.contains('fade-out')) return;
+    splash.classList.add('fade-out');
+    setTimeout(() => {
+      splash.style.display = 'none';
+    }, 800);
+  },
+
+  autoHide() {
+    // No auto-hide — user must click
+  }
+};
+
+// ═══ VIDEO MODULE ═══
+const VideoModule = {
+  currentProduct: null,
+
+  open(productName) {
+    this.currentProduct = productName;
+    document.getElementById('videoTitle').textContent = productName + ' — Produktvideo';
+    const modal = document.getElementById('videoModal');
+    const video = document.getElementById('videoPlayer');
+    modal.classList.add('show');
+    video.currentTime = 0;
+    this.updatePlayButton();
+  },
+
+  close() {
+    const video = document.getElementById('videoPlayer');
+    video.pause();
+    document.getElementById('videoModal').classList.remove('show');
+    this.updatePlayButton();
+  },
+
+  togglePlay() {
+    const video = document.getElementById('videoPlayer');
+    if (video.paused) {
+      video.play();
+    } else {
+      video.pause();
+    }
+    this.updatePlayButton();
+  },
+
+  updatePlayButton() {
+    const video = document.getElementById('videoPlayer');
+    const overlay = document.getElementById('videoOverlay');
+    if (overlay) overlay.classList.toggle('playing', !video.paused);
+  },
+
+  seekBy(seconds) {
+    const video = document.getElementById('videoPlayer');
+    video.currentTime = Math.max(0, Math.min(video.duration || 0, video.currentTime + seconds));
+  },
+
+  seek(value) {
+    const video = document.getElementById('videoPlayer');
+    if (video.duration) {
+      video.currentTime = (value / 100) * video.duration;
+    }
+  },
+
+  toggleFullscreen() {
+    const container = document.getElementById('videoContainer');
+    if (!container) return;
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      container.requestFullscreen().catch(() => {
+        const video = document.getElementById('videoPlayer');
+        if (video.webkitEnterFullscreen) video.webkitEnterFullscreen();
+      });
+    }
+  },
+
+  formatTime(s) {
+    if (!s || isNaN(s)) return '0:00';
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return m + ':' + (sec < 10 ? '0' : '') + sec;
+  },
+
+  initEvents() {
+    const video = document.getElementById('videoPlayer');
+    if (!video) return;
+
+    video.addEventListener('timeupdate', () => {
+      const seek = document.getElementById('videoSeek');
+      const time = document.getElementById('videoTime');
+      if (video.duration) {
+        seek.value = (video.currentTime / video.duration) * 100;
+        time.textContent = this.formatTime(video.currentTime) + ' / ' + this.formatTime(video.duration);
+      }
+    });
+
+    video.addEventListener('ended', () => this.updatePlayButton());
+    video.addEventListener('play', () => this.updatePlayButton());
+    video.addEventListener('pause', () => this.updatePlayButton());
+
+    const container = document.querySelector('.video-container');
+    if (!container) return;
+    const indLeft = document.getElementById('seekIndicatorLeft');
+    const indRight = document.getElementById('seekIndicatorRight');
+
+    // ── Hold to seek (touch) ──────────────────
+    let holdTimer = null;
+    let holdInterval = null;
+    let holdSide = null;
+    const HOLD_DELAY = 300; // ms before hold starts
+    const SEEK_STEP = 2; // seconds per tick
+    const SEEK_TICK = 150; // ms between ticks
+
+    const startHold = (side) => {
+      holdSide = side;
+      holdTimer = setTimeout(() => {
+        const ind = side === 'left' ? indLeft : indRight;
+        if (ind) ind.classList.add('show');
+        holdInterval = setInterval(() => {
+          this.seekBy(side === 'left' ? -SEEK_STEP : SEEK_STEP);
+        }, SEEK_TICK);
+      }, HOLD_DELAY);
+    };
+
+    const stopHold = () => {
+      clearTimeout(holdTimer);
+      clearInterval(holdInterval);
+      holdTimer = null;
+      holdInterval = null;
+      holdSide = null;
+      if (indLeft) indLeft.classList.remove('show');
+      if (indRight) indRight.classList.remove('show');
+    };
+
+    const isHolding = () => holdInterval !== null;
+
+    // Touch: hold left/right to seek
+    container.addEventListener('touchstart', (e) => {
+      const rect = container.getBoundingClientRect();
+      const x = e.touches[0].clientX - rect.left;
+      if (x < rect.width / 3) startHold('left');
+      else if (x > rect.width * 2/3) startHold('right');
+    }, { passive: true });
+
+    container.addEventListener('touchend', () => stopHold());
+    container.addEventListener('touchcancel', () => stopHold());
+
+    // Mouse: hold left/right to seek (desktop)
+    container.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.video-progress-bar')) return;
+      const rect = container.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      if (x < rect.width / 3) startHold('left');
+      else if (x > rect.width * 2/3) startHold('right');
+    });
+    container.addEventListener('mouseup', () => stopHold());
+    container.addEventListener('mouseleave', () => stopHold());
+
+    // ── Double-click / double-tap = fullscreen, single click = play/pause ──
+    let lastTap = 0;
+    let singleClickTimer = null;
+    container.addEventListener('click', (e) => {
+      if (e.target.closest('.video-progress-bar')) return;
+      if (isHolding()) return;
+      const now = Date.now();
+      if (now - lastTap < 350) {
+        // Double-click → fullscreen toggle
+        clearTimeout(singleClickTimer);
+        e.preventDefault();
+        e.stopPropagation();
+        this.toggleFullscreen();
+        lastTap = 0;
+      } else {
+        lastTap = now;
+        // Delayed single click → play/pause
+        singleClickTimer = setTimeout(() => {
+          this.togglePlay();
+        }, 360);
+      }
+    });
+
+    // Also handle double-tap on touch
+    let lastTouchTap = 0;
+    let singleTouchTimer = null;
+    container.addEventListener('touchend', (e) => {
+      if (isHolding()) return;
+      if (e.target.closest('.video-progress-bar')) return;
+      const now = Date.now();
+      if (now - lastTouchTap < 350) {
+        clearTimeout(singleTouchTimer);
+        e.preventDefault();
+        this.toggleFullscreen();
+        lastTouchTap = 0;
+      } else {
+        lastTouchTap = now;
+        singleTouchTimer = setTimeout(() => {
+          this.togglePlay();
+        }, 360);
+      }
+    });
+  }
+};
+
+// ═══ PRODUCT DEMO MODULE ═══
+const ProductDemoModule = {
+  open(productId) {
+    const modal = document.getElementById('demoModal');
+    const container = document.getElementById('demoContainer');
+    const product = ProductModule.PRODUCTS.find(p => p.id === productId);
+    if (!product) return;
+    container.innerHTML = this.renderDemo(product);
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    // Animate bars/gauges after render
+    setTimeout(() => {
+      container.querySelectorAll('[data-width]').forEach(el => {
+        el.style.width = el.dataset.width;
+      });
+    }, 100);
+  },
+
+  close() {
+    document.getElementById('demoModal').classList.remove('show');
+    document.body.style.overflow = '';
+  },
+
+  renderDemo(product) {
+    const demos = {
+      'prod-1': this.demoDashboard,
+      'prod-2': this.demoProcess,
+      'prod-3': this.demoStats,
+      'prod-4': this.demoComparison,
+      'prod-5': this.demoChecklist,
+      'prod-6': this.demoTimeline,
+    };
+    const fn = demos[product.id] || this.demoDashboard;
+    return `
+      <div class="demo-hero" style="background:${product.bgGradient};">
+        <div class="demo-hero-icon">${product.icon}</div>
+        <div class="demo-hero-title">${product.name}</div>
+        <div class="demo-hero-sub">Interaktive Produkt-Demo</div>
+      </div>
+      <div class="demo-body">${fn.call(this)}</div>
+      <div class="demo-footer">
+        <span>Beispiel-Visualisierung</span>
+        <span class="demo-footer-badge">${product.badge}</span>
+      </div>`;
+  },
+
+  demoDashboard() {
+    return `
+      <div class="demo-section-title">Live-Dashboard — Füllstände</div>
+      <div class="demo-gauge-row">
+        <div class="demo-gauge">
+          <div class="demo-gauge-value">78%</div>
+          <div class="demo-gauge-label">Container A</div>
+          <div class="demo-gauge-bar"><div class="demo-gauge-fill" data-width="78%" style="width:0;background:var(--orange);"></div></div>
+        </div>
+        <div class="demo-gauge">
+          <div class="demo-gauge-value">45%</div>
+          <div class="demo-gauge-label">Container B</div>
+          <div class="demo-gauge-bar"><div class="demo-gauge-fill" data-width="45%" style="width:0;background:var(--green);"></div></div>
+        </div>
+        <div class="demo-gauge">
+          <div class="demo-gauge-value">92%</div>
+          <div class="demo-gauge-label">Container C</div>
+          <div class="demo-gauge-bar"><div class="demo-gauge-fill" data-width="92%" style="width:0;background:var(--red);"></div></div>
+        </div>
+      </div>
+      <div class="demo-section-title">Routen-Optimierung</div>
+      <div class="demo-gauge-row">
+        <div class="demo-gauge">
+          <div class="demo-gauge-value" style="color:var(--green);">-32%</div>
+          <div class="demo-gauge-label">Fahrstrecke</div>
+        </div>
+        <div class="demo-gauge">
+          <div class="demo-gauge-value" style="color:var(--orange);">4.2t</div>
+          <div class="demo-gauge-label">CO₂ gespart / Jahr</div>
+        </div>
+        <div class="demo-gauge">
+          <div class="demo-gauge-value">127</div>
+          <div class="demo-gauge-label">Aktive Sensoren</div>
+        </div>
+      </div>`;
+  },
+
+  demoProcess() {
+    return `
+      <div class="demo-section-title">Ablauf — Ganzheitliche Entsorgung</div>
+      <div class="demo-steps">
+        <div class="demo-step">
+          <div class="demo-step-num">1</div>
+          <div><div class="demo-step-text">Bestandsanalyse</div><div class="demo-step-sub">Erfassung aller Abfallströme vor Ort</div></div>
+        </div>
+        <div class="demo-step">
+          <div class="demo-step-num" style="background:var(--orange);">2</div>
+          <div><div class="demo-step-text">Konzeptentwicklung</div><div class="demo-step-sub">Individuelle Entsorgungsstrategie</div></div>
+        </div>
+        <div class="demo-step">
+          <div class="demo-step-num" style="background:var(--green);">3</div>
+          <div><div class="demo-step-text">Behälter-Logistik</div><div class="demo-step-sub">Bereitstellung & Abholung</div></div>
+        </div>
+        <div class="demo-step">
+          <div class="demo-step-num" style="background:var(--blue);">4</div>
+          <div><div class="demo-step-text">Zertifizierter Nachweis</div><div class="demo-step-sub">Lückenlose Dokumentation & eANV</div></div>
+        </div>
+        <div class="demo-step">
+          <div class="demo-step-num" style="background:#ffd026;">5</div>
+          <div><div class="demo-step-text">Reporting</div><div class="demo-step-sub">Quartalsberichte & KPI-Dashboard</div></div>
+        </div>
+      </div>`;
+  },
+
+  demoStats() {
+    return `
+      <div class="demo-section-title">Verwertungsquoten 2024</div>
+      <div class="demo-bars">
+        <div class="demo-bar-row">
+          <div class="demo-bar-label">Papier</div>
+          <div class="demo-bar-track"><div class="demo-bar-fill" data-width="94%" style="width:0;background:var(--green);">94%</div></div>
+        </div>
+        <div class="demo-bar-row">
+          <div class="demo-bar-label">Kunststoff</div>
+          <div class="demo-bar-track"><div class="demo-bar-fill" data-width="78%" style="width:0;background:var(--purple);">78%</div></div>
+        </div>
+        <div class="demo-bar-row">
+          <div class="demo-bar-label">Metall</div>
+          <div class="demo-bar-track"><div class="demo-bar-fill" data-width="96%" style="width:0;background:var(--orange);">96%</div></div>
+        </div>
+        <div class="demo-bar-row">
+          <div class="demo-bar-label">Glas</div>
+          <div class="demo-bar-track"><div class="demo-bar-fill" data-width="89%" style="width:0;background:var(--blue);">89%</div></div>
+        </div>
+        <div class="demo-bar-row">
+          <div class="demo-bar-label">Holz</div>
+          <div class="demo-bar-track"><div class="demo-bar-fill" data-width="71%" style="width:0;background:#ffd026;">71%</div></div>
+        </div>
+      </div>
+      <div class="demo-gauge-row">
+        <div class="demo-gauge">
+          <div class="demo-gauge-value" style="color:var(--green);">85%</div>
+          <div class="demo-gauge-label">Gesamtverwertung</div>
+        </div>
+        <div class="demo-gauge">
+          <div class="demo-gauge-value">12.400t</div>
+          <div class="demo-gauge-label">Jahresvolumen</div>
+        </div>
+      </div>`;
+  },
+
+  demoComparison() {
+    return `
+      <div class="demo-section-title">Filtersysteme im Vergleich</div>
+      <table class="demo-table">
+        <tr><th>Eigenschaft</th><th>Standard</th><th style="color:var(--orange);">OCTRION</th></tr>
+        <tr><td>Feinstaubfilter</td><td>PM10</td><td><strong>PM2.5</strong></td></tr>
+        <tr><td>Wirkungsgrad</td><td>85%</td><td class="demo-check"><strong>99.2%</strong></td></tr>
+        <tr><td>Energieverbrauch</td><td>Hoch</td><td class="demo-check">-40%</td></tr>
+        <tr><td>IoT-Monitoring</td><td class="demo-cross">✕</td><td class="demo-check">✓</td></tr>
+        <tr><td>Voraus. Wartung</td><td class="demo-cross">✕</td><td class="demo-check">✓</td></tr>
+        <tr><td>CO₂-Report</td><td class="demo-cross">✕</td><td class="demo-check">✓</td></tr>
+      </table>
+      <div class="demo-gauge-row">
+        <div class="demo-gauge">
+          <div class="demo-gauge-value" style="color:var(--green);">-62%</div>
+          <div class="demo-gauge-label">Emissionsreduktion</div>
+        </div>
+        <div class="demo-gauge">
+          <div class="demo-gauge-value">24/7</div>
+          <div class="demo-gauge-label">Echtzeit-Monitoring</div>
+        </div>
+      </div>`;
+  },
+
+  demoChecklist() {
+    return `
+      <div class="demo-section-title">Sondermüll-Checkliste nach KrWG</div>
+      <div class="demo-checklist">
+        <div class="demo-check-item"><div class="demo-check-icon done">✓</div><div><strong>Abfallschlüssel</strong> — AVV-Nummer geprüft</div></div>
+        <div class="demo-check-item"><div class="demo-check-icon done">✓</div><div><strong>Begleitschein</strong> — eANV elektronisch erstellt</div></div>
+        <div class="demo-check-item"><div class="demo-check-icon done">✓</div><div><strong>ADR-Transport</strong> — Gefahrgutklasse bestätigt</div></div>
+        <div class="demo-check-item"><div class="demo-check-icon done">✓</div><div><strong>Zwischenlager</strong> — Genehmigung aktuell</div></div>
+        <div class="demo-check-item"><div class="demo-check-icon warn">!</div><div><strong>Entsorgungsnachweis</strong> — Wartet auf Bestätigung</div></div>
+        <div class="demo-check-item"><div class="demo-check-icon done">✓</div><div><strong>Jahresbericht</strong> — LUBW-konform erstellt</div></div>
+      </div>
+      <div class="demo-gauge-row">
+        <div class="demo-gauge">
+          <div class="demo-gauge-value">5/6</div>
+          <div class="demo-gauge-label">Schritte erledigt</div>
+          <div class="demo-gauge-bar"><div class="demo-gauge-fill" data-width="83%" style="width:0;background:var(--green);"></div></div>
+        </div>
+      </div>`;
+  },
+
+  demoTimeline() {
+    return `
+      <div class="demo-section-title">ESG-Roadmap 2025–2030</div>
+      <div class="demo-timeline">
+        <div class="demo-tl-item">
+          <div class="demo-tl-title">IST-Analyse & CO₂-Bilanz</div>
+          <div class="demo-tl-desc">Scope 1+2+3 Erfassung, Wesentlichkeitsanalyse</div>
+          <span class="demo-tl-tag" style="background:var(--green-bg);color:var(--green);">Q1 2025</span>
+        </div>
+        <div class="demo-tl-item">
+          <div class="demo-tl-title">ISO 14001 Zertifizierung</div>
+          <div class="demo-tl-desc">Umweltmanagementsystem implementieren</div>
+          <span class="demo-tl-tag" style="background:var(--purple-bg);color:var(--purple);">Q3 2025</span>
+        </div>
+        <div class="demo-tl-item">
+          <div class="demo-tl-title">Nachhaltigkeitsbericht</div>
+          <div class="demo-tl-desc">CSRD-konformer ESG-Report</div>
+          <span class="demo-tl-tag" style="background:var(--orange-bg);color:var(--orange);">Q1 2026</span>
+        </div>
+        <div class="demo-tl-item">
+          <div class="demo-tl-title">CO₂-Neutralität</div>
+          <div class="demo-tl-desc">Kompensation + Reduction Plan</div>
+          <span class="demo-tl-tag" style="background:var(--yellow-bg);color:#b8920d;">2028</span>
+        </div>
+        <div class="demo-tl-item">
+          <div class="demo-tl-title">Circular Economy</div>
+          <div class="demo-tl-desc">Zero Waste Ziel für alle Standorte</div>
+          <span class="demo-tl-tag" style="background:var(--green-bg);color:var(--green);">2030</span>
+        </div>
+      </div>`;
+  }
+};
+
+// ═══ INTEREST OVERLAY MODULE ═══
+const InterestOverlay = {
+  open() {
+    document.getElementById('interestOverlay').classList.add('show');
+    document.getElementById('interestBackdrop').classList.add('show');
+    this.syncFromForm();
+  },
+
+  close() {
+    document.getElementById('interestOverlay').classList.remove('show');
+    document.getElementById('interestBackdrop').classList.remove('show');
+  },
+
+  render() {
+    const grid = document.getElementById('interestOverlayGrid');
+    grid.innerHTML = App.CONFIG.interests.map(i => `
+      <div class="io-chip" id="ioc-${i.id}" onclick="InterestOverlay.toggleChip('${i.id}')">
+        <input type="checkbox" value="${i.id}">
+        <div class="io-chip-dot">
+          <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+        </div>
+        <div class="io-chip-info">
+          <div class="io-chip-name">${i.name}</div>
+          <div class="io-chip-sub">${i.desc}</div>
+        </div>
+      </div>
+    `).join('');
+  },
+
+  toggleChip(id) {
+    const chip = document.getElementById('ioc-' + id);
+    if (!chip) return;
+    const input = chip.querySelector('input');
+    const isNowSelected = !chip.classList.contains('selected');
+
+    chip.classList.toggle('selected', isNowSelected);
+    input.checked = isNowSelected;
+
+    // Sync to the main form interests
+    const formChip = document.getElementById('int-' + id);
+    if (formChip) {
+      formChip.classList.toggle('selected', isNowSelected);
+      formChip.querySelector('input').checked = isNowSelected;
+    }
+
+    // Update product buttons
+    ProductModule.syncInterestButtons();
+  },
+
+  syncFromForm() {
+    App.CONFIG.interests.forEach(i => {
+      const formChip = document.getElementById('int-' + i.id);
+      const overlayChip = document.getElementById('ioc-' + i.id);
+      if (formChip && overlayChip) {
+        const isSelected = formChip.classList.contains('selected');
+        overlayChip.classList.toggle('selected', isSelected);
+        overlayChip.querySelector('input').checked = isSelected;
+      }
+    });
+  },
+
+  toggleFromProduct(interestId) {
+    // Toggle from product card — updates both overlay and form
+    const formChip = document.getElementById('int-' + interestId);
+    const overlayChip = document.getElementById('ioc-' + interestId);
+    const isNowSelected = formChip ? !formChip.classList.contains('selected') : true;
+
+    if (formChip) {
+      formChip.classList.toggle('selected', isNowSelected);
+      formChip.querySelector('input').checked = isNowSelected;
+    }
+    if (overlayChip) {
+      overlayChip.classList.toggle('selected', isNowSelected);
+      overlayChip.querySelector('input').checked = isNowSelected;
+    }
+
+    ProductModule.syncInterestButtons();
+    App.showStatus(isNowSelected ? '✓ Interesse markiert' : '✗ Interesse entfernt',
+                   isNowSelected ? 'success' : 'warning');
+  }
+};
+
+// ═══ PRODUCT MODULE ═══
+const ProductModule = {
+  currentSlide: 0,
+  startX: 0,
+  currentX: 0,
+  isDragging: false,
+
+  PRODUCTS: [
+    {
+      id: 'prod-1',
+      name: 'Smart Waste Sensorik',
+      desc: 'IoT-Füllstandsensoren für Container und Großbehälter. Echtzeitdaten via Cloud-Dashboard mit intelligenter Routenoptimierung.',
+      icon: '📡',
+      badge: 'IoT',
+      tags: [{ text: 'IoT', class: 'purple' }, { text: 'Sensorik', class: 'orange' }, { text: 'Cloud', class: 'green' }],
+      interest: 'digital',
+      bgGradient: 'linear-gradient(135deg, #4c30a8, #3a2480)',
+      videoTitle: 'Smart Waste Sensorik'
+    },
+    {
+      id: 'prod-2',
+      name: 'Gewerbeabfall Management',
+      desc: 'Ganzheitliche Entsorgungskonzepte für Industrie und Gewerbe. Von der Analyse bis zur zertifizierten Verwertung.',
+      icon: '🏭',
+      badge: 'Core',
+      tags: [{ text: 'Gewerbe', class: 'purple' }, { text: 'Entsorgung', class: 'orange' }],
+      interest: 'abfall',
+      bgGradient: 'linear-gradient(135deg, #ff9b37, #e88a2c)',
+      videoTitle: 'Gewerbeabfall Management'
+    },
+    {
+      id: 'prod-3',
+      name: 'Wertstoff-Recycling',
+      desc: 'Geschlossene Kreislaufwirtschaft: Sortiertechnik, Aufbereitung und Vermarktung von Sekundärrohstoffen.',
+      icon: '♻️',
+      badge: 'Green',
+      tags: [{ text: 'Recycling', class: 'green' }, { text: 'Kreislauf', class: 'purple' }],
+      interest: 'recycling',
+      bgGradient: 'linear-gradient(135deg, #10B981, #059669)',
+      videoTitle: 'Wertstoff-Recycling'
+    },
+    {
+      id: 'prod-4',
+      name: 'Luftreinhaltung Industrie',
+      desc: 'Abluftreinigungssysteme, Filteranlagen und Emissionsmonitoring für produzierende Betriebe.',
+      icon: '🌬️',
+      badge: 'Clean Air',
+      tags: [{ text: 'Abluft', class: 'purple' }, { text: 'Filter', class: 'orange' }, { text: 'Monitoring', class: 'green' }],
+      interest: 'luft',
+      bgGradient: 'linear-gradient(135deg, #3B82F6, #2563EB)',
+      videoTitle: 'Luftreinhaltung Industrie'
+    },
+    {
+      id: 'prod-5',
+      name: 'Sondermüll & Gefahrstoffe',
+      desc: 'Zertifizierte Entsorgung gefährlicher Abfälle. ADR-Transport, Zwischenlager und thermische Behandlung.',
+      icon: '☢️',
+      badge: 'Spezialist',
+      tags: [{ text: 'Gefahrgut', class: 'orange' }, { text: 'Zertifiziert', class: 'yellow' }],
+      interest: 'sondermuell',
+      bgGradient: 'linear-gradient(135deg, #EF4444, #DC2626)',
+      videoTitle: 'Sondermüll Entsorgung'
+    },
+    {
+      id: 'prod-6',
+      name: 'Nachhaltigkeitsberatung',
+      desc: 'ESG-Strategien, CO₂-Bilanzierung, Nachhaltigkeitsberichte und Umweltmanagementsysteme (ISO 14001).',
+      icon: '🌱',
+      badge: 'ESG',
+      tags: [{ text: 'Beratung', class: 'green' }, { text: 'ISO 14001', class: 'purple' }, { text: 'ESG', class: 'yellow' }],
+      interest: 'beratung',
+      bgGradient: 'linear-gradient(135deg, #ffd026, #e6b800)',
+      videoTitle: 'Nachhaltigkeitsberatung'
+    }
+  ],
+
+  init() {
+    this.renderProducts();
+    this.renderDots();
+    this.initSwipe();
+    this.syncInterestButtons();
+  },
+
+  renderProducts() {
+    const carousel = document.getElementById('productsCarousel');
+    carousel.innerHTML = this.PRODUCTS.map(p => `
+      <div class="product-slide">
+        <div class="product-card">
+          <div class="product-visual">
+            <div class="product-visual-bg" style="background:${p.bgGradient};"></div>
+            <div class="product-visual-icon">${p.icon}</div>
+            <div class="product-badge">${p.badge}</div>
+          </div>
+          <div class="product-body">
+            <div class="product-name">${p.name}</div>
+            <div class="product-desc">${p.desc}</div>
+            <div class="product-tags">
+              ${p.tags.map(t => `<span class="product-tag ${t.class}">${t.text}</span>`).join('')}
+            </div>
+            <div class="product-video-embed" onclick="VideoModule.open('${p.videoTitle}')">
+              <div class="product-video-play-icon">▶</div>
+              <div class="product-video-info">
+                <div class="product-video-title">🎬 Produkt-Video</div>
+                <div class="product-video-sub">${p.videoTitle} ansehen</div>
+              </div>
+            </div>
+            <div class="product-actions">
+              <button class="product-interest-btn" id="pib-${p.interest}"
+                      onclick="InterestOverlay.toggleFromProduct('${p.interest}')">
+                <span class="check-icon">
+                  <svg viewBox="0 0 24 24" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </span>
+                Interesse merken
+              </button>
+            </div>
+            <button class="product-demo-btn" onclick="ProductDemoModule.open('${p.id}')">
+              📊 Produkt-Demo ansehen
+            </button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  },
+
+  renderDots() {
+    const dots = document.getElementById('carouselDots');
+    dots.innerHTML = this.PRODUCTS.map((_, i) =>
+      `<button class="carousel-dot${i === 0 ? ' active' : ''}" onclick="ProductModule.goTo(${i})"></button>`
+    ).join('');
+  },
+
+  goTo(index) {
+    if (index < 0) index = 0;
+    if (index >= this.PRODUCTS.length) index = this.PRODUCTS.length - 1;
+    this.currentSlide = index;
+    const carousel = document.getElementById('productsCarousel');
+    carousel.style.transform = `translateX(-${index * 100}%)`;
+
+    document.querySelectorAll('.carousel-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === index);
+    });
+
+    // Update nav hints visibility
+    const leftHint = document.getElementById('navHintLeft');
+    const rightHint = document.getElementById('navHintRight');
+    if (leftHint) leftHint.classList.toggle('hidden', index === 0);
+    if (rightHint) rightHint.classList.toggle('hidden', index >= this.PRODUCTS.length - 1);
+  },
+
+  initSwipe() {
+    const wrapper = document.getElementById('productsWrapper');
+    const carousel = document.getElementById('productsCarousel');
+    if (!wrapper) return;
+
+    wrapper.addEventListener('touchstart', (e) => {
+      this.isDragging = true;
+      this.startX = e.touches[0].clientX;
+      this.currentX = this.startX;
+      this.startTime = Date.now();
+      carousel.classList.add('swiping');
+    }, { passive: true });
+
+    wrapper.addEventListener('touchmove', (e) => {
+      if (!this.isDragging) return;
+      this.currentX = e.touches[0].clientX;
+      const diff = this.currentX - this.startX;
+      const base = -this.currentSlide * wrapper.offsetWidth;
+      carousel.style.transform = `translateX(${base + diff}px)`;
+    }, { passive: true });
+
+    wrapper.addEventListener('touchend', () => {
+      if (!this.isDragging) return;
+      this.isDragging = false;
+      carousel.classList.remove('swiping');
+      const diff = this.currentX - this.startX;
+      const elapsed = Date.now() - (this.startTime || 0);
+      const velocity = Math.abs(diff) / Math.max(elapsed, 1);
+      const threshold = velocity > 0.3 ? 20 : 50;
+
+      if (diff < -threshold && this.currentSlide < this.PRODUCTS.length - 1) {
+        this.goTo(this.currentSlide + 1);
+      } else if (diff > threshold && this.currentSlide > 0) {
+        this.goTo(this.currentSlide - 1);
+      } else {
+        this.goTo(this.currentSlide);
+      }
+    });
+
+    // Mouse support for desktop
+    wrapper.addEventListener('mousedown', (e) => {
+      this.isDragging = true;
+      this.startX = e.clientX;
+      this.currentX = this.startX;
+      carousel.classList.add('swiping');
+      e.preventDefault();
+    });
+
+    wrapper.addEventListener('mousemove', (e) => {
+      if (!this.isDragging) return;
+      this.currentX = e.clientX;
+      const diff = this.currentX - this.startX;
+      const base = -this.currentSlide * wrapper.offsetWidth;
+      carousel.style.transform = `translateX(${base + diff}px)`;
+    });
+
+    wrapper.addEventListener('mouseup', () => {
+      if (!this.isDragging) return;
+      this.isDragging = false;
+      carousel.classList.remove('swiping');
+      const diff = this.currentX - this.startX;
+      const threshold = 50;
+
+      if (diff < -threshold && this.currentSlide < this.PRODUCTS.length - 1) {
+        this.goTo(this.currentSlide + 1);
+      } else if (diff > threshold && this.currentSlide > 0) {
+        this.goTo(this.currentSlide - 1);
+      } else {
+        this.goTo(this.currentSlide);
+      }
+    });
+
+    wrapper.addEventListener('mouseleave', () => {
+      if (this.isDragging) {
+        this.isDragging = false;
+        carousel.classList.remove('swiping');
+        this.goTo(this.currentSlide);
+      }
+    });
+  },
+
+  syncInterestButtons() {
+    this.PRODUCTS.forEach(p => {
+      const btn = document.getElementById('pib-' + p.interest);
+      if (!btn) return;
+      const formChip = document.getElementById('int-' + p.interest);
+      const isChecked = formChip ? formChip.classList.contains('selected') : false;
+      btn.classList.toggle('checked', isChecked);
+    });
+  }
+};
+
+// ═══ TAB SWIPE MODULE (replaced by tab arrows) ═══
+const TabSwipeModule = { init() {} };
+
+// ═══ MAIN APP ═══
+const App = {
+  CONFIG: {
+    interests: [
+      { id: 'abfall',      name: 'Abfallentsorgung', desc: 'Gewerbe & Industrie',
+        cc: [{ name: 'Lisa Winter', email: 'l.winter@oktopus-umwelt.de' }] },
+      { id: 'recycling',   name: 'Recycling', desc: 'Wertstoffkreisläufe',
+        cc: [{ name: 'Thomas Bergmann', email: 't.bergmann@oktopus-umwelt.de' }] },
+      { id: 'luft',        name: 'Luftreinhaltung', desc: 'Industrieabluft',
+        cc: [{ name: 'Mehmet Kaya', email: 'm.kaya@oktopus-umwelt.de' }] },
+      { id: 'sondermuell', name: 'Sondermüll', desc: 'Gefahrstoffe',
+        cc: [{ name: 'Mehmet Kaya', email: 'm.kaya@oktopus-umwelt.de' }] },
+      { id: 'beratung',    name: 'Umweltberatung', desc: 'Nachhaltigkeitskonzepte',
+        cc: [{ name: 'Dr. Sabine Fischer', email: 's.fischer@oktopus-umwelt.de' }] },
+      { id: 'digital',     name: 'Digitalisierung', desc: 'Smart Waste',
+        cc: [{ name: 'Thomas Bergmann', email: 't.bergmann@oktopus-umwelt.de' },
+             { name: 'Lisa Winter', email: 'l.winter@oktopus-umwelt.de' }] },
+    ],
+    company: {
+      name: 'OKTOPUS Umweltwirtschaft',
+      phone: '+49 89 123456-0',
+      website: 'www.oktopus-umwelt.de'
+    }
+  },
+
+  leads: [],
+  editingLeadId: null,
+  isMobileMode: false,
+  activeFilter: 'all',
+  contactViewMode: 'normal',
+
+  async init() {
+    this.loadLeads();
+    this.renderInterests();
+    this.updateStats();
+    this.loadSettings();
+    if (this.leads.length === 0) this.loadDemoLeads();
+
+    // Init modules
+    InterestOverlay.render();
+    ProductModule.init();
+    TabSwipeModule.init();
+    VideoModule.initEvents();
+    this.renderCrmInterests();
+    this.renderSettingsInterestReps();
+    SplashModule.autoHide();
+    this.updateTabArrows();
+
+    // Load saved view mode
+    const savedMode = localStorage.getItem('oktopus_view_mode');
+    if (savedMode === 'mobile') this.toggleViewMode(true);
+
+    // Load saved contact view mode
+    const savedContactView = localStorage.getItem('oktopus_contact_view');
+    if (savedContactView === 'compact') this.setContactView('compact');
+
+    // Auto-send queued emails/calendars when online
+    window.addEventListener('online', () => {
+      this._processEmailQueue();
+      this._processCalendarQueue();
+    });
+    // Also try on startup if already online
+    if (navigator.onLine) {
+      this._processEmailQueue();
+      this._processCalendarQueue();
+    }
+  },
+
+  toggleViewMode(forceState) {
+    const frame = document.querySelector('.frame');
+    if (typeof forceState === 'boolean') {
+      this.isMobileMode = forceState;
+    } else {
+      this.isMobileMode = !this.isMobileMode;
+    }
+    frame.classList.toggle('mobile-mode', this.isMobileMode);
+    const btn = document.getElementById('viewToggle');
+    const label = document.getElementById('viewToggleLabel');
+    if (btn && label) {
+      btn.classList.toggle('active', this.isMobileMode);
+      label.textContent = this.isMobileMode ? 'Tablet' : 'Handy';
+    }
+    localStorage.setItem('oktopus_view_mode', this.isMobileMode ? 'mobile' : 'tablet');
+  },
+
+  getCCRecipients(interestIds) {
+    const map = new Map();
+    interestIds.forEach(id => {
+      const interest = this.CONFIG.interests.find(i => i.id === id);
+      if (interest?.cc) interest.cc.forEach(r => map.set(r.email, r));
+    });
+    return [...map.values()];
+  },
+
+  loadDemoLeads() {
+    this.leads = [
+      {
+        id: '1', createdAt: new Date(Date.now() - 3600000).toISOString(),
+        salutation: 'Herr', title: '', firstName: 'Michael', lastName: 'Schneider',
+        company: 'Stadtwerke München', jobTitle: 'Leiter Abfallwirtschaft',
+        email: 'm.schneider@swm.de', phone: '+49 89 2361-0', mobile: '+49 170 1234567',
+        website: 'www.swm.de', address: 'Emmy-Noether-Straße 2, 80992 München',
+        interests: ['abfall', 'digital'],
+        bantBudget: 'vorhanden', bantAuthority: 'entscheider', bantNeed: 'dringend', bantTiming: 'quartal',
+        notes: 'Interessiert an IoT-Sensoren für Containerfüllstände.', event: 'IFAT Munich 2026',
+        emailSent: true, followUp: true,
+      },
+      {
+        id: '2', createdAt: new Date(Date.now() - 7200000).toISOString(),
+        salutation: 'Frau', title: 'Dr.', firstName: 'Anna', lastName: 'Weber',
+        company: 'BMW Group', jobTitle: 'Environmental Manager',
+        email: 'anna.weber@bmw.de', phone: '+49 89 382-0', mobile: '',
+        website: 'www.bmw.de', address: 'Petuelring 130, 80788 München',
+        interests: ['recycling', 'luft', 'beratung'],
+        bantBudget: 'geplant', bantAuthority: 'beeinflusser', bantNeed: 'konkret', bantTiming: 'jahr',
+        notes: 'Sucht Partner für CO2-Neutralität bis 2030.', event: 'IFAT Munich 2026',
+        emailSent: true, followUp: false,
+      },
+      {
+        id: '3', createdAt: new Date(Date.now() - 10800000).toISOString(),
+        salutation: 'Herr', title: 'Prof. Dr.', firstName: 'Klaus', lastName: 'Hoffmann',
+        company: 'Chempark Leverkusen', jobTitle: 'HSE Director',
+        email: 'k.hoffmann@chempark.de', phone: '+49 214 30-1', mobile: '+49 151 9876543',
+        website: 'www.chempark.de', address: 'Kaiser-Wilhelm-Allee, 51373 Leverkusen',
+        interests: ['sondermuell', 'beratung'],
+        bantBudget: 'vorhanden', bantAuthority: 'entscheider', bantNeed: 'dringend', bantTiming: 'sofort',
+        notes: 'HOT LEAD — Akuter Bedarf an Sondermüllentsorgung.', event: 'IFAT Munich 2026',
+        emailSent: false, followUp: false,
+      },
+    ];
+    this.saveLeads();
+    this.updateStats();
+  },
+
+  saveLead() {
+    const lead = {
+      id: this.editingLeadId || Date.now().toString(),
+      createdAt: this.editingLeadId
+        ? this.leads.find(l => l.id === this.editingLeadId)?.createdAt
+        : new Date().toISOString(),
+      salutation: document.getElementById('salutation').value,
+      title: document.getElementById('title').value,
+      firstName: document.getElementById('firstName').value.trim(),
+      lastName: document.getElementById('lastName').value.trim(),
+      company: document.getElementById('company').value.trim(),
+      jobTitle: document.getElementById('jobTitle').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      mobile: document.getElementById('mobile').value.trim(),
+      website: document.getElementById('website').value.trim(),
+      address: document.getElementById('address').value.trim(),
+      interests: Array.from(document.querySelectorAll('#interestsGrid input[name="interests"]:checked')).map(c => c.value),
+      interestProbabilities: this.getCrmInterestData(),
+      bantBudget: document.getElementById('bantBudget').value,
+      bantAuthority: document.getElementById('bantAuthority').value,
+      bantNeed: document.getElementById('bantNeed').value,
+      bantTiming: document.getElementById('bantTiming').value,
+      notes: document.getElementById('notes').value.trim(),
+      event: document.getElementById('settingsEvent')?.value || 'IFAT Munich 2026',
+      emailSent: false,
+      followUp: false,
+      crmDone: false,
+    };
+
+    // Determine if CRM is done
+    const hasBant = lead.bantBudget || lead.bantAuthority || lead.bantNeed || lead.bantTiming;
+    const hasProb = Object.values(lead.interestProbabilities || {}).some(v => v > 0);
+    lead.crmDone = !!(hasBant || hasProb);
+
+    if (!lead.firstName || !lead.lastName) return this.showStatus('Vor- und Nachname erforderlich', 'error');
+    if (!lead.email)   return this.showStatus('E-Mail erforderlich', 'error');
+    if (!lead.company) return this.showStatus('Unternehmen erforderlich', 'error');
+
+    if (this.editingLeadId) {
+      const idx = this.leads.findIndex(l => l.id === this.editingLeadId);
+      if (idx !== -1) {
+        lead.emailSent = this.leads[idx].emailSent;
+        lead.followUp  = this.leads[idx].followUp;
+        lead.crmDone   = lead.crmDone || this.leads[idx].crmDone;
+        this.leads[idx] = lead;
+      }
+      this.editingLeadId = null;
+    } else {
+      this.leads.unshift(lead);
+    }
+
+    this.saveLeads();
+    this.updateStats();
+    this.fireConfetti();
+    this.showStatus('Kontakt gespeichert!', 'success');
+    this.resetForm();
+  },
+
+  fireConfetti() {
+    if (typeof confetti !== 'function') {
+      // Confetti not loaded (offline) — visual pulse instead
+      const frame = document.querySelector('.frame');
+      frame.style.boxShadow = '0 0 40px rgba(76,48,168,0.4)';
+      setTimeout(() => frame.style.boxShadow = '', 600);
+      return;
+    }
+    confetti({ particleCount: 60, angle: 60, spread: 55, origin: { x: 0, y: 0.65 },
+      colors: ['#4c30a8', '#7a63c7', '#3a2480', '#ff9b37', '#ffd026'] });
+    confetti({ particleCount: 60, angle: 120, spread: 55, origin: { x: 1, y: 0.65 },
+      colors: ['#4c30a8', '#7a63c7', '#3a2480', '#ff9b37', '#ffd026'] });
+  },
+
+  resetForm() {
+    ['firstName','lastName','company','jobTitle','email','phone','mobile','website','address','notes']
+      .forEach(id => { const el = document.getElementById(id); if (el) { el.value = ''; el.classList.remove('autofilled'); } });
+    document.getElementById('salutation').value = '';
+    document.getElementById('title').value = '';
+    ['bantBudget','bantAuthority','bantNeed','bantTiming'].forEach(id => document.getElementById(id).value = '');
+    // Reset CRM interest probabilities
+    this.CONFIG.interests.forEach(i => {
+      const chk = document.getElementById('crm-chk-' + i.id);
+      const prob = document.getElementById('crm-prob-' + i.id);
+      if (chk) chk.checked = false;
+      if (prob) prob.value = '0';
+    });
+    document.querySelectorAll('#interestsGrid .interest-chip').forEach(el => {
+      el.classList.remove('selected');
+      el.querySelector('input').checked = false;
+    });
+    CameraModule.reset();
+    this.editingLeadId = null;
+    this.updateQualifyBanner(null);
+    ProductModule.syncInterestButtons();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  },
+
+  editLead(id, targetSection) {
+    const lead = this.leads.find(l => l.id === id);
+    if (!lead) return;
+    this.editingLeadId = id;
+    document.getElementById('salutation').value    = lead.salutation || '';
+    document.getElementById('title').value         = lead.title || '';
+    document.getElementById('firstName').value     = lead.firstName;
+    document.getElementById('lastName').value      = lead.lastName;
+    document.getElementById('company').value       = lead.company;
+    document.getElementById('jobTitle').value      = lead.jobTitle || '';
+    document.getElementById('email').value         = lead.email;
+    document.getElementById('phone').value         = lead.phone || '';
+    document.getElementById('mobile').value        = lead.mobile || '';
+    document.getElementById('website').value       = lead.website || '';
+    document.getElementById('address').value       = lead.address || '';
+    document.getElementById('notes').value         = lead.notes || '';
+    document.getElementById('bantBudget').value    = lead.bantBudget || '';
+    document.getElementById('bantAuthority').value = lead.bantAuthority || '';
+    document.getElementById('bantNeed').value      = lead.bantNeed || '';
+    document.getElementById('bantTiming').value    = lead.bantTiming || '';
+    document.querySelectorAll('#interestsGrid .interest-chip').forEach(el => {
+      const val = el.querySelector('input').value;
+      const checked = lead.interests?.includes(val);
+      el.classList.toggle('selected', checked);
+      el.querySelector('input').checked = checked;
+    });
+    ProductModule.syncInterestButtons();
+    this.updateQualifyBanner(lead);
+    const section = targetSection || 'new';
+    this.showSection(section);
+    this.loadCrmInterestData(lead);
+    if (section === 'qualify') {
+      this.showStatus('Qualifizierung: ' + lead.firstName + ' ' + lead.lastName, 'warning');
+    } else {
+      this.showStatus('Bearbeitung: ' + lead.firstName + ' ' + lead.lastName, 'warning');
+    }
+  },
+
+  qualifyLead(id, event) {
+    event?.stopPropagation();
+    this.editLead(id, 'qualify');
+  },
+
+  updateQualifyBanner(lead) {
+    const banner = document.getElementById('qualifyLeadBanner');
+    if (!lead) { banner.style.display = 'none'; return; }
+    banner.style.display = 'block';
+    const initials = (lead.firstName?.[0] || '') + (lead.lastName?.[0] || '');
+    document.getElementById('qualifyAvatar').textContent = initials;
+    const displayName = [lead.title, lead.firstName, lead.lastName].filter(Boolean).join(' ');
+    document.getElementById('qualifyName').textContent = displayName;
+    document.getElementById('qualifyCompany').textContent = lead.company || '';
+  },
+
+  deleteLead(id, event) {
+    event?.stopPropagation();
+    if (!confirm('Kontakt wirklich entfernen?')) return;
+    this.leads = this.leads.filter(l => l.id !== id);
+    this.saveLeads();
+    this.updateStats();
+    this.showStatus('Kontakt entfernt', 'success');
+  },
+// ═══ CRM INTEREST PROBABILITY ═══
+  renderCrmInterests() {
+    const grid = document.getElementById('crmInterestsGrid');
+    if (!grid) return;
+    const settings = this.getSettings();
+    const reps = settings.interestReps || {};
+    // Only show interests that are selected in the form
+    const selectedIds = Array.from(document.querySelectorAll('#interestsGrid input[name="interests"]:checked')).map(c => c.value);
+    const visibleInterests = this.CONFIG.interests.filter(i => selectedIds.includes(i.id));
+    if (!visibleInterests.length) {
+      grid.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;">Keine Themen ausgewählt.<br>Bitte zuerst Interessen im Kontakt-Tab markieren.</div>';
+      return;
+    }
+    grid.innerHTML = visibleInterests.map(i => {
+      const rep = reps[i.id] || i.cc?.[0] || {};
+      return `
+        <div class="crm-interest-row">
+          <input type="checkbox" class="crm-interest-check" id="crm-chk-${i.id}" value="${i.id}" checked>
+          <div class="crm-interest-name">${i.name}</div>
+          <select class="form-control crm-interest-prob" id="crm-prob-${i.id}" style="font-size:12px;padding:5px;">
+            <option value="0">unbekannt</option>
+            <option value="25">25%</option>
+            <option value="50">50%</option>
+            <option value="75">75%</option>
+            <option value="100">100%</option>
+          </select>
+          <div class="crm-interest-rep" title="${rep.email || ''}">${rep.name || '—'}</div>
+        </div>`;
+    }).join('');
+  },
+
+  getCrmInterestData() {
+    const data = {};
+    this.CONFIG.interests.forEach(i => {
+      const chk = document.getElementById('crm-chk-' + i.id);
+      const prob = document.getElementById('crm-prob-' + i.id);
+      if (chk?.checked || (prob && parseInt(prob.value) > 0)) {
+        data[i.id] = parseInt(prob?.value || 0);
+      }
+    });
+    return data;
+  },
+
+  loadCrmInterestData(lead) {
+    // Reset all CRM interest fields
+    this.CONFIG.interests.forEach(i => {
+      const chk = document.getElementById('crm-chk-' + i.id);
+      const prob = document.getElementById('crm-prob-' + i.id);
+      if (chk) chk.checked = false;
+      if (prob) prob.value = '0';
+    });
+    // Load from lead
+    if (lead?.interests) {
+      lead.interests.forEach(id => {
+        const chk = document.getElementById('crm-chk-' + id);
+        if (chk) chk.checked = true;
+      });
+    }
+    if (lead?.interestProbabilities) {
+      Object.entries(lead.interestProbabilities).forEach(([id, val]) => {
+        const chk = document.getElementById('crm-chk-' + id);
+        const prob = document.getElementById('crm-prob-' + id);
+        if (chk) chk.checked = true;
+        if (prob) prob.value = val.toString();
+      });
+    }
+  },
+
+  // ═══ SETTINGS: INTEREST REP MAPPING ═══
+  renderSettingsInterestReps() {
+    const container = document.getElementById('settingsInterestReps');
+    if (!container) return;
+    const settings = this.getSettings();
+    const reps = settings.interestReps || {};
+    container.innerHTML = this.CONFIG.interests.map(i => {
+      const rep = reps[i.id] || i.cc?.[0] || {};
+      return `
+        <div class="settings-interest-row">
+          <div class="settings-interest-name">${i.name}</div>
+          <input type="text" class="settings-interest-repname" id="sir-name-${i.id}"
+                 value="${rep.name || ''}" placeholder="Name" onchange="App.saveInterestReps()">
+          <input type="email" class="settings-interest-repemail" id="sir-email-${i.id}"
+                 value="${rep.email || ''}" placeholder="E-Mail" onchange="App.saveInterestReps()">
+        </div>`;
+    }).join('');
+  },
+
+  saveInterestReps() {
+    const reps = {};
+    this.CONFIG.interests.forEach(i => {
+      const name = document.getElementById('sir-name-' + i.id)?.value?.trim() || '';
+      const email = document.getElementById('sir-email-' + i.id)?.value?.trim() || '';
+      if (name || email) reps[i.id] = { name, email };
+    });
+    const s = this.getSettings();
+    s.interestReps = reps;
+    localStorage.setItem('oktopus_settings_v3', JSON.stringify(s));
+    // Update the CONFIG cc fields too
+    this.CONFIG.interests.forEach(i => {
+      if (reps[i.id]) i.cc = [reps[i.id]];
+    });
+    this.renderCrmInterests();
+    this.showStatus('Vertriebszuordnung gespeichert', 'success');
+  },
+
+  
+  renderInterests() {
+    const grid = document.getElementById('interestsGrid');
+    grid.innerHTML = this.CONFIG.interests.map(i => `
+      <label class="interest-chip" id="int-${i.id}">
+        <input type="checkbox" name="interests" value="${i.id}" onchange="App.toggleInterest(this)">
+        <div class="interest-dot"></div>
+        <div>
+          <div class="interest-name">${i.name}</div>
+          <div class="interest-sub">${i.desc}</div>
+        </div>
+      </label>
+    `).join('');
+  },
+
+  toggleInterest(checkbox) {
+    checkbox.closest('.interest-chip').classList.toggle('selected', checkbox.checked);
+    ProductModule.syncInterestButtons();
+  },
+
+  showSection(name) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(`section-${name}`).classList.add('active');
+    document.querySelectorAll('.nav-tab').forEach(n => n.classList.remove('active'));
+    document.querySelector(`.nav-tab[data-section="${name}"]`)?.classList.add('active');
+    window.scrollTo(0, 0);
+    if (name === 'leads') this.renderLeadsList();
+    if (name === 'products') ProductModule.syncInterestButtons();
+    if (name === 'qualify') this.renderCrmInterests();
+    this.updateTabArrows();
+  },
+
+  prevTab() {
+    const tabs = ['products', 'new', 'qualify', 'leads', 'settings'];
+    const active = document.querySelector('.section.active');
+    const idx = tabs.indexOf(active?.id?.replace('section-', ''));
+    if (idx > 0) this.showSection(tabs[idx - 1]);
+  },
+
+  nextTab() {
+    const tabs = ['products', 'new', 'qualify', 'leads', 'settings'];
+    const active = document.querySelector('.section.active');
+    const idx = tabs.indexOf(active?.id?.replace('section-', ''));
+    if (idx >= 0 && idx < tabs.length - 1) this.showSection(tabs[idx + 1]);
+  },
+
+  updateTabArrows() {
+    const tabs = ['products', 'new', 'qualify', 'leads', 'settings'];
+    const active = document.querySelector('.section.active');
+    const idx = tabs.indexOf(active?.id?.replace('section-', ''));
+    const left = document.getElementById('tabArrowLeft');
+    const right = document.getElementById('tabArrowRight');
+    if (left) left.classList.toggle('hidden', idx <= 0);
+    if (right) right.classList.toggle('hidden', idx >= tabs.length - 1);
+  },
+
+  renderLeadsList() {
+    const list = document.getElementById('leadsList');
+    const search = document.getElementById('searchInput')?.value.toLowerCase() || '';
+    const isCompact = this.contactViewMode === 'compact';
+
+    let filtered = this.leads;
+    if (search) {
+      filtered = filtered.filter(l =>
+        l.firstName.toLowerCase().includes(search) ||
+        l.lastName.toLowerCase().includes(search) ||
+        l.company.toLowerCase().includes(search) ||
+        l.email.toLowerCase().includes(search)
+      );
+    }
+
+    // Apply CRM filter
+    if (this.activeFilter !== 'all') {
+      filtered = filtered.filter(l => {
+        const status = this.getLeadStatus(l);
+        switch (this.activeFilter) {
+          case 'hot': return status === 'hot';
+          case 'warm': return status === 'warm';
+          case 'new': return status === 'new';
+          case 'crm-done': return !!l.crmDone;
+          case 'crm-open': return !l.crmDone;
+          default: return true;
+        }
+      });
+    }
+
+    if (!filtered.length) {
+      const noFilter = this.activeFilter !== 'all';
+      list.innerHTML = `
+        <div class="empty-state">
+          <div style="font-size:48px;margin-bottom:16px">${search || noFilter ? '🔍' : '🐙'}</div>
+          <div class="empty-state-title">${search || noFilter ? 'Keine Treffer' : 'Noch keine Kontakte'}</div>
+          <div>${search || noFilter ? 'Filter oder Suche anpassen' : 'Ersten Kontakt anlegen → Kontakt Tab'}</div>
+        </div>`;
+      return;
+    }
+
+    list.innerHTML = filtered.map(lead => {
+      const status = this.getLeadStatus(lead);
+      const label = status === 'hot' ? '🔥 Hot' : status === 'warm' ? 'Warm' : 'Neu';
+
+      const initials = (lead.firstName[0] || '') + (lead.lastName[0] || '');
+      const tags = lead.interests?.map(id => {
+        const i = this.CONFIG.interests.find(x => x.id === id);
+        return i ? `<span class="lead-tag">${i.name}</span>` : '';
+      }).join('') || '';
+
+      const time = new Date(lead.createdAt).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+      const badges = [
+        `<span class="lead-badge ${status}">${label}</span>`,
+        lead.emailSent ? '<span class="lead-badge email">📧</span>' : '',
+        lead.crmDone ? '<span class="lead-badge crm-done">✓ CRM</span>' : '<span class="lead-badge crm-pending">⚠ CRM offen</span>',
+      ].filter(Boolean).join('');
+
+      const displayName = [lead.title, lead.firstName, lead.lastName].filter(Boolean).join(' ');
+      const cardClass = isCompact ? 'lead-card compact' : 'lead-card';
+      const emailBtnClass = lead.emailSent ? 'lead-action-btn sent' : 'lead-action-btn pending';
+      const emailBtnLabel = lead.emailSent ? '✓ Mail gesendet' : '📧 Mail senden';
+      const calBtnClass = lead.followUp ? 'lead-action-btn sent' : 'lead-action-btn';
+      const calBtnLabel = lead.followUp ? '✓ Termin erstellt' : '📅 Termin';
+
+      return `
+        <div class="${cardClass}" onclick="App.editLead('${lead.id}')">
+          <div class="lead-card-top">
+            <div class="lead-avatar">${initials}</div>
+            <div class="lead-info">
+              <div class="lead-name">${displayName}</div>
+              <div class="lead-company">${lead.company}</div>
+              <div class="lead-position">${lead.jobTitle || ''}</div>
+            </div>
+            <div class="lead-badges">${badges}</div>
+          </div>
+          ${tags ? `<div class="lead-tags">${tags}</div>` : ''}
+          <div class="lead-meta">
+            <span>${lead.email}</span>
+            <span>${time}</span>
+            <span style="margin-left:auto;color:var(--purple);font-weight:600;cursor:pointer;" onclick="App.qualifyLead('${lead.id}', event)">⭐ Bewerten</span>
+            <span class="lead-delete" onclick="App.deleteLead('${lead.id}', event)">✕</span>
+          </div>
+          <div class="lead-actions-row">
+            <button class="${emailBtnClass}" onclick="event.stopPropagation(); App.sendFollowUpEmail('${lead.id}')">${emailBtnLabel}</button>
+            <button class="${calBtnClass}" onclick="event.stopPropagation(); App.createFollowUpCalendar('${lead.id}')">${calBtnLabel}</button>
+          </div>
+        </div>`;
+    }).join('');
+  },
+
+  filterLeads() { this.renderLeadsList(); },
+
+  setFilter(filter, btn) {
+    this.activeFilter = filter;
+    document.querySelectorAll('#filterBar .filter-pill').forEach(p => p.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    this.renderLeadsList();
+  },
+
+  setContactView(mode) {
+    this.contactViewMode = mode;
+    localStorage.setItem('oktopus_contact_view', mode);
+    document.getElementById('viewNormal').classList.toggle('active', mode === 'normal');
+    document.getElementById('viewCompact').classList.toggle('active', mode === 'compact');
+    this.renderLeadsList();
+  },
+
+  getLeadStatus(lead) {
+    if ((lead.bantTiming === 'sofort' || lead.bantTiming === 'quartal') && lead.bantBudget === 'vorhanden') return 'hot';
+    if (lead.bantNeed === 'konkret' || lead.bantNeed === 'dringend') return 'warm';
+    return 'new';
+  },
+
+  // ═══ EMAIL & CALENDAR ═══════════════════════
+  _confirmCallback: null,
+
+  showConfirm(opts) {
+    document.getElementById('confirmIcon').textContent = opts.icon || '📧';
+    document.getElementById('confirmTitle').textContent = opts.title;
+    document.getElementById('confirmDesc').innerHTML = opts.desc || '';
+    document.getElementById('confirmWarning').innerHTML = opts.warning
+      ? `<div class="confirm-warning">⚠️ ${opts.warning}</div>` : '';
+    document.getElementById('confirmDetails').innerHTML = opts.details || '';
+    document.getElementById('confirmActionBtn').textContent = opts.actionLabel || 'OK';
+    // Email body editing
+    const editEl = document.getElementById('confirmEmailEdit');
+    const bodyEl = document.getElementById('confirmEmailBody');
+    if (opts.emailBody) {
+      bodyEl.value = opts.emailBody;
+      editEl.classList.add('show');
+    } else {
+      editEl.classList.remove('show');
+      bodyEl.value = '';
+    }
+    this._confirmCallback = opts.onConfirm || null;
+    document.getElementById('confirmOverlay').classList.add('show');
+  },
+
+  closeConfirm() {
+    document.getElementById('confirmOverlay').classList.remove('show');
+    this._confirmCallback = null;
+  },
+
+  executeConfirm() {
+    if (this._confirmCallback) this._confirmCallback();
+    this.closeConfirm();
+  },
+
+  getSenderInfo() {
+    const s = this.getSettings();
+    return {
+      email: s.senderEmail || 'vertrieb@oktopus-umwelt.de',
+      name: s.senderName || s.repName || 'OKTOPUS Vertrieb'
+    };
+  },
+
+  buildEmailBody(lead) {
+    const s = this.getSettings();
+    const sender = this.getSenderInfo();
+
+    // Greeting
+    const salut = lead.salutation
+      ? (lead.salutation === 'Herr' ? 'Sehr geehrter Herr' : lead.salutation === 'Frau' ? 'Sehr geehrte Frau' : 'Guten Tag')
+      : 'Guten Tag';
+    const titlePart = lead.title ? lead.title + ' ' : '';
+    const greeting = lead.salutation && lead.salutation !== 'Divers'
+      ? `${salut} ${titlePart}${lead.lastName}`
+      : `Guten Tag ${titlePart}${lead.firstName} ${lead.lastName}`;
+
+    // Gather interests with assigned reps
+    const interestBlocks = (lead.interests || []).map(id => {
+      const interest = this.CONFIG.interests.find(x => x.id === id);
+      if (!interest) return null;
+      const reps = (interest.cc || []).map(r => r.name).filter(Boolean);
+      return { name: interest.name, desc: interest.desc || '', reps };
+    }).filter(Boolean);
+
+    const lines = [];
+    lines.push(`${greeting},`);
+    lines.push('');
+    lines.push(`vielen Dank für Ihren Besuch an unserem Stand${s.stand ? ' (' + s.stand + ')' : ''} auf der ${s.event || 'IFAT Munich 2026'}. Es hat uns sehr gefreut, Sie persönlich kennenzulernen!`);
+    lines.push('');
+
+    if (interestBlocks.length) {
+      lines.push('Im Gespräch haben Sie Interesse an folgenden Themen geäußert:');
+      lines.push('');
+      interestBlocks.forEach(block => {
+        lines.push(`  ▸ ${block.name}${block.desc ? ' (' + block.desc + ')' : ''}`);
+        if (block.reps.length) {
+          lines.push(`    Ihr Ansprechpartner: ${block.reps.join(', ')}`);
+        }
+      });
+      lines.push('');
+      lines.push('Die jeweils genannten Kolleginnen und Kollegen werden sich in Kürze bei Ihnen melden, um einen persönlichen Termin zu vereinbaren und Ihre Anforderungen im Detail zu besprechen.');
+    } else {
+      lines.push('Gerne möchten wir das Gespräch fortsetzen und Ihnen weiterführende Informationen zu unseren Lösungen zukommen lassen.');
+    }
+
+    lines.push('');
+    lines.push('Sollten Sie vorab Fragen haben, zögern Sie nicht, uns jederzeit zu kontaktieren. Wir freuen uns auf die Zusammenarbeit!');
+    lines.push('');
+    lines.push('Herzliche Grüße');
+    lines.push(sender.name);
+    lines.push('');
+    lines.push(`${this.CONFIG.company.name}`);
+    lines.push(`Tel: ${this.CONFIG.company.phone}`);
+    lines.push(`Web: ${this.CONFIG.company.website}`);
+
+    return lines.join('\n');
+  },
+
+  sendFollowUpEmail(leadId) {
+    const lead = leadId
+      ? this.leads.find(l => l.id === leadId)
+      : (this.editingLeadId ? this.leads.find(l => l.id === this.editingLeadId) : null);
+    if (!lead) return this.showStatus('Bitte zuerst einen Kontakt auswählen', 'error');
+    if (!lead.email) return this.showStatus('Keine E-Mail-Adresse vorhanden', 'error');
+
+    const sender = this.getSenderInfo();
+    const ccRecipients = this.getCCRecipients(lead.interests || []);
+    const ccEmails = ccRecipients.map(r => r.email);
+    const ccNames = ccRecipients.map(r => r.name).join(', ');
+    const isResend = lead.emailSent;
+
+    const detailsHtml = `
+      <div class="confirm-detail-row"><div class="confirm-detail-label">An:</div><div>${lead.email}</div></div>
+      <div class="confirm-detail-row"><div class="confirm-detail-label">Von:</div><div>${sender.name} &lt;${sender.email}&gt;</div></div>
+      ${ccEmails.length ? `<div class="confirm-detail-row"><div class="confirm-detail-label">CC:</div><div>${ccNames}</div></div>` : ''}
+    `;
+
+    const emailBody = this.buildEmailBody(lead);
+
+    this.showConfirm({
+      icon: isResend ? '⚠️' : '📧',
+      title: isResend ? 'Erneut senden?' : 'Follow-up E-Mail senden',
+      desc: `An <strong>${lead.firstName} ${lead.lastName}</strong> (${lead.company})`,
+      warning: isResend ? 'An diesen Kontakt wurde bereits eine E-Mail gesendet! Wirklich erneut versenden?' : '',
+      details: detailsHtml,
+      emailBody: emailBody,
+      actionLabel: isResend ? '⚠️ Trotzdem senden' : '📧 Jetzt senden',
+      onConfirm: () => {
+        const editedBody = document.getElementById('confirmEmailBody').value;
+        this._executeEmail(lead, ccEmails, editedBody);
+      }
+    });
+  },
+
+  async _executeEmail(lead, ccEmails, bodyOverride) {
+    const sender = this.getSenderInfo();
+    const settings = this.getSettings();
+    const subject = `Follow-up: ${settings.event || 'IFAT Munich 2026'} — ${this.CONFIG.company.name}`;
+    const body = bodyOverride || this.buildEmailBody(lead);
+
+    // Offline → queue as pending
+    if (!navigator.onLine) {
+      this._queueEmail(lead, ccEmails, subject, body);
+      this.showStatus('Offline — E-Mail wird automatisch gesendet, sobald Internet verfügbar ist', 'warning');
+      return;
+    }
+
+    // Priority 1: Power Automate Webhook (simplest, no login)
+    if (settings.webhookUrl) {
+      try {
+        this.showStatus('E-Mail wird gesendet…', 'loading');
+        const resp = await fetch(settings.webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: lead.email,
+            cc: ccEmails.join(', '),
+            subject: subject,
+            body: body,
+            replyTo: sender.email
+          })
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        this._markEmailSent(lead);
+        this.showStatus('✅ E-Mail erfolgreich gesendet!', 'success');
+        return;
+      } catch (e) {
+        this.showStatus('Webhook fehlgeschlagen: ' + e.message + ' — versuche Fallback…', 'warning');
+      }
+    }
+
+    // Fallback .eml file
+    this._downloadEml(lead, ccEmails, sender, subject, body);
+    this._markEmailSent(lead);
+    this.showStatus('E-Mail als .eml heruntergeladen — in Outlook öffnen und senden.', 'warning');
+  },
+
+  _markEmailSent(lead) {
+    const idx = this.leads.findIndex(l => l.id === lead.id);
+    if (idx !== -1) {
+      this.leads[idx].emailSent = true;
+      this.leads[idx].emailSentAt = new Date().toISOString();
+      this.saveLeads();
+      this.updateStats();
+    }
+  },
+
+  _downloadEml(lead, ccEmails, sender, subject, body) {
+    const emlContent = [
+      `From: ${sender.name} <${sender.email}>`,
+      `To: ${lead.email}`,
+      ccEmails.length ? `Cc: ${ccEmails.join(', ')}` : '',
+      `Subject: ${subject}`,
+      'X-Unsent: 1',
+      'MIME-Version: 1.0',
+      'Content-Type: text/plain; charset=utf-8',
+      'Content-Transfer-Encoding: 8bit',
+      '',
+      body
+    ].filter(Boolean).join('\r\n');
+    const blob = new Blob([emlContent], { type: 'message/rfc822' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `followup_${lead.lastName}_${lead.firstName}.eml`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  },
+
+  _queueEmail(lead, ccEmails, subject, body) {
+    const queue = JSON.parse(localStorage.getItem('oktopus_email_queue') || '[]');
+    queue.push({ leadId: lead.id, to: lead.email, ccEmails, subject, body, queuedAt: new Date().toISOString() });
+    localStorage.setItem('oktopus_email_queue', JSON.stringify(queue));
+    this._markEmailSent(lead); // Mark locally so UI shows pending state
+  },
+
+  async _processEmailQueue() {
+    const queue = JSON.parse(localStorage.getItem('oktopus_email_queue') || '[]');
+    if (!queue.length) return;
+    if (!navigator.onLine) return;
+
+    // Try via webhook
+    const s = this.getSettings();
+    const webhookUrl = s.webhookUrl;
+
+    if (!webhookUrl) {
+      // No sending method available — download as .eml files instead
+      const sender = this.getSenderInfo();
+      queue.forEach(item => {
+        this._downloadEml({ email: item.to, lastName: 'Queue', firstName: '' }, item.ccEmails, sender, item.subject, item.body);
+      });
+      localStorage.setItem('oktopus_email_queue', '[]');
+      this.showStatus(`${queue.length} ausstehende Mail(s) als .eml heruntergeladen`, 'warning');
+      return;
+    }
+
+    let sent = 0;
+    const remaining = [];
+    for (const item of queue) {
+      try {
+        const resp = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: item.to,
+            cc: item.ccEmails.join(', '),
+            subject: item.subject,
+            body: item.body,
+            replyTo: this.getSenderInfo().email
+          })
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        sent++;
+      } catch (e) {
+        remaining.push(item);
+      }
+    }
+    localStorage.setItem('oktopus_email_queue', JSON.stringify(remaining));
+    if (sent > 0) this.showStatus(`✅ ${sent} ausstehende E-Mail(s) nachträglich gesendet!`, 'success');
+    if (remaining.length > 0) this.showStatus(`${remaining.length} E-Mail(s) konnten nicht gesendet werden`, 'warning');
+  },
+
+  createFollowUpCalendar(leadId) {
+    const lead = leadId
+      ? this.leads.find(l => l.id === leadId)
+      : (this.editingLeadId ? this.leads.find(l => l.id === this.editingLeadId) : null);
+    if (!lead) return this.showStatus('Bitte zuerst einen Kontakt auswählen', 'error');
+
+    const ccRecipients = this.getCCRecipients(lead.interests || []);
+    const repNames = ccRecipients.map(r => r.name).join(', ');
+    const displayName = [lead.title, lead.firstName, lead.lastName].filter(Boolean).join(' ');
+
+    this.showConfirm({
+      icon: '📅',
+      title: 'Follow-up Termin erstellen',
+      desc: `Outlook-Termin für <strong>${displayName}</strong> (${lead.company})`,
+      details: `
+        <div class="confirm-detail-row"><div class="confirm-detail-label">📅</div><div>In 3 Tagen, 10:00 Uhr (30 Min.)</div></div>
+        <div class="confirm-detail-row"><div class="confirm-detail-label">👥</div><div>${repNames || 'Kein Vertriebler zugeordnet'}</div></div>
+        <div class="confirm-detail-row"><div class="confirm-detail-label">📋</div><div>Follow-up: ${displayName} / ${lead.company}</div></div>
+      `,
+      actionLabel: '📅 Termin erstellen',
+      onConfirm: () => this._executeCalendar(lead, ccRecipients)
+    });
+  },
+
+  _executeCalendar(lead, ccRecipients) {
+    // Offline → queue for later
+    if (!navigator.onLine) {
+      this._queueCalendar(lead, ccRecipients);
+      this.showStatus('Offline — Termin wird heruntergeladen, sobald Internet verfügbar ist', 'warning');
+      return;
+    }
+
+    const settings = this.getSettings();
+    const displayName = [lead.title, lead.firstName, lead.lastName].filter(Boolean).join(' ');
+    const interestNames = (lead.interests || []).map(id => {
+      const i = this.CONFIG.interests.find(x => x.id === id);
+      return i ? i.name : '';
+    }).filter(Boolean);
+
+    // Create date 3 days from now at 10:00
+    const start = new Date();
+    start.setDate(start.getDate() + 3);
+    start.setHours(10, 0, 0, 0);
+    const end = new Date(start);
+    end.setMinutes(end.getMinutes() + 30);
+
+    // Generate individual ICS per sales rep (each gets a separate file)
+    if (ccRecipients.length > 1) {
+      ccRecipients.forEach((rep, idx) => {
+        setTimeout(() => {
+          this._downloadICS(lead, [rep], start, end, displayName, interestNames, settings,
+            `followup_${lead.lastName}_${rep.name.replace(/\s+/g, '_')}.ics`);
+        }, idx * 300);
+      });
+    } else {
+      this._downloadICS(lead, ccRecipients, start, end, displayName, interestNames, settings,
+        `followup_${lead.lastName}_${lead.firstName}.ics`);
+    }
+
+    // Mark follow-up
+    const idx = this.leads.findIndex(l => l.id === lead.id);
+    if (idx !== -1) {
+      this.leads[idx].followUp = true;
+      this.leads[idx].followUpAt = new Date().toISOString();
+      this.saveLeads();
+      this.updateStats();
+    }
+    const repCount = ccRecipients.length;
+    this.showStatus(`${repCount} Outlook-Termin${repCount > 1 ? 'e' : ''} (.ics) heruntergeladen`, 'success');
+  },
+
+  _queueCalendar(lead, ccRecipients) {
+    const queue = JSON.parse(localStorage.getItem('oktopus_calendar_queue') || '[]');
+    queue.push({
+      leadId: lead.id,
+      lead: { ...lead },
+      reps: ccRecipients,
+      queuedAt: new Date().toISOString()
+    });
+    localStorage.setItem('oktopus_calendar_queue', JSON.stringify(queue));
+    // Mark follow-up locally
+    const idx = this.leads.findIndex(l => l.id === lead.id);
+    if (idx !== -1) {
+      this.leads[idx].followUp = true;
+      this.leads[idx].followUpAt = new Date().toISOString();
+      this.saveLeads();
+      this.updateStats();
+    }
+  },
+
+  _processCalendarQueue() {
+    if (!navigator.onLine) return;
+    const queue = JSON.parse(localStorage.getItem('oktopus_calendar_queue') || '[]');
+    if (!queue.length) return;
+    const settings = this.getSettings();
+    queue.forEach((item, i) => {
+      const lead = item.lead;
+      const ccRecipients = item.reps;
+      const displayName = [lead.title, lead.firstName, lead.lastName].filter(Boolean).join(' ');
+      const interestNames = (lead.interests || []).map(id => {
+        const interest = this.CONFIG.interests.find(x => x.id === id);
+        return interest ? interest.name : '';
+      }).filter(Boolean);
+      const start = new Date();
+      start.setDate(start.getDate() + 3);
+      start.setHours(10, 0, 0, 0);
+      const end = new Date(start);
+      end.setMinutes(end.getMinutes() + 30);
+      if (ccRecipients.length > 1) {
+        ccRecipients.forEach((rep, idx) => {
+          setTimeout(() => {
+            this._downloadICS(lead, [rep], start, end, displayName, interestNames, settings,
+              `followup_${lead.lastName}_${rep.name.replace(/\s+/g, '_')}.ics`);
+          }, (i * ccRecipients.length + idx) * 300);
+        });
+      } else {
+        setTimeout(() => {
+          this._downloadICS(lead, ccRecipients, start, end, displayName, interestNames, settings,
+            `followup_${lead.lastName}_${lead.firstName}.ics`);
+        }, i * 300);
+      }
+    });
+    localStorage.setItem('oktopus_calendar_queue', '[]');
+    this.showStatus(`${queue.length} ausstehende(r) Termin(e) nachträglich heruntergeladen!`, 'success');
+  },
+
+  _downloadICS(lead, attendees, start, end, displayName, interestNames, settings, fileName) {
+    const formatICS = (d) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    const description = [
+      `Follow-up nach ${settings.event || 'IFAT Munich 2026'}`,
+      `Kontakt: ${displayName} (${lead.company})`,
+      `Position: ${lead.jobTitle || '—'}`,
+      `E-Mail: ${lead.email}`,
+      lead.phone ? `Telefon: ${lead.phone}` : '',
+      `Interessen: ${interestNames.join(', ') || '—'}`,
+      lead.notes ? `Notizen: ${lead.notes}` : '',
+    ].filter(Boolean).join('\\n');
+
+    const attendeeLines = attendees.map(r =>
+      `ATTENDEE;CN=${r.name};ROLE=REQ-PARTICIPANT:mailto:${r.email}`
+    ).join('\n');
+
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//OKTOPUS//LeadManager//DE',
+      'METHOD:REQUEST',
+      'BEGIN:VEVENT',
+      `DTSTART:${formatICS(start)}`,
+      `DTEND:${formatICS(end)}`,
+      `SUMMARY:Follow-up: ${displayName} — ${lead.company}`,
+      `DESCRIPTION:${description}`,
+      `LOCATION:${settings.stand || 'Büro'}`,
+      attendeeLines,
+      `ORGANIZER;CN=${this.getSenderInfo().name}:mailto:${this.getSenderInfo().email}`,
+      'STATUS:CONFIRMED',
+      `UID:${lead.id}-${Date.now()}-${Math.random().toString(36).slice(2)}@oktopus`,
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\n');
+
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = fileName;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  },
+
+  saveLeads() { localStorage.setItem('oktopus_leads_v3', JSON.stringify(this.leads)); },
+
+  loadLeads() {
+    const v3 = localStorage.getItem('oktopus_leads_v3');
+    const v2 = localStorage.getItem('oktopus_leads_v2');
+    const v1 = localStorage.getItem('oktopus_leads_pro');
+    if (v3) this.leads = JSON.parse(v3);
+    else if (v2) { this.leads = JSON.parse(v2); this.saveLeads(); }
+    else if (v1) { this.leads = JSON.parse(v1); this.saveLeads(); }
+  },
+
+  updateStats() {
+    const total    = this.leads.length;
+    const hot      = this.leads.filter(l => (l.bantTiming === 'sofort' || l.bantTiming === 'quartal') && l.bantBudget === 'vorhanden').length;
+    const today    = this.leads.filter(l => new Date(l.createdAt).toDateString() === new Date().toDateString()).length;
+    const emails   = this.leads.filter(l => l.emailSent).length;
+    const followups = this.leads.filter(l => l.followUp).length;
+    const repName = this.getSettings().repName || '';
+
+    document.getElementById('repFull').textContent = repName || 'Vertrieb';
+    // Set initials for mobile rep display
+    const repInitialsEl = document.getElementById('repInitials');
+    if (repInitialsEl) {
+      if (repName) {
+        const pts = repName.trim().split(/\s+/);
+        repInitialsEl.textContent = pts.length > 1 ? (pts[0][0] + pts[pts.length-1][0]).toUpperCase() : pts[0].substring(0,2).toUpperCase();
+      } else {
+        repInitialsEl.textContent = 'OK';
+      }
+    }
+    // Kontakte tab quick stats
+    document.getElementById('qsTotal').textContent      = total;
+    document.getElementById('qsHot').textContent        = hot;
+    document.getElementById('qsToday').textContent      = today;
+    document.getElementById('qsEmails').textContent     = emails;
+
+    document.getElementById('leadsCount').textContent   = total;
+    document.getElementById('statsTotal').textContent    = total;
+    document.getElementById('statsHot').textContent      = hot;
+    document.getElementById('statsEmails').textContent   = emails;
+    document.getElementById('statsFollowups').textContent = followups;
+
+    this.renderLeadsList();
+  },
+
+  exportCSV() {
+    if (!this.leads.length) return this.showStatus('Keine Kontakte vorhanden', 'error');
+
+    const headers = [
+      'Anrede','Titel','Vorname','Nachname','Unternehmen','Position',
+      'E-Mail','Telefon','Mobil','Website','Adresse',
+      'Interessen','CC-Vertriebler','Budget','Entscheider','Bedarf','Timing',
+      'Notizen','Event','E-Mail gesendet','Follow-up','Erstellt'
+    ];
+
+    const rows = this.leads.map(l => {
+      const interestNames = l.interests?.map(id => this.CONFIG.interests.find(i => i.id === id)?.name).filter(Boolean).join('; ') || '';
+      const ccNames = this.getCCRecipients(l.interests || []).map(r => r.name).join('; ');
+      return [
+        l.salutation||'', l.title||'', l.firstName, l.lastName,
+        l.company, l.jobTitle||'',
+        l.email, l.phone||'', l.mobile||'', l.website||'', l.address||'',
+        interestNames, ccNames,
+        l.bantBudget||'', l.bantAuthority||'', l.bantNeed||'', l.bantTiming||'',
+        l.notes?.replace(/\n/g,' ')||'', l.event||'',
+        l.emailSent?'Ja':'Nein', l.followUp?'Ja':'Nein',
+        new Date(l.createdAt).toLocaleString('de-DE')
+      ];
+    });
+
+    const csv = [headers, ...rows]
+      .map(r => r.map(c => `"${(c||'').replace(/"/g,'""')}"`).join(','))
+      .join('\n');
+
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `oktopus_leads_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    this.showStatus(`${this.leads.length} Kontakte als CSV exportiert`, 'success');
+  },
+
+  getSettings() { return JSON.parse(localStorage.getItem('oktopus_settings_v3') || '{}'); },
+
+  loadSettings() {
+    const s = this.getSettings();
+    if (s.event) {
+      document.getElementById('settingsEvent').value = s.event;
+      document.getElementById('eventBadge').textContent = s.event;
+    }
+    if (s.stand) document.getElementById('settingsStand').value = s.stand;
+    if (s.repName) document.getElementById('settingsRepName').value = s.repName;
+    if (s.senderEmail) document.getElementById('settingsSenderEmail').value = s.senderEmail;
+    if (s.senderName) document.getElementById('settingsSenderName').value = s.senderName;
+    if (s.webhookUrl) document.getElementById('settingsWebhookUrl').value = s.webhookUrl;
+    if (s.emailEnabled) document.getElementById('toggleEmail').classList.add('active');
+    if (s.calendarEnabled) document.getElementById('toggleCalendar').classList.add('active');
+    // Load interest-rep mapping into CONFIG
+    if (s.interestReps) {
+      this.CONFIG.interests.forEach(i => {
+        if (s.interestReps[i.id]) i.cc = [s.interestReps[i.id]];
+      });
+    }
+  },
+
+  saveSettings() {
+    const s = this.getSettings();
+    s.event = document.getElementById('settingsEvent').value;
+    s.stand = document.getElementById('settingsStand').value;
+    s.repName = document.getElementById('settingsRepName')?.value?.trim() || '';
+    s.senderEmail = document.getElementById('settingsSenderEmail')?.value?.trim() || '';
+    s.senderName = document.getElementById('settingsSenderName')?.value?.trim() || '';
+    s.webhookUrl = document.getElementById('settingsWebhookUrl')?.value?.trim() || '';
+    s.emailEnabled = document.getElementById('toggleEmail').classList.contains('active');
+    s.calendarEnabled = document.getElementById('toggleCalendar').classList.contains('active');
+    localStorage.setItem('oktopus_settings_v3', JSON.stringify(s));
+    document.getElementById('eventBadge').textContent = s.event;
+    this.updateStats();
+  },
+
+  toggleSetting(type) {
+    const toggleMap = { email: 'toggleEmail', calendar: 'toggleCalendar' };
+    const toggle = document.getElementById(toggleMap[type]);
+    if (!toggle) return;
+    toggle.classList.toggle('active');
+    this.saveSettings();
+  },
+
+  clearAllData() {
+    if (!confirm('Wirklich ALLE Kontakte und Einstellungen löschen?\nDas kann nicht rückgängig gemacht werden.')) return;
+    localStorage.removeItem('oktopus_leads_v3');
+    localStorage.removeItem('oktopus_settings_v3');
+    this.leads = [];
+    this.updateStats();
+    this.showStatus('Alle Daten gelöscht', 'success');
+  },
+
+  _toastTimer: null,
+
+  showStatus(msg, type = 'success') {
+    const toast = document.getElementById('statusBar');
+    const text  = document.getElementById('statusText');
+    const icon  = document.getElementById('toastIcon');
+    text.textContent = msg;
+
+    const icons = {
+      success: '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>',
+      error:   '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>',
+      warning: '<svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>',
+      loading: '<svg viewBox="0 0 24 24" class="spin"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>',
+    };
+
+    icon.innerHTML = icons[type] || icons.success;
+    toast.className = 'toast show ' + type;
+    clearTimeout(this._toastTimer);
+    if (type !== 'loading') {
+      this._toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+    }
+  }
+};
+
+// ═══════════════════════════════════════════════
+// CAMERA & OCR MODULE
+// ═══════════════════════════════════════════════
+const CameraModule = {
+  stream: null,
+
+  async init() {
+    const zone    = document.getElementById('cameraZone');
+    const preview = document.getElementById('cameraPreview');
+    const video   = document.getElementById('cameraVideo');
+    const actions = document.getElementById('cameraActions');
+
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } }
+      });
+      video.srcObject = this.stream;
+      zone.classList.add('active');
+      document.getElementById('cameraTitle').textContent = 'Kamera aktiv';
+      document.getElementById('cameraDesc').textContent = 'Visitenkarte ins Bild halten';
+      preview.classList.add('show');
+      video.style.display = 'block';
+      document.getElementById('capturedImage').style.display = 'none';
+      actions.style.display = 'flex';
+    } catch (err) {
+      console.error('Kamera-Fehler:', err);
+      App.showStatus('Kamera nicht verfügbar (HTTPS erforderlich)', 'error');
+    }
+  },
+
+  capture() {
+    const video  = document.getElementById('cameraVideo');
+    const canvas = document.getElementById('cameraCanvas');
+    const img    = document.getElementById('capturedImage');
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    if (typeof Tesseract === 'undefined') {
+      App.showStatus('OCR nicht verfügbar (Tesseract.js offline nicht geladen)', 'warning');
+      return;
+    }
+    img.src = dataUrl;
+    img.style.display = 'block';
+    video.style.display = 'none';
+
+    if (this.stream) { this.stream.getTracks().forEach(t => t.stop()); this.stream = null; }
+
+    document.getElementById('cameraActions').innerHTML = `
+      <button class="btn btn-ghost" onclick="CameraModule.retake()">↺ Neu</button>
+      <button class="btn btn-accent" onclick="CameraModule.runOCR()">🔍 Text erkennen</button>
+    `;
+    App.showStatus('Foto aufgenommen', 'success');
+  },
+
+  retake() {
+    document.getElementById('cameraPreview').classList.remove('show');
+    document.getElementById('cameraActions').style.display = 'none';
+    document.getElementById('cameraZone').classList.remove('active');
+    document.getElementById('cameraTitle').textContent = 'Antippen zum Scannen';
+    document.getElementById('cameraDesc').textContent = 'Visitenkarte ins Bild halten';
+    document.getElementById('ocrProgress').classList.remove('show');
+    document.getElementById('cameraActions').innerHTML = `
+      <button class="btn btn-ghost" onclick="CameraModule.retake()">↺ Neu</button>
+      <button class="btn btn-accent" onclick="CameraModule.capture()">📷 Aufnehmen</button>
+    `;
+    this.init();
+  },
+
+  async runOCR() {
+    const img       = document.getElementById('capturedImage');
+    const progress  = document.getElementById('ocrProgress');
+    const ocrText   = document.getElementById('ocrText');
+    const ocrPercent = document.getElementById('ocrPercent');
+
+    progress.classList.add('show');
+    ocrText.textContent = 'Texterkennung wird gestartet...';
+
+    try {
+      const result = await Tesseract.recognize(img.src, 'deu+eng', {
+        workerPath: 'tesseract/worker.min.js',
+        corePath: 'tesseract/tesseract-core-simd-lstm.wasm.js',
+        langPath: 'tesseract',
+        logger: m => {
+          if (m.status === 'recognizing text') {
+            ocrPercent.textContent = Math.round(m.progress * 100) + '%';
+            ocrText.textContent = 'Texterkennung läuft...';
+          }
+        }
+      });
+
+      this.parseOCRResult(result.data.text);
+      ocrText.textContent = 'Fertig! Formular wurde ausgefüllt.';
+      ocrPercent.textContent = '100%';
+      setTimeout(() => progress.classList.remove('show'), 2000);
+      App.showStatus('Visitenkarte erkannt', 'success');
+    } catch (err) {
+      console.error('OCR Fehler:', err);
+      ocrText.textContent = 'Fehler bei der Texterkennung';
+      App.showStatus('OCR fehlgeschlagen', 'error');
+    }
+  },
+
+  parseOCRResult(text) {
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+    const emailMatch = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+    if (emailMatch) this.setField('email', emailMatch[0]);
+
+    const phonePatterns = text.match(/(?:\+49|0049|0)[\s.-]?\d{2,4}[\s.-]?\d{3,}[\s.-]?\d{0,}/g);
+    if (phonePatterns) {
+      if (phonePatterns[0]) this.setField('phone', phonePatterns[0].replace(/\s+/g, ' '));
+      if (phonePatterns[1]) this.setField('mobile', phonePatterns[1].replace(/\s+/g, ' '));
+    }
+
+    const webMatch = text.match(/(?:www\.|https?:\/\/)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/i);
+    if (webMatch) this.setField('website', webMatch[0]);
+
+    if (/\bProf\.\s*Dr\./i.test(text)) document.getElementById('title').value = 'Prof. Dr.';
+    else if (/\bProf\.\s/i.test(text)) document.getElementById('title').value = 'Prof.';
+    else if (/\bDr\.\s/i.test(text)) document.getElementById('title').value = 'Dr.';
+    else if (/\bDipl\.-Ing\./i.test(text)) document.getElementById('title').value = 'Dipl.-Ing.';
+
+    const companyPatterns = [/GmbH/i, /AG\b/i, /KG\b/i, /SE\b/i, /Inc\./i, /Ltd\./i, /Stadtwerke/i, /Group/i];
+    for (const line of lines) {
+      if (companyPatterns.some(p => p.test(line))) { this.setField('company', line); break; }
+    }
+
+    const positionKeywords = ['Leiter','Manager','Director','Geschäftsführ','CEO','CTO','Head of','Abteilungsleiter','Bereichsleiter','Vertrieb','Einkauf'];
+    for (const line of lines) {
+      if (positionKeywords.some(k => line.toLowerCase().includes(k.toLowerCase()))) { this.setField('jobTitle', line); break; }
+    }
+
+    for (const line of lines.slice(0, 4)) {
+      const words = line.split(/\s+/);
+      if (words.length >= 2 && words.length <= 4
+          && !line.includes('@') && !line.includes('www')
+          && !companyPatterns.some(p => p.test(line))
+          && !/\d{4,}/.test(line)) {
+        let nameWords = [...words];
+        const titlePrefixes = ['Dr.', 'Prof.', 'Dipl.-Ing.', 'MBA'];
+        while (titlePrefixes.includes(nameWords[0]) && nameWords.length > 2) nameWords.shift();
+        if (nameWords.length >= 2) {
+          this.setField('firstName', nameWords[0]);
+          this.setField('lastName', nameWords.slice(1).join(' '));
+          const femaleNames = ['Anna','Maria','Sabine','Lisa','Julia','Sarah','Laura','Petra','Claudia'];
+          const maleNames   = ['Michael','Thomas','Klaus','Peter','Andreas','Stefan','Markus','Martin','Frank'];
+          if (femaleNames.some(n => nameWords[0].includes(n))) document.getElementById('salutation').value = 'Frau';
+          else if (maleNames.some(n => nameWords[0].includes(n))) document.getElementById('salutation').value = 'Herr';
+          break;
+        }
+      }
+    }
+
+    const addressMatch = text.match(/\d{5}\s+[A-ZÄÖÜ][a-zäöüß]+/);
+    if (addressMatch) {
+      for (const line of lines) {
+        if (line.includes(addressMatch[0])) { this.setField('address', line); break; }
+      }
+    }
+  },
+
+  setField(fieldId, value) {
+    const field = document.getElementById(fieldId);
+    if (field && value) {
+      field.value = value;
+      field.classList.add('autofilled');
+      setTimeout(() => field.classList.remove('autofilled'), 3000);
+    }
+  },
+
+  reset() {
+    if (this.stream) { this.stream.getTracks().forEach(t => t.stop()); this.stream = null; }
+    document.getElementById('cameraPreview').classList.remove('show');
+    document.getElementById('cameraActions').style.display = 'none';
+    document.getElementById('cameraZone').classList.remove('active');
+    document.getElementById('cameraTitle').textContent = 'Antippen zum Scannen';
+    document.getElementById('cameraDesc').textContent = 'Visitenkarte ins Bild halten';
+    document.getElementById('ocrProgress').classList.remove('show');
+  }
+};
+
+// ═══ APP START ═══
+document.addEventListener('DOMContentLoaded', () => App.init());
+</script>
+</body>
+</html>

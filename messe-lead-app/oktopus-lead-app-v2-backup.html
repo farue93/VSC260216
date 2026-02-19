@@ -1,0 +1,2478 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#F0EFF6">
+  <title>OKTOPUS | Lead Capture</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <style>
+/* ═══════════════════════════════════════════════════
+   OKTOPUS Lead Capture — v2 Brand Redesign
+   #4c30a8 · #ff9b37 · #ffd026 · #424248
+   Splash · Products · Swipe · Tentacle Buttons
+   ═══════════════════════════════════════════════════ */
+
+:root {
+  --purple:        #4c30a8;
+  --purple-dark:   #3a2480;
+  --purple-light:  #7a63c7;
+  --purple-bg:     rgba(76,48,168,0.06);
+  --purple-10:     rgba(76,48,168,0.10);
+  --purple-15:     rgba(76,48,168,0.15);
+  --purple-20:     rgba(76,48,168,0.20);
+  --orange:        #ff9b37;
+  --orange-bg:     rgba(255,155,55,0.10);
+  --yellow:        #ffd026;
+  --yellow-bg:     rgba(255,208,38,0.12);
+  --green:         #10B981;
+  --green-light:   #34D399;
+  --green-bg:      rgba(16,185,129,0.08);
+  --red:           #EF4444;
+  --red-bg:        rgba(239,68,68,0.08);
+  --blue:          #3B82F6;
+  --blue-bg:       rgba(59,130,246,0.08);
+  --bg:            #F0EFF6;
+  --bg-subtle:     #E8E6F0;
+  --card:          #FFFFFF;
+  --border:        #E0DDE9;
+  --border-focus:  var(--purple);
+  --text:          #424248;
+  --text-sec:      #6B6B73;
+  --text-muted:    #9898A0;
+  --input-bg:      #F5F4FA;
+  --shadow-sm:     0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow:        0 4px 12px rgba(0,0,0,0.06);
+  --shadow-lg:     0 8px 28px rgba(0,0,0,0.08);
+  --shadow-purple: 0 4px 16px rgba(76,48,168,0.22);
+  --radius:        12px;
+  --radius-lg:     16px;
+  --radius-xl:     20px;
+  --transition:    all 0.2s cubic-bezier(0.4,0,0.2,1);
+  --transition-spring: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg); color: var(--text);
+  min-height: 100vh; -webkit-font-smoothing: antialiased;
+  font-size: 14px; line-height: 1.5; overflow-x: hidden;
+}
+
+/* ═══ SPLASH SCREEN ═════════════════════════════ */
+.splash {
+  position: fixed; inset: 0; z-index: 9999;
+  background: linear-gradient(145deg, #4c30a8 0%, #3a2480 45%, #2d1b66 100%);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  transition: opacity 0.7s ease, transform 0.7s ease;
+  overflow: hidden;
+}
+.splash::before {
+  content: ''; position: absolute; inset: -50%;
+  background: radial-gradient(circle at 30% 40%, rgba(255,155,55,0.08) 0%, transparent 50%),
+              radial-gradient(circle at 70% 60%, rgba(255,208,38,0.06) 0%, transparent 50%);
+  animation: splashGlow 4s ease-in-out infinite alternate;
+}
+@keyframes splashGlow {
+  0% { opacity: 0.5; transform: scale(1); }
+  100% { opacity: 1; transform: scale(1.05); }
+}
+.splash.fade-out {
+  opacity: 0; transform: scale(1.15);
+  pointer-events: none;
+}
+.splash-logo {
+  width: 160px; height: 160px; position: relative; z-index: 1;
+  animation: splashFlyIn 0.7s cubic-bezier(0.16,1,0.3,1) both;
+}
+.splash-logo svg { width: 100%; height: 100%; }
+.splash-title {
+  font-size: 36px; font-weight: 900; color: #fff;
+  letter-spacing: 3px; margin-top: 20px;
+  position: relative; z-index: 1;
+  animation: splashFlyIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.12s both;
+}
+.splash-title span { color: var(--orange); }
+.splash-sub {
+  font-size: 12px; color: rgba(255,255,255,0.5);
+  font-weight: 600; letter-spacing: 4px; text-transform: uppercase;
+  margin-top: 8px; position: relative; z-index: 1;
+  animation: splashFlyIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.24s both;
+}
+.splash-tentacles {
+  display: flex; gap: 28px; margin-top: 52px;
+  position: relative; z-index: 1;
+  animation: splashFlyIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.36s both;
+}
+.tentacle-btn {
+  width: 60px; height: 60px; border: none;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%; cursor: pointer;
+  padding: 14px; position: relative;
+  animation: breathe 2.8s ease-in-out infinite;
+  -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.12);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.tentacle-btn:nth-child(2) { animation-delay: 0.9s; }
+.tentacle-btn:nth-child(3) { animation-delay: 1.8s; }
+.tentacle-btn svg {
+  width: 100%; height: 100%;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+}
+.tentacle-btn:active {
+  transform: scale(0.88);
+  background: rgba(255,255,255,0.18);
+}
+.tentacle-label {
+  position: absolute; bottom: -20px; left: 50%;
+  transform: translateX(-50%); white-space: nowrap;
+  font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.55);
+  letter-spacing: 1px; text-transform: uppercase;
+}
+
+@keyframes splashFlyIn {
+  0% { opacity: 0; transform: translateY(100px) scale(0.3) rotate(-10deg); }
+  60% { transform: translateY(-8px) scale(1.04) rotate(1deg); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+}
+@keyframes breathe {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+/* ═══ FRAME ═══════════════════════════════════ */
+.frame {
+  max-width: 480px; margin: 0 auto;
+  min-height: 100vh; position: relative;
+  background: var(--bg);
+}
+
+/* ═══ TOPBAR ═════════════════════════════════ */
+.topbar {
+  position: fixed; top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 100%; max-width: 480px; z-index: 100;
+  background: var(--purple);
+  padding: 0 16px; height: 56px;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 2px 16px rgba(76,48,168,0.25);
+}
+
+.logo {
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+
+.logo-icon {
+  width: 32px; height: 32px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 4px;
+}
+.logo-icon svg { width: 100%; height: 100%; }
+
+.logo-text {
+  font-size: 18px; font-weight: 900;
+  color: #fff; letter-spacing: 1.5px;
+}
+.logo-text span { color: var(--orange); }
+
+.tb-sep {
+  width: 1px; height: 24px;
+  background: rgba(255,255,255,0.15);
+}
+
+.event-pill {
+  font-size: 10px; font-weight: 700;
+  color: var(--yellow); letter-spacing: 0.5px;
+  background: rgba(255,208,38,0.12);
+  padding: 4px 10px; border-radius: 20px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.lead-counter {
+  display: flex; align-items: center; gap: 6px;
+  margin-left: auto; position: relative;
+}
+.counter-pulse {
+  position: absolute; left: -4px; top: 50%;
+  transform: translateY(-50%);
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--orange);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: translateY(-50%) scale(1); }
+  50% { opacity: 0.4; transform: translateY(-50%) scale(1.4); }
+}
+.counter-number {
+  font-size: 20px; font-weight: 900; color: #fff;
+  padding-left: 10px;
+}
+.counter-label {
+  font-size: 10px; color: rgba(255,255,255,0.6);
+  font-weight: 600; letter-spacing: 0.5px;
+}
+
+.tb-spacer { flex: 1; }
+
+.tb-avatar {
+  width: 32px; height: 32px; border-radius: 10px;
+  background: var(--orange);
+  color: #fff; font-size: 11px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  letter-spacing: 0.5px;
+}
+
+/* ═══ TOAST ══════════════════════════════════ */
+.toast {
+  position: fixed; top: 64px; left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  z-index: 200; padding: 10px 20px;
+  background: var(--card);
+  border-radius: 28px; box-shadow: var(--shadow-lg);
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; font-weight: 600;
+  opacity: 0; transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  border: 1px solid var(--border); max-width: 90%;
+}
+.toast.show {
+  transform: translateX(-50%) translateY(0); opacity: 1;
+}
+.toast-icon {
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.toast-icon svg { width: 14px; height: 14px; fill: white; }
+.toast.success .toast-icon { background: var(--green); }
+.toast.error .toast-icon { background: var(--red); }
+.toast.warning .toast-icon { background: var(--orange); }
+.toast.loading .toast-icon { background: var(--purple); }
+.toast-text { color: var(--text); white-space: nowrap; }
+
+/* ═══ BOTTOM NAV ═════════════════════════════ */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 100%; max-width: 480px; z-index: 100;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  display: flex; height: 64px;
+  box-shadow: 0 -2px 16px rgba(0,0,0,0.05);
+}
+.nav-tab {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px; border: none; background: none;
+  color: var(--text-muted); font-size: 10px;
+  font-weight: 600; cursor: pointer;
+  transition: var(--transition);
+  position: relative; font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-tab.active { color: var(--purple); }
+.nav-tab.active::before {
+  content: ''; position: absolute; top: 0;
+  left: 25%; right: 25%; height: 3px;
+  background: var(--purple); border-radius: 0 0 3px 3px;
+}
+.nav-icon { width: 22px; height: 22px; }
+.nav-icon svg { width: 100%; height: 100%; fill: currentColor; }
+
+/* ═══ MAIN ═══════════════════════════════════ */
+.main {
+  padding: 68px 16px 80px;
+  max-width: 480px; margin: 0 auto;
+}
+
+.section { display: none; }
+.section.active { display: block; animation: fadeUp 0.3s ease; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══ QUICK STATS BAR ═══════════════════════ */
+.quick-stats {
+  display: flex; align-items: center;
+  background: var(--card); border-radius: var(--radius-lg);
+  padding: 14px; margin-bottom: 16px;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+}
+.quick-stat {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 2px;
+}
+.qs-value {
+  font-size: 20px; font-weight: 900; color: var(--purple);
+}
+.qs-value.hot { color: var(--red); }
+.qs-value.sent { color: var(--green); }
+.qs-label {
+  font-size: 10px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  font-weight: 600;
+}
+.qs-divider {
+  width: 1px; height: 28px; background: var(--border);
+}
+
+/* ═══ APP CARDS ══════════════════════════════ */
+.app-card {
+  background: var(--card); border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm); margin-bottom: 16px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.animate-in {
+  animation: slideUpCard 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes slideUpCard {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.card-header-fancy {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+}
+.card-icon {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: var(--purple-bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.card-header-fancy h3 {
+  font-size: 15px; font-weight: 700; color: var(--text);
+}
+.card-header-fancy p {
+  font-size: 12px; color: var(--text-muted);
+  margin-top: 1px;
+}
+.card-body { padding: 16px 20px; }
+
+/* ═══ CAMERA ═════════════════════════════════ */
+.camera-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg); padding: 32px 20px;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 8px;
+  cursor: pointer; transition: var(--transition);
+}
+.camera-zone:active {
+  border-color: var(--purple);
+  background: var(--purple-bg);
+}
+.camera-zone.active {
+  border-color: var(--green); border-style: solid;
+}
+.camera-ring {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-purple);
+}
+.camera-ring svg { width: 24px; height: 24px; }
+.camera-label {
+  font-weight: 700; color: var(--text); font-size: 14px;
+  margin-top: 4px;
+}
+.camera-sub {
+  font-size: 12px; color: var(--text-muted);
+}
+.camera-preview {
+  border-radius: var(--radius); overflow: hidden;
+  margin-top: 12px; display: none;
+}
+.camera-preview.show { display: block; }
+.camera-preview video,
+.camera-preview img {
+  width: 100%; border-radius: var(--radius);
+}
+.camera-actions {
+  display: flex; gap: 8px; margin-top: 12px;
+}
+
+.ocr-progress {
+  display: none; align-items: center; gap: 10px;
+  padding: 12px; background: var(--purple-bg);
+  border-radius: var(--radius); margin-top: 12px;
+}
+.ocr-progress.show { display: flex; }
+.ocr-ring {
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 3px solid var(--purple-15);
+  border-top-color: var(--purple);
+  animation: spin-slow 0.8s linear infinite;
+}
+.ocr-text { flex: 1; font-size: 12px; font-weight: 600; color: var(--purple); }
+.ocr-percent { font-size: 14px; font-weight: 800; color: var(--purple); }
+
+/* ═══ FORM CONTROLS ══════════════════════════ */
+.form-row {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; margin-bottom: 12px;
+}
+.form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 4px; }
+.form-group label {
+  font-size: 11px; font-weight: 700;
+  color: var(--text-sec); text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.form-control {
+  width: 100%; padding: 10px 12px;
+  background: var(--input-bg); border: 1.5px solid var(--border);
+  border-radius: var(--radius); font-size: 14px;
+  color: var(--text); font-family: inherit;
+  transition: var(--transition); outline: none;
+}
+.form-control:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px var(--purple-10);
+  background: #fff;
+}
+.form-textarea { min-height: 80px; resize: vertical; }
+.form-control.autofilled {
+  border-color: var(--green);
+  background: var(--green-bg);
+  animation: autofillPulse 0.4s ease;
+}
+@keyframes autofillPulse {
+  0% { transform: scale(0.98); }
+  50% { transform: scale(1.01); }
+  100% { transform: scale(1); }
+}
+
+select.form-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%239898A0' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+}
+
+/* ═══ INTEREST CHIPS ═════════════════════════ */
+.interest-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.interest-chip {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px; border-radius: var(--radius);
+  border: 2px solid var(--border);
+  cursor: pointer; transition: var(--transition);
+  background: var(--card);
+}
+.interest-chip input { display: none; }
+.interest-chip.selected {
+  border-color: var(--purple); background: var(--purple-bg);
+}
+.interest-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--purple-15); flex-shrink: 0;
+  transition: var(--transition);
+}
+.interest-chip.selected .interest-dot {
+  background: var(--purple); box-shadow: 0 0 8px var(--purple-20);
+}
+.interest-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.interest-sub { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+
+/* ═══ BANT GRID ══════════════════════════════ */
+.bant-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.bant-card {
+  text-align: center; padding: 14px 8px;
+  border-radius: var(--radius);
+  background: var(--input-bg); border: 1px solid var(--border);
+}
+.bant-emoji { font-size: 24px; margin-bottom: 6px; }
+.bant-title {
+  font-size: 11px; font-weight: 700; color: var(--text);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+.bant-select { text-align: center; font-size: 12px; }
+
+/* ═══ BUTTONS ════════════════════════════════ */
+.btn {
+  padding: 10px 20px; border-radius: var(--radius);
+  font-size: 13px; font-weight: 700; border: none;
+  cursor: pointer; font-family: inherit;
+  transition: var(--transition); display: inline-flex;
+  align-items: center; gap: 6px; justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-accent {
+  background: var(--purple); color: white;
+  box-shadow: var(--shadow-purple);
+}
+.btn-accent:active { transform: scale(0.96); }
+.btn-glow {
+  background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%);
+  color: white; box-shadow: var(--shadow-purple);
+  position: relative; overflow: hidden;
+}
+.btn-glow:active { transform: scale(0.96); }
+.btn-shine {
+  position: absolute; top: 0; left: -75%; width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: shine 3s infinite;
+}
+@keyframes shine {
+  0% { left: -75%; }
+  100% { left: 125%; }
+}
+.btn-ghost {
+  background: transparent; color: var(--purple);
+  border: 1.5px solid var(--border);
+}
+.btn-ghost:active { background: var(--purple-bg); }
+.btn-danger {
+  background: var(--red-bg); color: var(--red);
+  border: 1.5px solid transparent;
+}
+.btn-danger:active { background: #FECACA; }
+.btn-lg { padding: 14px 28px; font-size: 15px; }
+.btn-sm { padding: 7px 14px; font-size: 12px; }
+.btn-block { display: flex; width: 100%; }
+
+.action-bar {
+  display: flex; gap: 12px; margin-top: 16px;
+  padding-bottom: 20px;
+}
+.action-bar .btn { flex: 1; }
+
+/* ═══ PRODUCTS SECTION ══════════════════════ */
+.products-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.products-title {
+  font-size: 22px; font-weight: 900; color: var(--text);
+}
+.products-count {
+  font-size: 12px; color: var(--text-muted); font-weight: 600;
+}
+.products-wrapper {
+  position: relative; overflow: hidden;
+  touch-action: pan-y; user-select: none;
+  margin: 0 -4px;
+}
+.products-carousel {
+  display: flex; transition: transform 0.4s cubic-bezier(0.25,0.8,0.25,1);
+  will-change: transform;
+}
+.products-carousel.swiping { transition: none; }
+.product-slide {
+  min-width: 100%; padding: 0 4px; flex-shrink: 0;
+}
+.product-card {
+  background: var(--card); border-radius: var(--radius-xl);
+  box-shadow: var(--shadow); overflow: hidden;
+  border: 1px solid var(--border);
+  transition: var(--transition);
+}
+.product-visual {
+  height: 200px; position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.product-visual-bg {
+  position: absolute; inset: 0;
+}
+.product-visual-icon {
+  font-size: 80px; position: relative; z-index: 1;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
+  animation: floatProduct 3.5s ease-in-out infinite;
+}
+@keyframes floatProduct {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.product-badge {
+  position: absolute; top: 12px; right: 12px; z-index: 2;
+  background: var(--orange); color: #fff;
+  font-size: 10px; font-weight: 800; padding: 4px 10px;
+  border-radius: 20px; text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.product-body { padding: 20px; }
+.product-name {
+  font-size: 18px; font-weight: 800; color: var(--text);
+  margin-bottom: 4px;
+}
+.product-desc {
+  font-size: 13px; color: var(--text-sec); line-height: 1.55;
+  margin-bottom: 14px;
+}
+.product-tags {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px;
+}
+.product-tag {
+  font-size: 10px; font-weight: 700; padding: 4px 10px;
+  border-radius: 20px; letter-spacing: 0.3px;
+}
+.product-tag.purple { background: var(--purple-bg); color: var(--purple); }
+.product-tag.orange { background: var(--orange-bg); color: var(--orange); }
+.product-tag.yellow { background: var(--yellow-bg); color: #b8920d; }
+.product-tag.green { background: var(--green-bg); color: var(--green); }
+
+.product-actions {
+  display: flex; gap: 8px; align-items: center;
+}
+.product-interest-btn {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px; border: 2px solid var(--purple);
+  border-radius: var(--radius); background: transparent;
+  color: var(--purple); font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: var(--transition);
+  font-family: inherit;
+}
+.product-interest-btn:active,
+.product-interest-btn.checked {
+  background: var(--purple); color: #fff;
+}
+.product-interest-btn .check-icon {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid currentColor; display: flex;
+  align-items: center; justify-content: center;
+  transition: var(--transition); flex-shrink: 0;
+}
+.product-interest-btn.checked .check-icon {
+  background: #fff; border-color: #fff;
+}
+.product-interest-btn .check-icon svg {
+  width: 12px; height: 12px; opacity: 0;
+  transition: var(--transition);
+}
+.product-interest-btn.checked .check-icon svg {
+  opacity: 1;
+}
+.product-video-btn {
+  width: 44px; height: 44px; border-radius: var(--radius);
+  border: 2px solid var(--orange); background: transparent;
+  color: var(--orange); font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition); flex-shrink: 0;
+  font-family: inherit;
+}
+.product-video-btn:active {
+  background: var(--orange); color: #fff;
+}
+
+.carousel-dots {
+  display: flex; justify-content: center; gap: 8px;
+  padding: 16px 0 6px;
+}
+.carousel-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--border); border: none; cursor: pointer;
+  transition: var(--transition); padding: 0;
+}
+.carousel-dot.active {
+  width: 24px; border-radius: 4px;
+  background: var(--purple);
+}
+.swipe-hint {
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px; padding: 6px 0; color: var(--text-muted);
+  font-size: 11px; font-weight: 500;
+}
+.swipe-arrow {
+  display: inline-block;
+  animation: swipeHint 1.8s ease-in-out infinite;
+}
+@keyframes swipeHint {
+  0%, 100% { transform: translateX(0); opacity: 0.3; }
+  50% { transform: translateX(5px); opacity: 1; }
+}
+
+/* ═══ INTEREST OVERLAY ══════════════════════ */
+.interest-overlay {
+  position: fixed; bottom: 0; left: 50%;
+  transform: translateX(-50%) translateY(100%);
+  width: 100%; max-width: 480px;
+  z-index: 4000;
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+.interest-overlay.show { transform: translateX(-50%) translateY(0); }
+.interest-overlay-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+  z-index: 3999; opacity: 0; transition: opacity 0.3s;
+  pointer-events: none;
+}
+.interest-overlay-backdrop.show { opacity: 1; pointer-events: auto; }
+.interest-overlay-panel {
+  background: var(--card); border-radius: 24px 24px 0 0;
+  padding: 16px 20px 32px; max-height: 55vh; overflow-y: auto;
+  box-shadow: 0 -8px 32px rgba(0,0,0,0.15);
+}
+.interest-overlay-handle {
+  width: 40px; height: 4px; background: var(--border);
+  border-radius: 2px; margin: 0 auto 14px;
+}
+.interest-overlay-title {
+  font-size: 16px; font-weight: 800; color: var(--text);
+  margin-bottom: 2px;
+}
+.interest-overlay-sub {
+  font-size: 12px; color: var(--text-muted); margin-bottom: 14px;
+}
+.interest-overlay-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.io-chip {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px; border-radius: var(--radius);
+  border: 2px solid var(--border); cursor: pointer;
+  transition: var(--transition); background: var(--card);
+}
+.io-chip.selected {
+  border-color: var(--purple); background: var(--purple-bg);
+}
+.io-chip input { display: none; }
+.io-chip-dot {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid var(--border); display: flex;
+  align-items: center; justify-content: center;
+  transition: var(--transition); flex-shrink: 0;
+}
+.io-chip.selected .io-chip-dot {
+  background: var(--purple); border-color: var(--purple);
+}
+.io-chip-dot svg {
+  width: 12px; height: 12px; fill: #fff;
+  opacity: 0; transition: var(--transition);
+}
+.io-chip.selected .io-chip-dot svg { opacity: 1; }
+.io-chip-info {}
+.io-chip-name { font-size: 12px; font-weight: 700; color: var(--text); }
+.io-chip-sub { font-size: 10px; color: var(--text-muted); }
+
+/* ═══ VIDEO MODAL ═══════════════════════════ */
+.video-modal {
+  position: fixed; inset: 0; z-index: 5000;
+  background: rgba(0,0,0,0.92);
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 24px;
+}
+.video-modal.show { display: flex; }
+.video-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255,255,255,0.12); border: none;
+  color: #fff; font-size: 22px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 10; backdrop-filter: blur(8px);
+}
+.video-close:active { background: rgba(255,255,255,0.25); }
+.video-container {
+  width: 100%; max-width: 440px; aspect-ratio: 16/9;
+  border-radius: var(--radius-lg); overflow: hidden;
+  background: #111; position: relative;
+}
+.video-placeholder {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.6); gap: 12px;
+}
+.video-placeholder-icon { font-size: 56px; }
+.video-placeholder-text { font-size: 14px; font-weight: 500; }
+.video-touch-controls {
+  display: flex; align-items: center; justify-content: center;
+  gap: 28px; margin-top: 24px;
+}
+.video-touch-btn {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);
+  color: #fff; font-size: 20px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(8px); transition: var(--transition);
+}
+.video-touch-btn:active {
+  background: rgba(255,255,255,0.25); transform: scale(0.92);
+}
+.video-touch-btn.play-btn {
+  width: 68px; height: 68px; font-size: 26px;
+  background: var(--purple); border-color: var(--purple-light);
+}
+.video-title {
+  color: #fff; font-size: 15px; font-weight: 600;
+  margin-top: 16px; text-align: center;
+}
+
+/* ═══ LEADS LIST ═════════════════════════════ */
+.leads-hero {
+  display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 16px;
+}
+.leads-title { font-size: 22px; font-weight: 900; }
+.leads-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+.search-bar {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--card); border-radius: var(--radius-lg);
+  padding: 10px 16px; margin-bottom: 16px;
+  border: 1px solid var(--border);
+}
+.search-bar svg { width: 18px; height: 18px; fill: var(--text-muted); flex-shrink: 0; }
+.search-bar input {
+  flex: 1; border: none; background: none;
+  font-size: 14px; color: var(--text);
+  font-family: inherit; outline: none;
+}
+
+.lead-card {
+  background: var(--card); border-radius: var(--radius-lg);
+  padding: 16px; margin-bottom: 10px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm); cursor: pointer;
+  transition: var(--transition);
+}
+.lead-card:active { transform: scale(0.985); }
+.lead-card-top { display: flex; align-items: center; gap: 12px; }
+.lead-avatar {
+  width: 42px; height: 42px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+  color: #fff; font-size: 14px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; letter-spacing: 0.5px;
+}
+.lead-info { flex: 1; min-width: 0; }
+.lead-name {
+  font-size: 14px; font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lead-company {
+  font-size: 12px; color: var(--text-sec);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lead-position { font-size: 11px; color: var(--text-muted); }
+.lead-badges { display: flex; gap: 4px; flex-shrink: 0; }
+.lead-badge {
+  font-size: 10px; font-weight: 700; padding: 3px 8px;
+  border-radius: 20px; letter-spacing: 0.3px;
+}
+.lead-badge.new { background: var(--blue-bg); color: var(--blue); }
+.lead-badge.warm { background: var(--orange-bg); color: var(--orange); }
+.lead-badge.hot { background: var(--red-bg); color: var(--red); }
+.lead-badge.email { background: var(--green-bg); color: var(--green); }
+.lead-tags {
+  display: flex; flex-wrap: wrap; gap: 4px;
+  margin-top: 10px; padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.lead-tag {
+  font-size: 10px; font-weight: 600; color: var(--purple);
+  background: var(--purple-bg); padding: 3px 8px;
+  border-radius: 12px;
+}
+.lead-meta {
+  display: flex; align-items: center; gap: 12px;
+  margin-top: 10px; font-size: 11px; color: var(--text-muted);
+}
+.lead-delete {
+  margin-left: auto; color: var(--red);
+  font-weight: 600; cursor: pointer;
+}
+
+.empty-state {
+  text-align: center; padding: 48px 20px;
+  color: var(--text-muted);
+}
+.empty-state-title {
+  font-size: 18px; font-weight: 700;
+  color: var(--text); margin-bottom: 4px;
+}
+
+/* ═══ SETTINGS ═══════════════════════════════ */
+.settings-group { margin-bottom: 24px; }
+.settings-title {
+  font-size: 13px; font-weight: 700; color: var(--text-sec);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 10px; padding-left: 4px;
+}
+.settings-card {
+  background: var(--card); border-radius: var(--radius-lg);
+  border: 1px solid var(--border); overflow: hidden;
+}
+.sc-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.sc-row:last-child { border-bottom: none; }
+.sc-icon { font-size: 20px; flex-shrink: 0; }
+.sc-content { flex: 1; }
+.sc-label { font-size: 14px; font-weight: 600; }
+.sc-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.sc-value { font-size: 12px; font-weight: 700; }
+.settings-input {
+  margin-top: 4px; font-size: 13px;
+}
+
+.toggle {
+  width: 44px; height: 26px; border-radius: 13px;
+  background: var(--border); cursor: pointer;
+  position: relative; transition: var(--transition);
+  flex-shrink: 0;
+}
+.toggle::after {
+  content: ''; position: absolute;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: white; top: 3px; left: 3px;
+  transition: var(--transition);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.toggle.active { background: var(--purple); }
+.toggle.active::after { left: 21px; }
+
+.stats-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+}
+.stat-box {
+  padding: 16px; text-align: center;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.stat-box:nth-child(2n) { border-right: none; }
+.stat-box:nth-child(n+3) { border-bottom: none; }
+.stat-number {
+  font-size: 28px; font-weight: 800; color: var(--purple);
+}
+.stat-box.hot .stat-number { color: var(--red); }
+.stat-label {
+  font-size: 11px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  font-weight: 600; margin-top: 4px;
+}
+
+/* ═══ RESPONSIVE ═════════════════════════════ */
+@media (max-width: 440px) {
+  .form-row { grid-template-columns: 1fr; }
+  .form-row.triple { grid-template-columns: 1fr 1fr; }
+  .interest-grid { grid-template-columns: 1fr; }
+  .interest-overlay-grid { grid-template-columns: 1fr; }
+  .bant-grid { grid-template-columns: 1fr; }
+  .event-pill { display: none; }
+  .topbar { padding: 0 12px; }
+  .main { padding: 68px 12px 80px; }
+  .product-visual { height: 160px; }
+  .product-visual-icon { font-size: 60px; }
+  .splash-logo { width: 120px; height: 120px; }
+  .splash-title { font-size: 28px; }
+  .tentacle-btn { width: 50px; height: 50px; padding: 12px; }
+}
+
+/* Tablet */
+@media (min-width: 481px) and (max-width: 1024px) {
+  .frame { max-width: 600px; }
+  .topbar { max-width: 600px; }
+  .bottom-nav { max-width: 600px; }
+  .product-visual { height: 240px; }
+  .product-visual-icon { font-size: 100px; }
+  .interest-overlay { max-width: 600px; }
+  .splash-logo { width: 200px; height: 200px; }
+  .splash-title { font-size: 44px; }
+}
+
+/* ═══ SCROLLBAR ══════════════════════════════ */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+.spin { animation: spin-slow 1s linear infinite; }
+  </style>
+</head>
+<body>
+
+<!-- ═══ SPLASH SCREEN ═══ -->
+<div class="splash" id="splashScreen">
+  <div class="splash-logo">
+    <!-- OKTOPUS Logo: open circle top + 3 tentacles bottom -->
+    <svg viewBox="0 0 200 200" fill="none">
+      <!-- Main body circle (open at bottom) -->
+      <path d="M100 20 C145 20 180 55 180 100 C180 130 165 155 142 168" stroke="white" stroke-width="18" stroke-linecap="round" fill="none"/>
+      <path d="M100 20 C55 20 20 55 20 100 C20 130 35 155 58 168" stroke="white" stroke-width="18" stroke-linecap="round" fill="none"/>
+      <!-- Left tentacle -->
+      <path d="M58 168 C50 185 42 200 55 200 C68 200 60 185 65 175" stroke="#ff9b37" stroke-width="14" stroke-linecap="round" fill="none"/>
+      <!-- Center tentacle -->
+      <path d="M90 178 C92 195 95 210 100 210 C105 210 108 195 110 178" stroke="#ffd026" stroke-width="14" stroke-linecap="round" fill="none"/>
+      <!-- Right tentacle -->
+      <path d="M142 168 C150 185 158 200 145 200 C132 200 140 185 135 175" stroke="#ff9b37" stroke-width="14" stroke-linecap="round" fill="none"/>
+      <!-- Eye left -->
+      <circle cx="78" cy="88" r="10" fill="white"/>
+      <circle cx="80" cy="86" r="5" fill="#4c30a8"/>
+      <!-- Eye right -->
+      <circle cx="122" cy="88" r="10" fill="white"/>
+      <circle cx="124" cy="86" r="5" fill="#4c30a8"/>
+    </svg>
+  </div>
+  <div class="splash-title">OKTO<span>PUS</span></div>
+  <div class="splash-sub">Lead Management System</div>
+
+  <!-- 3 Tentacle Touch Buttons -->
+  <div class="splash-tentacles">
+    <button class="tentacle-btn" onclick="SplashModule.quickAction('products')" aria-label="Produkte">
+      <svg viewBox="0 0 40 40"><path d="M20 5 C14 5 6 12 8 22 C10 32 16 38 20 38 C24 38 30 32 32 22 C34 12 26 5 20 5Z" fill="#ff9b37"/></svg>
+      <div class="tentacle-label">Produkte</div>
+    </button>
+    <button class="tentacle-btn" onclick="SplashModule.quickAction('new')" aria-label="Erfassen">
+      <svg viewBox="0 0 40 40"><path d="M20 5 C14 5 6 12 8 22 C10 32 16 38 20 38 C24 38 30 32 32 22 C34 12 26 5 20 5Z" fill="#ffd026"/></svg>
+      <div class="tentacle-label">Erfassen</div>
+    </button>
+    <button class="tentacle-btn" onclick="SplashModule.quickAction('leads')" aria-label="Leads">
+      <svg viewBox="0 0 40 40"><path d="M20 5 C14 5 6 12 8 22 C10 32 16 38 20 38 C24 38 30 32 32 22 C34 12 26 5 20 5Z" fill="#ff9b37"/></svg>
+      <div class="tentacle-label">Leads</div>
+    </button>
+  </div>
+</div>
+
+<!-- ═══ VIDEO MODAL ═══ -->
+<div class="video-modal" id="videoModal">
+  <button class="video-close" onclick="VideoModule.close()">✕</button>
+  <div class="video-container">
+    <div class="video-placeholder" id="videoPlaceholder">
+      <div class="video-placeholder-icon">🎬</div>
+      <div class="video-placeholder-text" id="videoPlaceholderText">Video-Platzhalter</div>
+    </div>
+  </div>
+  <div class="video-touch-controls">
+    <button class="video-touch-btn" onclick="VideoModule.seekBack()">⏪</button>
+    <button class="video-touch-btn play-btn" onclick="VideoModule.togglePlay()">▶</button>
+    <button class="video-touch-btn" onclick="VideoModule.seekForward()">⏩</button>
+  </div>
+  <div class="video-title" id="videoTitle">Produktvideo</div>
+</div>
+
+<!-- ═══ INTEREST OVERLAY (from Products) ═══ -->
+<div class="interest-overlay-backdrop" id="interestBackdrop" onclick="InterestOverlay.close()"></div>
+<div class="interest-overlay" id="interestOverlay">
+  <div class="interest-overlay-panel">
+    <div class="interest-overlay-handle"></div>
+    <div class="interest-overlay-title">Interesse markieren</div>
+    <div class="interest-overlay-sub" id="ioSubtitle">Für den aktuellen Messebesucher</div>
+    <div class="interest-overlay-grid" id="interestOverlayGrid"></div>
+  </div>
+</div>
+
+<div class="frame">
+  <!-- ═══ HEADER ═══ -->
+  <header class="topbar">
+    <div class="logo" onclick="App.showSection('products')">
+      <div class="logo-icon">
+        <svg viewBox="0 0 200 200" fill="none">
+          <path d="M100 25 C140 25 170 55 170 95 C170 120 158 142 140 155" stroke="white" stroke-width="16" stroke-linecap="round" fill="none"/>
+          <path d="M100 25 C60 25 30 55 30 95 C30 120 42 142 60 155" stroke="white" stroke-width="16" stroke-linecap="round" fill="none"/>
+          <path d="M60 155 C55 168 50 180 58 180 C66 180 62 168 65 162" stroke="#ff9b37" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <path d="M93 165 C95 178 98 188 100 188 C102 188 105 178 107 165" stroke="#ffd026" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <path d="M140 155 C145 168 150 180 142 180 C134 180 138 168 135 162" stroke="#ff9b37" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <circle cx="82" cy="88" r="7" fill="white"/>
+          <circle cx="118" cy="88" r="7" fill="white"/>
+        </svg>
+      </div>
+      <div class="logo-text">OKTO<span>PUS</span></div>
+    </div>
+
+    <div class="tb-sep"></div>
+    <div class="event-pill" id="eventBadge">IFAT Munich 2026</div>
+
+    <div class="lead-counter">
+      <div class="counter-pulse"></div>
+      <span class="counter-number" id="leadCount">0</span>
+      <span class="counter-label">Leads</span>
+    </div>
+
+    <div class="tb-spacer"></div>
+    <div class="tb-avatar">OK</div>
+  </header>
+
+  <!-- Toast -->
+  <div class="toast" id="statusBar">
+    <div class="toast-icon" id="toastIcon">
+      <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+    </div>
+    <span class="toast-text" id="statusText">Gespeichert</span>
+  </div>
+
+  <!-- ═══ MAIN ═══ -->
+  <main class="main">
+
+    <!-- ═══ SECTION: PRODUCTS (NEW FIRST TAB) ═══ -->
+    <section class="section active" id="section-products">
+      <div class="products-header">
+        <div>
+          <div class="products-title">Unsere Produkte</div>
+          <div class="products-count" id="productsCount">6 Lösungen</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="InterestOverlay.open()">🎯 Interessen</button>
+      </div>
+
+      <div class="products-wrapper" id="productsWrapper">
+        <div class="products-carousel" id="productsCarousel"></div>
+      </div>
+      <div class="carousel-dots" id="carouselDots"></div>
+      <div class="swipe-hint">
+        <span class="swipe-arrow">→</span>
+        Wischen für mehr Produkte
+        <span class="swipe-arrow">→</span>
+      </div>
+    </section>
+
+    <!-- ═══ SECTION: NEW LEAD ═══ -->
+    <section class="section" id="section-new">
+
+      <!-- Quick Stats -->
+      <div class="quick-stats">
+        <div class="quick-stat">
+          <span class="qs-value" id="qsTotal">0</span>
+          <span class="qs-label">Gesamt</span>
+        </div>
+        <div class="qs-divider"></div>
+        <div class="quick-stat">
+          <span class="qs-value hot" id="qsHot">0</span>
+          <span class="qs-label">Hot</span>
+        </div>
+        <div class="qs-divider"></div>
+        <div class="quick-stat">
+          <span class="qs-value" id="qsToday">0</span>
+          <span class="qs-label">Heute</span>
+        </div>
+        <div class="qs-divider"></div>
+        <div class="quick-stat">
+          <span class="qs-value sent" id="qsEmails">0</span>
+          <span class="qs-label">E-Mails</span>
+        </div>
+      </div>
+
+      <!-- Camera -->
+      <div class="app-card animate-in">
+        <div class="card-header-fancy">
+          <div class="card-icon">📸</div>
+          <div>
+            <h3>Visitenkarte scannen</h3>
+            <p>OCR-Texterkennung direkt im Browser</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="camera-zone" id="cameraZone" onclick="CameraModule.init()">
+            <div class="camera-ring">
+              <svg viewBox="0 0 24 24" fill="white"><path d="M12 15.2a3.2 3.2 0 100-6.4 3.2 3.2 0 000 6.4z"/><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+            </div>
+            <div class="camera-label" id="cameraTitle">Antippen zum Scannen</div>
+            <div class="camera-sub" id="cameraDesc">Visitenkarte ins Bild halten</div>
+          </div>
+          <div class="camera-preview" id="cameraPreview">
+            <video id="cameraVideo" autoplay playsinline></video>
+            <canvas id="cameraCanvas" style="display:none;"></canvas>
+            <img id="capturedImage" style="display:none;">
+          </div>
+          <div class="camera-actions" id="cameraActions" style="display:none;">
+            <button class="btn btn-ghost" onclick="CameraModule.retake()">↺ Neu</button>
+            <button class="btn btn-accent" onclick="CameraModule.capture()">📷 Aufnehmen</button>
+          </div>
+          <div class="ocr-progress" id="ocrProgress">
+            <div class="ocr-ring"></div>
+            <span class="ocr-text" id="ocrText">Texterkennung läuft...</span>
+            <span class="ocr-percent" id="ocrPercent">0%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="app-card animate-in" style="animation-delay:0.05s;">
+        <div class="card-header-fancy">
+          <div class="card-icon">👤</div>
+          <div>
+            <h3>Kontaktdaten</h3>
+            <p>Pflichtfelder sind markiert</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="form-row triple">
+            <div class="form-group">
+              <label>Anrede</label>
+              <select class="form-control" id="salutation">
+                <option value="">—</option>
+                <option value="Herr">Herr</option>
+                <option value="Frau">Frau</option>
+                <option value="Divers">Divers</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Titel</label>
+              <select class="form-control" id="title">
+                <option value="">—</option>
+                <option value="Dr.">Dr.</option>
+                <option value="Prof.">Prof.</option>
+                <option value="Prof. Dr.">Prof. Dr.</option>
+                <option value="Dipl.-Ing.">Dipl.-Ing.</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Vorname *</label>
+              <input type="text" class="form-control" id="firstName" placeholder="Max">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nachname *</label>
+              <input type="text" class="form-control" id="lastName" placeholder="Mustermann">
+            </div>
+            <div class="form-group">
+              <label>Unternehmen *</label>
+              <input type="text" class="form-control" id="company" placeholder="Firma GmbH">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Position</label>
+              <input type="text" class="form-control" id="jobTitle" placeholder="Leiter Einkauf">
+            </div>
+            <div class="form-group">
+              <label>E-Mail *</label>
+              <input type="email" class="form-control" id="email" placeholder="max@firma.de">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Telefon</label>
+              <input type="tel" class="form-control" id="phone" placeholder="+49 89 12345">
+            </div>
+            <div class="form-group">
+              <label>Mobil</label>
+              <input type="tel" class="form-control" id="mobile" placeholder="+49 170 12345">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Website</label>
+              <input type="url" class="form-control" id="website" placeholder="www.firma.de">
+            </div>
+            <div class="form-group">
+              <label>Adresse</label>
+              <input type="text" class="form-control" id="address" placeholder="Musterstr. 1, 80331 München">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interests -->
+      <div class="app-card animate-in" style="animation-delay:0.1s;">
+        <div class="card-header-fancy">
+          <div class="card-icon">🎯</div>
+          <div>
+            <h3>Interesse an</h3>
+            <p>Bestimmt den zuständigen Vertrieb (CC)</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="interest-grid" id="interestsGrid"></div>
+        </div>
+      </div>
+
+      <!-- BANT -->
+      <div class="app-card animate-in" style="animation-delay:0.15s;">
+        <div class="card-header-fancy">
+          <div class="card-icon">🔥</div>
+          <div>
+            <h3>Lead-Qualifizierung</h3>
+            <p>BANT-Score bestimmt die Priorität</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="bant-grid">
+            <div class="bant-card">
+              <div class="bant-emoji">💰</div>
+              <div class="bant-title">Budget</div>
+              <select class="form-control bant-select" id="bantBudget">
+                <option value="">—</option>
+                <option value="vorhanden">✅ Vorhanden</option>
+                <option value="geplant">📋 Geplant</option>
+                <option value="offen">❓ Offen</option>
+              </select>
+            </div>
+            <div class="bant-card">
+              <div class="bant-emoji">👑</div>
+              <div class="bant-title">Entscheider</div>
+              <select class="form-control bant-select" id="bantAuthority">
+                <option value="">—</option>
+                <option value="entscheider">⭐ Entscheider</option>
+                <option value="beeinflusser">🔄 Beeinflusser</option>
+                <option value="anwender">👤 Anwender</option>
+              </select>
+            </div>
+            <div class="bant-card">
+              <div class="bant-emoji">📊</div>
+              <div class="bant-title">Bedarf</div>
+              <select class="form-control bant-select" id="bantNeed">
+                <option value="">—</option>
+                <option value="dringend">🔴 Dringend</option>
+                <option value="konkret">🟡 Konkret</option>
+                <option value="zukunft">🟢 Zukünftig</option>
+              </select>
+            </div>
+            <div class="bant-card">
+              <div class="bant-emoji">⏱️</div>
+              <div class="bant-title">Zeitraum</div>
+              <select class="form-control bant-select" id="bantTiming">
+                <option value="">—</option>
+                <option value="sofort">🚀 Sofort</option>
+                <option value="quartal">📅 Dieses Quartal</option>
+                <option value="jahr">📆 Dieses Jahr</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="app-card animate-in" style="animation-delay:0.2s;">
+        <div class="card-header-fancy">
+          <div class="card-icon">📝</div>
+          <div>
+            <h3>Gesprächsnotizen</h3>
+            <p>Was wurde besprochen?</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <textarea class="form-control form-textarea" id="notes" placeholder="Key Points, nächste Schritte, besondere Anforderungen..."></textarea>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-bar">
+        <button class="btn btn-ghost btn-lg" onclick="App.resetForm()">↺ Zurücksetzen</button>
+        <button class="btn btn-glow btn-lg" onclick="App.saveLead()" id="saveBtn">
+          <span class="btn-shine"></span>
+          ✨ Lead erfassen
+        </button>
+      </div>
+    </section>
+
+    <!-- ═══ SECTION: LEADS LIST ═══ -->
+    <section class="section" id="section-leads">
+      <div class="leads-hero">
+        <div>
+          <h2 class="leads-title">Leads</h2>
+          <p class="leads-subtitle"><span id="leadsCount">0</span> Kontakte erfasst</p>
+        </div>
+        <div class="leads-actions">
+          <button class="btn btn-ghost btn-sm" onclick="App.exportCSV()">📥 CSV Export</button>
+        </div>
+      </div>
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="searchInput" placeholder="Name, Firma oder E-Mail suchen..." oninput="App.filterLeads()">
+      </div>
+      <div id="leadsList"></div>
+    </section>
+
+    <!-- ═══ SECTION: SETTINGS ═══ -->
+    <section class="section" id="section-settings">
+
+      <div class="settings-group">
+        <div class="settings-title">🎪 Veranstaltung</div>
+        <div class="settings-card">
+          <div class="sc-row">
+            <div class="sc-icon">📍</div>
+            <div class="sc-content">
+              <div class="sc-label">Event Name</div>
+              <input type="text" class="form-control settings-input" id="settingsEvent" value="IFAT Munich 2026" onchange="App.saveSettings()">
+            </div>
+          </div>
+          <div class="sc-row">
+            <div class="sc-icon">🏢</div>
+            <div class="sc-content">
+              <div class="sc-label">Standnummer</div>
+              <input type="text" class="form-control settings-input" id="settingsStand" placeholder="Halle 5, Stand A42" onchange="App.saveSettings()">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-title">⚡ Automatisierung</div>
+        <div class="settings-card">
+          <div class="sc-row">
+            <div class="sc-icon">📧</div>
+            <div class="sc-content">
+              <div class="sc-label">Auto Willkommens-E-Mail</div>
+              <div class="sc-desc">Vertriebler im CC je nach Interesse</div>
+            </div>
+            <div class="toggle" id="toggleEmail" onclick="App.toggleSetting('email')"></div>
+          </div>
+          <div class="sc-row">
+            <div class="sc-icon">📅</div>
+            <div class="sc-content">
+              <div class="sc-label">Auto Follow-up Termin</div>
+              <div class="sc-desc">Outlook-Termin in 3 Tagen</div>
+            </div>
+            <div class="toggle" id="toggleCalendar" onclick="App.toggleSetting('calendar')"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-title">📊 Statistiken</div>
+        <div class="settings-card">
+          <div class="stats-grid">
+            <div class="stat-box">
+              <div class="stat-number" id="statsTotal">0</div>
+              <div class="stat-label">Gesamt</div>
+            </div>
+            <div class="stat-box hot">
+              <div class="stat-number" id="statsHot">0</div>
+              <div class="stat-label">Hot Leads</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number" id="statsEmails">0</div>
+              <div class="stat-label">E-Mails</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number" id="statsFollowups">0</div>
+              <div class="stat-label">Follow-ups</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-title">🔧 System</div>
+        <div class="settings-card">
+          <div class="sc-row">
+            <div class="sc-icon">💾</div>
+            <div class="sc-content">
+              <div class="sc-label">Lokaler Speicher</div>
+              <div class="sc-desc">Offline-First — Daten im Browser</div>
+            </div>
+            <div class="sc-value" style="color:var(--green);">Aktiv</div>
+          </div>
+        </div>
+        <button class="btn btn-danger btn-block" onclick="App.clearAllData()" style="margin-top:12px;">🗑️ Alle lokalen Daten löschen</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══ BOTTOM NAV ═══ -->
+  <nav class="bottom-nav">
+    <button class="nav-tab active" onclick="App.showSection('products')" data-section="products">
+      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg></div>
+      <span>Produkte</span>
+    </button>
+    <button class="nav-tab" onclick="App.showSection('new')" data-section="new">
+      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg></div>
+      <span>Erfassen</span>
+    </button>
+    <button class="nav-tab" onclick="App.showSection('leads')" data-section="leads">
+      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
+      <span>Leads</span>
+    </button>
+    <button class="nav-tab" onclick="App.showSection('settings')" data-section="settings">
+      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></div>
+      <span>Settings</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// OKTOPUS APP v2 — Standalone Lead Capture
+// ═══════════════════════════════════════════════
+
+// ═══ SPLASH MODULE ═══
+const SplashModule = {
+  targetSection: null,
+
+  quickAction(section) {
+    this.targetSection = section;
+    this.dismiss();
+  },
+
+  dismiss() {
+    const splash = document.getElementById('splashScreen');
+    splash.classList.add('fade-out');
+    setTimeout(() => {
+      splash.style.display = 'none';
+      if (this.targetSection) {
+        App.showSection(this.targetSection);
+      }
+    }, 700);
+  },
+
+  autoHide() {
+    // Auto-dismiss after 3.5s unless user taps a tentacle
+    setTimeout(() => {
+      const splash = document.getElementById('splashScreen');
+      if (!splash.classList.contains('fade-out')) {
+        this.dismiss();
+      }
+    }, 3500);
+  }
+};
+
+// ═══ VIDEO MODULE ═══
+const VideoModule = {
+  currentProduct: null,
+
+  open(productName) {
+    this.currentProduct = productName;
+    document.getElementById('videoTitle').textContent = productName + ' — Produktvideo';
+    document.getElementById('videoPlaceholderText').textContent =
+      'Video für "' + productName + '" wird hier eingebettet';
+    document.getElementById('videoModal').classList.add('show');
+  },
+
+  close() {
+    document.getElementById('videoModal').classList.remove('show');
+  },
+
+  togglePlay() {
+    App.showStatus('Video-Player: Platzhalter — Video-URL in Produkt-Config hinterlegen', 'warning');
+  },
+  seekBack() { App.showStatus('⏪ 10s zurück', 'success'); },
+  seekForward() { App.showStatus('⏩ 10s vor', 'success'); }
+};
+
+// ═══ INTEREST OVERLAY MODULE ═══
+const InterestOverlay = {
+  open() {
+    document.getElementById('interestOverlay').classList.add('show');
+    document.getElementById('interestBackdrop').classList.add('show');
+    this.syncFromForm();
+  },
+
+  close() {
+    document.getElementById('interestOverlay').classList.remove('show');
+    document.getElementById('interestBackdrop').classList.remove('show');
+  },
+
+  render() {
+    const grid = document.getElementById('interestOverlayGrid');
+    grid.innerHTML = App.CONFIG.interests.map(i => `
+      <label class="io-chip" id="ioc-${i.id}" onclick="InterestOverlay.toggleChip('${i.id}')">
+        <input type="checkbox" value="${i.id}">
+        <div class="io-chip-dot">
+          <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+        </div>
+        <div class="io-chip-info">
+          <div class="io-chip-name">${i.name}</div>
+          <div class="io-chip-sub">${i.desc}</div>
+        </div>
+      </label>
+    `).join('');
+  },
+
+  toggleChip(id) {
+    const chip = document.getElementById('ioc-' + id);
+    if (!chip) return;
+    const input = chip.querySelector('input');
+    const isNowSelected = !chip.classList.contains('selected');
+
+    chip.classList.toggle('selected', isNowSelected);
+    input.checked = isNowSelected;
+
+    // Sync to the main form interests
+    const formChip = document.getElementById('int-' + id);
+    if (formChip) {
+      formChip.classList.toggle('selected', isNowSelected);
+      formChip.querySelector('input').checked = isNowSelected;
+    }
+
+    // Update product buttons
+    ProductModule.syncInterestButtons();
+  },
+
+  syncFromForm() {
+    App.CONFIG.interests.forEach(i => {
+      const formChip = document.getElementById('int-' + i.id);
+      const overlayChip = document.getElementById('ioc-' + i.id);
+      if (formChip && overlayChip) {
+        const isSelected = formChip.classList.contains('selected');
+        overlayChip.classList.toggle('selected', isSelected);
+        overlayChip.querySelector('input').checked = isSelected;
+      }
+    });
+  },
+
+  toggleFromProduct(interestId) {
+    // Toggle from product card — updates both overlay and form
+    const formChip = document.getElementById('int-' + interestId);
+    const overlayChip = document.getElementById('ioc-' + interestId);
+    const isNowSelected = formChip ? !formChip.classList.contains('selected') : true;
+
+    if (formChip) {
+      formChip.classList.toggle('selected', isNowSelected);
+      formChip.querySelector('input').checked = isNowSelected;
+    }
+    if (overlayChip) {
+      overlayChip.classList.toggle('selected', isNowSelected);
+      overlayChip.querySelector('input').checked = isNowSelected;
+    }
+
+    ProductModule.syncInterestButtons();
+    App.showStatus(isNowSelected ? '✓ Interesse markiert' : '✗ Interesse entfernt',
+                   isNowSelected ? 'success' : 'warning');
+  }
+};
+
+// ═══ PRODUCT MODULE ═══
+const ProductModule = {
+  currentSlide: 0,
+  startX: 0,
+  currentX: 0,
+  isDragging: false,
+
+  PRODUCTS: [
+    {
+      id: 'prod-1',
+      name: 'Smart Waste Sensorik',
+      desc: 'IoT-Füllstandsensoren für Container und Großbehälter. Echtzeitdaten via Cloud-Dashboard mit intelligenter Routenoptimierung.',
+      icon: '📡',
+      badge: 'IoT',
+      tags: [{ text: 'IoT', class: 'purple' }, { text: 'Sensorik', class: 'orange' }, { text: 'Cloud', class: 'green' }],
+      interest: 'digital',
+      bgGradient: 'linear-gradient(135deg, #4c30a8, #3a2480)',
+      videoTitle: 'Smart Waste Sensorik'
+    },
+    {
+      id: 'prod-2',
+      name: 'Gewerbeabfall Management',
+      desc: 'Ganzheitliche Entsorgungskonzepte für Industrie und Gewerbe. Von der Analyse bis zur zertifizierten Verwertung.',
+      icon: '🏭',
+      badge: 'Core',
+      tags: [{ text: 'Gewerbe', class: 'purple' }, { text: 'Entsorgung', class: 'orange' }],
+      interest: 'abfall',
+      bgGradient: 'linear-gradient(135deg, #ff9b37, #e88a2c)',
+      videoTitle: 'Gewerbeabfall Management'
+    },
+    {
+      id: 'prod-3',
+      name: 'Wertstoff-Recycling',
+      desc: 'Geschlossene Kreislaufwirtschaft: Sortiertechnik, Aufbereitung und Vermarktung von Sekundärrohstoffen.',
+      icon: '♻️',
+      badge: 'Green',
+      tags: [{ text: 'Recycling', class: 'green' }, { text: 'Kreislauf', class: 'purple' }],
+      interest: 'recycling',
+      bgGradient: 'linear-gradient(135deg, #10B981, #059669)',
+      videoTitle: 'Wertstoff-Recycling'
+    },
+    {
+      id: 'prod-4',
+      name: 'Luftreinhaltung Industrie',
+      desc: 'Abluftreinigungssysteme, Filteranlagen und Emissionsmonitoring für produzierende Betriebe.',
+      icon: '🌬️',
+      badge: 'Clean Air',
+      tags: [{ text: 'Abluft', class: 'purple' }, { text: 'Filter', class: 'orange' }, { text: 'Monitoring', class: 'green' }],
+      interest: 'luft',
+      bgGradient: 'linear-gradient(135deg, #3B82F6, #2563EB)',
+      videoTitle: 'Luftreinhaltung Industrie'
+    },
+    {
+      id: 'prod-5',
+      name: 'Sondermüll & Gefahrstoffe',
+      desc: 'Zertifizierte Entsorgung gefährlicher Abfälle. ADR-Transport, Zwischenlager und thermische Behandlung.',
+      icon: '☢️',
+      badge: 'Spezialist',
+      tags: [{ text: 'Gefahrgut', class: 'orange' }, { text: 'Zertifiziert', class: 'yellow' }],
+      interest: 'sondermuell',
+      bgGradient: 'linear-gradient(135deg, #EF4444, #DC2626)',
+      videoTitle: 'Sondermüll Entsorgung'
+    },
+    {
+      id: 'prod-6',
+      name: 'Nachhaltigkeitsberatung',
+      desc: 'ESG-Strategien, CO₂-Bilanzierung, Nachhaltigkeitsberichte und Umweltmanagementsysteme (ISO 14001).',
+      icon: '🌱',
+      badge: 'ESG',
+      tags: [{ text: 'Beratung', class: 'green' }, { text: 'ISO 14001', class: 'purple' }, { text: 'ESG', class: 'yellow' }],
+      interest: 'beratung',
+      bgGradient: 'linear-gradient(135deg, #ffd026, #e6b800)',
+      videoTitle: 'Nachhaltigkeitsberatung'
+    }
+  ],
+
+  init() {
+    this.renderProducts();
+    this.renderDots();
+    this.initSwipe();
+    this.syncInterestButtons();
+  },
+
+  renderProducts() {
+    const carousel = document.getElementById('productsCarousel');
+    carousel.innerHTML = this.PRODUCTS.map(p => `
+      <div class="product-slide">
+        <div class="product-card">
+          <div class="product-visual">
+            <div class="product-visual-bg" style="background:${p.bgGradient};"></div>
+            <div class="product-visual-icon">${p.icon}</div>
+            <div class="product-badge">${p.badge}</div>
+          </div>
+          <div class="product-body">
+            <div class="product-name">${p.name}</div>
+            <div class="product-desc">${p.desc}</div>
+            <div class="product-tags">
+              ${p.tags.map(t => `<span class="product-tag ${t.class}">${t.text}</span>`).join('')}
+            </div>
+            <div class="product-actions">
+              <button class="product-interest-btn" id="pib-${p.interest}"
+                      onclick="InterestOverlay.toggleFromProduct('${p.interest}')">
+                <span class="check-icon">
+                  <svg viewBox="0 0 24 24" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </span>
+                Interesse merken
+              </button>
+              <button class="product-video-btn" onclick="VideoModule.open('${p.videoTitle}')">▶</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  },
+
+  renderDots() {
+    const dots = document.getElementById('carouselDots');
+    dots.innerHTML = this.PRODUCTS.map((_, i) =>
+      `<button class="carousel-dot${i === 0 ? ' active' : ''}" onclick="ProductModule.goTo(${i})"></button>`
+    ).join('');
+  },
+
+  goTo(index) {
+    if (index < 0) index = 0;
+    if (index >= this.PRODUCTS.length) index = this.PRODUCTS.length - 1;
+    this.currentSlide = index;
+    const carousel = document.getElementById('productsCarousel');
+    carousel.style.transform = `translateX(-${index * 100}%)`;
+
+    document.querySelectorAll('.carousel-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === index);
+    });
+  },
+
+  initSwipe() {
+    const wrapper = document.getElementById('productsWrapper');
+    const carousel = document.getElementById('productsCarousel');
+    if (!wrapper) return;
+
+    wrapper.addEventListener('touchstart', (e) => {
+      this.isDragging = true;
+      this.startX = e.touches[0].clientX;
+      this.currentX = this.startX;
+      carousel.classList.add('swiping');
+    }, { passive: true });
+
+    wrapper.addEventListener('touchmove', (e) => {
+      if (!this.isDragging) return;
+      this.currentX = e.touches[0].clientX;
+      const diff = this.currentX - this.startX;
+      const base = -this.currentSlide * wrapper.offsetWidth;
+      carousel.style.transform = `translateX(${base + diff}px)`;
+    }, { passive: true });
+
+    wrapper.addEventListener('touchend', () => {
+      if (!this.isDragging) return;
+      this.isDragging = false;
+      carousel.classList.remove('swiping');
+      const diff = this.currentX - this.startX;
+      const threshold = 50;
+
+      if (diff < -threshold && this.currentSlide < this.PRODUCTS.length - 1) {
+        this.goTo(this.currentSlide + 1);
+      } else if (diff > threshold && this.currentSlide > 0) {
+        this.goTo(this.currentSlide - 1);
+      } else {
+        this.goTo(this.currentSlide);
+      }
+    });
+
+    // Mouse support for desktop
+    wrapper.addEventListener('mousedown', (e) => {
+      this.isDragging = true;
+      this.startX = e.clientX;
+      this.currentX = this.startX;
+      carousel.classList.add('swiping');
+      e.preventDefault();
+    });
+
+    wrapper.addEventListener('mousemove', (e) => {
+      if (!this.isDragging) return;
+      this.currentX = e.clientX;
+      const diff = this.currentX - this.startX;
+      const base = -this.currentSlide * wrapper.offsetWidth;
+      carousel.style.transform = `translateX(${base + diff}px)`;
+    });
+
+    wrapper.addEventListener('mouseup', () => {
+      if (!this.isDragging) return;
+      this.isDragging = false;
+      carousel.classList.remove('swiping');
+      const diff = this.currentX - this.startX;
+      const threshold = 50;
+
+      if (diff < -threshold && this.currentSlide < this.PRODUCTS.length - 1) {
+        this.goTo(this.currentSlide + 1);
+      } else if (diff > threshold && this.currentSlide > 0) {
+        this.goTo(this.currentSlide - 1);
+      } else {
+        this.goTo(this.currentSlide);
+      }
+    });
+
+    wrapper.addEventListener('mouseleave', () => {
+      if (this.isDragging) {
+        this.isDragging = false;
+        carousel.classList.remove('swiping');
+        this.goTo(this.currentSlide);
+      }
+    });
+  },
+
+  syncInterestButtons() {
+    this.PRODUCTS.forEach(p => {
+      const btn = document.getElementById('pib-' + p.interest);
+      if (!btn) return;
+      const formChip = document.getElementById('int-' + p.interest);
+      const isChecked = formChip ? formChip.classList.contains('selected') : false;
+      btn.classList.toggle('checked', isChecked);
+    });
+  }
+};
+
+// ═══ MAIN APP ═══
+const App = {
+  CONFIG: {
+    interests: [
+      { id: 'abfall',      name: 'Abfallentsorgung', desc: 'Gewerbe & Industrie',
+        cc: [{ name: 'Lisa Winter', email: 'l.winter@oktopus-umwelt.de' }] },
+      { id: 'recycling',   name: 'Recycling', desc: 'Wertstoffkreisläufe',
+        cc: [{ name: 'Thomas Bergmann', email: 't.bergmann@oktopus-umwelt.de' }] },
+      { id: 'luft',        name: 'Luftreinhaltung', desc: 'Industrieabluft',
+        cc: [{ name: 'Mehmet Kaya', email: 'm.kaya@oktopus-umwelt.de' }] },
+      { id: 'sondermuell', name: 'Sondermüll', desc: 'Gefahrstoffe',
+        cc: [{ name: 'Mehmet Kaya', email: 'm.kaya@oktopus-umwelt.de' }] },
+      { id: 'beratung',    name: 'Umweltberatung', desc: 'Nachhaltigkeitskonzepte',
+        cc: [{ name: 'Dr. Sabine Fischer', email: 's.fischer@oktopus-umwelt.de' }] },
+      { id: 'digital',     name: 'Digitalisierung', desc: 'Smart Waste',
+        cc: [{ name: 'Thomas Bergmann', email: 't.bergmann@oktopus-umwelt.de' },
+             { name: 'Lisa Winter', email: 'l.winter@oktopus-umwelt.de' }] },
+    ],
+    company: {
+      name: 'OKTOPUS Umweltwirtschaft',
+      phone: '+49 89 123456-0',
+      website: 'www.oktopus-umwelt.de'
+    }
+  },
+
+  leads: [],
+  editingLeadId: null,
+
+  init() {
+    this.loadLeads();
+    this.renderInterests();
+    this.updateStats();
+    this.loadSettings();
+    if (this.leads.length === 0) this.loadDemoLeads();
+
+    // Init modules
+    InterestOverlay.render();
+    ProductModule.init();
+    SplashModule.autoHide();
+  },
+
+  getCCRecipients(interestIds) {
+    const map = new Map();
+    interestIds.forEach(id => {
+      const interest = this.CONFIG.interests.find(i => i.id === id);
+      if (interest?.cc) interest.cc.forEach(r => map.set(r.email, r));
+    });
+    return [...map.values()];
+  },
+
+  loadDemoLeads() {
+    this.leads = [
+      {
+        id: '1', createdAt: new Date(Date.now() - 3600000).toISOString(),
+        salutation: 'Herr', title: '', firstName: 'Michael', lastName: 'Schneider',
+        company: 'Stadtwerke München', jobTitle: 'Leiter Abfallwirtschaft',
+        email: 'm.schneider@swm.de', phone: '+49 89 2361-0', mobile: '+49 170 1234567',
+        website: 'www.swm.de', address: 'Emmy-Noether-Straße 2, 80992 München',
+        interests: ['abfall', 'digital'],
+        bantBudget: 'vorhanden', bantAuthority: 'entscheider', bantNeed: 'dringend', bantTiming: 'quartal',
+        notes: 'Interessiert an IoT-Sensoren für Containerfüllstände.', event: 'IFAT Munich 2026',
+        emailSent: true, followUp: true,
+      },
+      {
+        id: '2', createdAt: new Date(Date.now() - 7200000).toISOString(),
+        salutation: 'Frau', title: 'Dr.', firstName: 'Anna', lastName: 'Weber',
+        company: 'BMW Group', jobTitle: 'Environmental Manager',
+        email: 'anna.weber@bmw.de', phone: '+49 89 382-0', mobile: '',
+        website: 'www.bmw.de', address: 'Petuelring 130, 80788 München',
+        interests: ['recycling', 'luft', 'beratung'],
+        bantBudget: 'geplant', bantAuthority: 'beeinflusser', bantNeed: 'konkret', bantTiming: 'jahr',
+        notes: 'Sucht Partner für CO2-Neutralität bis 2030.', event: 'IFAT Munich 2026',
+        emailSent: true, followUp: false,
+      },
+      {
+        id: '3', createdAt: new Date(Date.now() - 10800000).toISOString(),
+        salutation: 'Herr', title: 'Prof. Dr.', firstName: 'Klaus', lastName: 'Hoffmann',
+        company: 'Chempark Leverkusen', jobTitle: 'HSE Director',
+        email: 'k.hoffmann@chempark.de', phone: '+49 214 30-1', mobile: '+49 151 9876543',
+        website: 'www.chempark.de', address: 'Kaiser-Wilhelm-Allee, 51373 Leverkusen',
+        interests: ['sondermuell', 'beratung'],
+        bantBudget: 'vorhanden', bantAuthority: 'entscheider', bantNeed: 'dringend', bantTiming: 'sofort',
+        notes: 'HOT LEAD — Akuter Bedarf an Sondermüllentsorgung.', event: 'IFAT Munich 2026',
+        emailSent: false, followUp: false,
+      },
+    ];
+    this.saveLeads();
+    this.updateStats();
+  },
+
+  saveLead() {
+    const lead = {
+      id: this.editingLeadId || Date.now().toString(),
+      createdAt: this.editingLeadId
+        ? this.leads.find(l => l.id === this.editingLeadId)?.createdAt
+        : new Date().toISOString(),
+      salutation: document.getElementById('salutation').value,
+      title: document.getElementById('title').value,
+      firstName: document.getElementById('firstName').value.trim(),
+      lastName: document.getElementById('lastName').value.trim(),
+      company: document.getElementById('company').value.trim(),
+      jobTitle: document.getElementById('jobTitle').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      mobile: document.getElementById('mobile').value.trim(),
+      website: document.getElementById('website').value.trim(),
+      address: document.getElementById('address').value.trim(),
+      interests: Array.from(document.querySelectorAll('#interestsGrid input[name="interests"]:checked')).map(c => c.value),
+      bantBudget: document.getElementById('bantBudget').value,
+      bantAuthority: document.getElementById('bantAuthority').value,
+      bantNeed: document.getElementById('bantNeed').value,
+      bantTiming: document.getElementById('bantTiming').value,
+      notes: document.getElementById('notes').value.trim(),
+      event: document.getElementById('settingsEvent')?.value || 'IFAT Munich 2026',
+      emailSent: false,
+      followUp: false,
+    };
+
+    if (!lead.firstName || !lead.lastName) return this.showStatus('Vor- und Nachname erforderlich', 'error');
+    if (!lead.email)   return this.showStatus('E-Mail erforderlich', 'error');
+    if (!lead.company) return this.showStatus('Unternehmen erforderlich', 'error');
+
+    if (this.editingLeadId) {
+      const idx = this.leads.findIndex(l => l.id === this.editingLeadId);
+      if (idx !== -1) {
+        lead.emailSent = this.leads[idx].emailSent;
+        lead.followUp  = this.leads[idx].followUp;
+        this.leads[idx] = lead;
+      }
+      this.editingLeadId = null;
+    } else {
+      this.leads.unshift(lead);
+    }
+
+    this.saveLeads();
+    this.updateStats();
+    this.fireConfetti();
+    this.showStatus('Lead gespeichert!', 'success');
+    this.resetForm();
+  },
+
+  fireConfetti() {
+    if (typeof confetti !== 'function') return;
+    confetti({ particleCount: 60, angle: 60, spread: 55, origin: { x: 0, y: 0.65 },
+      colors: ['#4c30a8', '#7a63c7', '#3a2480', '#ff9b37', '#ffd026'] });
+    confetti({ particleCount: 60, angle: 120, spread: 55, origin: { x: 1, y: 0.65 },
+      colors: ['#4c30a8', '#7a63c7', '#3a2480', '#ff9b37', '#ffd026'] });
+  },
+
+  resetForm() {
+    ['firstName','lastName','company','jobTitle','email','phone','mobile','website','address','notes']
+      .forEach(id => { const el = document.getElementById(id); if (el) { el.value = ''; el.classList.remove('autofilled'); } });
+    document.getElementById('salutation').value = '';
+    document.getElementById('title').value = '';
+    ['bantBudget','bantAuthority','bantNeed','bantTiming'].forEach(id => document.getElementById(id).value = '');
+    document.querySelectorAll('#interestsGrid .interest-chip').forEach(el => {
+      el.classList.remove('selected');
+      el.querySelector('input').checked = false;
+    });
+    CameraModule.reset();
+    this.editingLeadId = null;
+    ProductModule.syncInterestButtons();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  },
+
+  editLead(id) {
+    const lead = this.leads.find(l => l.id === id);
+    if (!lead) return;
+    this.editingLeadId = id;
+    document.getElementById('salutation').value    = lead.salutation || '';
+    document.getElementById('title').value         = lead.title || '';
+    document.getElementById('firstName').value     = lead.firstName;
+    document.getElementById('lastName').value      = lead.lastName;
+    document.getElementById('company').value       = lead.company;
+    document.getElementById('jobTitle').value      = lead.jobTitle || '';
+    document.getElementById('email').value         = lead.email;
+    document.getElementById('phone').value         = lead.phone || '';
+    document.getElementById('mobile').value        = lead.mobile || '';
+    document.getElementById('website').value       = lead.website || '';
+    document.getElementById('address').value       = lead.address || '';
+    document.getElementById('notes').value         = lead.notes || '';
+    document.getElementById('bantBudget').value    = lead.bantBudget || '';
+    document.getElementById('bantAuthority').value = lead.bantAuthority || '';
+    document.getElementById('bantNeed').value      = lead.bantNeed || '';
+    document.getElementById('bantTiming').value    = lead.bantTiming || '';
+    document.querySelectorAll('#interestsGrid .interest-chip').forEach(el => {
+      const val = el.querySelector('input').value;
+      const checked = lead.interests?.includes(val);
+      el.classList.toggle('selected', checked);
+      el.querySelector('input').checked = checked;
+    });
+    ProductModule.syncInterestButtons();
+    this.showSection('new');
+    this.showStatus('Bearbeitung: ' + lead.firstName + ' ' + lead.lastName, 'warning');
+  },
+
+  deleteLead(id, event) {
+    event?.stopPropagation();
+    if (!confirm('Lead wirklich löschen?')) return;
+    this.leads = this.leads.filter(l => l.id !== id);
+    this.saveLeads();
+    this.updateStats();
+    this.showStatus('Lead gelöscht', 'success');
+  },
+
+  renderInterests() {
+    const grid = document.getElementById('interestsGrid');
+    grid.innerHTML = this.CONFIG.interests.map(i => `
+      <label class="interest-chip" id="int-${i.id}">
+        <input type="checkbox" name="interests" value="${i.id}" onchange="App.toggleInterest(this)">
+        <div class="interest-dot"></div>
+        <div>
+          <div class="interest-name">${i.name}</div>
+          <div class="interest-sub">${i.desc}</div>
+        </div>
+      </label>
+    `).join('');
+  },
+
+  toggleInterest(checkbox) {
+    checkbox.closest('.interest-chip').classList.toggle('selected', checkbox.checked);
+    ProductModule.syncInterestButtons();
+  },
+
+  showSection(name) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(`section-${name}`).classList.add('active');
+    document.querySelectorAll('.nav-tab').forEach(n => n.classList.remove('active'));
+    document.querySelector(`.nav-tab[data-section="${name}"]`)?.classList.add('active');
+    window.scrollTo(0, 0);
+    if (name === 'leads') this.renderLeadsList();
+    if (name === 'products') ProductModule.syncInterestButtons();
+  },
+
+  renderLeadsList() {
+    const list = document.getElementById('leadsList');
+    const search = document.getElementById('searchInput')?.value.toLowerCase() || '';
+
+    let filtered = this.leads;
+    if (search) {
+      filtered = this.leads.filter(l =>
+        l.firstName.toLowerCase().includes(search) ||
+        l.lastName.toLowerCase().includes(search) ||
+        l.company.toLowerCase().includes(search) ||
+        l.email.toLowerCase().includes(search)
+      );
+    }
+
+    if (!filtered.length) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <div style="font-size:48px;margin-bottom:16px">${search ? '🔍' : '🐙'}</div>
+          <div class="empty-state-title">${search ? 'Keine Treffer' : 'Noch keine Leads'}</div>
+          <div>${search ? 'Andere Suche probieren' : 'Ersten Lead erfassen → Erfassen Tab'}</div>
+        </div>`;
+      return;
+    }
+
+    list.innerHTML = filtered.map(lead => {
+      let status = 'new', label = 'Neu';
+      if ((lead.bantTiming === 'sofort' || lead.bantTiming === 'quartal') && lead.bantBudget === 'vorhanden') {
+        status = 'hot'; label = '🔥 Hot';
+      } else if (lead.bantNeed === 'konkret' || lead.bantNeed === 'dringend') {
+        status = 'warm'; label = 'Warm';
+      }
+
+      const initials = (lead.firstName[0] || '') + (lead.lastName[0] || '');
+      const tags = lead.interests?.map(id => {
+        const i = this.CONFIG.interests.find(x => x.id === id);
+        return i ? `<span class="lead-tag">${i.name}</span>` : '';
+      }).join('') || '';
+
+      const time = new Date(lead.createdAt).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+      const badges = [
+        `<span class="lead-badge ${status}">${label}</span>`,
+        lead.emailSent ? '<span class="lead-badge email">📧</span>' : '',
+      ].filter(Boolean).join('');
+
+      const displayName = [lead.title, lead.firstName, lead.lastName].filter(Boolean).join(' ');
+
+      return `
+        <div class="lead-card" onclick="App.editLead('${lead.id}')">
+          <div class="lead-card-top">
+            <div class="lead-avatar">${initials}</div>
+            <div class="lead-info">
+              <div class="lead-name">${displayName}</div>
+              <div class="lead-company">${lead.company}</div>
+              <div class="lead-position">${lead.jobTitle || ''}</div>
+            </div>
+            <div class="lead-badges">${badges}</div>
+          </div>
+          ${tags ? `<div class="lead-tags">${tags}</div>` : ''}
+          <div class="lead-meta">
+            <span>${lead.email}</span>
+            <span>${time}</span>
+            <span class="lead-delete" onclick="App.deleteLead('${lead.id}', event)">✕ Löschen</span>
+          </div>
+        </div>`;
+    }).join('');
+  },
+
+  filterLeads() { this.renderLeadsList(); },
+
+  saveLeads() { localStorage.setItem('oktopus_leads_v3', JSON.stringify(this.leads)); },
+
+  loadLeads() {
+    const v3 = localStorage.getItem('oktopus_leads_v3');
+    const v2 = localStorage.getItem('oktopus_leads_v2');
+    const v1 = localStorage.getItem('oktopus_leads_pro');
+    if (v3) this.leads = JSON.parse(v3);
+    else if (v2) { this.leads = JSON.parse(v2); this.saveLeads(); }
+    else if (v1) { this.leads = JSON.parse(v1); this.saveLeads(); }
+  },
+
+  updateStats() {
+    const total    = this.leads.length;
+    const hot      = this.leads.filter(l => (l.bantTiming === 'sofort' || l.bantTiming === 'quartal') && l.bantBudget === 'vorhanden').length;
+    const today    = this.leads.filter(l => new Date(l.createdAt).toDateString() === new Date().toDateString()).length;
+    const emails   = this.leads.filter(l => l.emailSent).length;
+    const followups = this.leads.filter(l => l.followUp).length;
+
+    document.getElementById('leadCount').textContent    = total;
+    document.getElementById('qsTotal').textContent      = total;
+    document.getElementById('qsHot').textContent        = hot;
+    document.getElementById('qsToday').textContent      = today;
+    document.getElementById('qsEmails').textContent     = emails;
+    document.getElementById('leadsCount').textContent   = total;
+    document.getElementById('statsTotal').textContent    = total;
+    document.getElementById('statsHot').textContent      = hot;
+    document.getElementById('statsEmails').textContent   = emails;
+    document.getElementById('statsFollowups').textContent = followups;
+
+    this.renderLeadsList();
+  },
+
+  exportCSV() {
+    if (!this.leads.length) return this.showStatus('Keine Leads vorhanden', 'error');
+
+    const headers = [
+      'Anrede','Titel','Vorname','Nachname','Unternehmen','Position',
+      'E-Mail','Telefon','Mobil','Website','Adresse',
+      'Interessen','CC-Vertriebler','Budget','Entscheider','Bedarf','Timing',
+      'Notizen','Event','E-Mail gesendet','Follow-up','Erstellt'
+    ];
+
+    const rows = this.leads.map(l => {
+      const interestNames = l.interests?.map(id => this.CONFIG.interests.find(i => i.id === id)?.name).filter(Boolean).join('; ') || '';
+      const ccNames = this.getCCRecipients(l.interests || []).map(r => r.name).join('; ');
+      return [
+        l.salutation||'', l.title||'', l.firstName, l.lastName,
+        l.company, l.jobTitle||'',
+        l.email, l.phone||'', l.mobile||'', l.website||'', l.address||'',
+        interestNames, ccNames,
+        l.bantBudget||'', l.bantAuthority||'', l.bantNeed||'', l.bantTiming||'',
+        l.notes?.replace(/\n/g,' ')||'', l.event||'',
+        l.emailSent?'Ja':'Nein', l.followUp?'Ja':'Nein',
+        new Date(l.createdAt).toLocaleString('de-DE')
+      ];
+    });
+
+    const csv = [headers, ...rows]
+      .map(r => r.map(c => `"${(c||'').replace(/"/g,'""')}"`).join(','))
+      .join('\n');
+
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `oktopus_leads_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    this.showStatus(`${this.leads.length} Leads als CSV exportiert`, 'success');
+  },
+
+  getSettings() { return JSON.parse(localStorage.getItem('oktopus_settings_v3') || '{}'); },
+
+  loadSettings() {
+    const s = this.getSettings();
+    if (s.event) {
+      document.getElementById('settingsEvent').value = s.event;
+      document.getElementById('eventBadge').textContent = s.event;
+    }
+    if (s.stand) document.getElementById('settingsStand').value = s.stand;
+    if (s.emailEnabled) document.getElementById('toggleEmail').classList.add('active');
+    if (s.calendarEnabled) document.getElementById('toggleCalendar').classList.add('active');
+  },
+
+  saveSettings() {
+    const s = {
+      event: document.getElementById('settingsEvent').value,
+      stand: document.getElementById('settingsStand').value,
+      emailEnabled: document.getElementById('toggleEmail').classList.contains('active'),
+      calendarEnabled: document.getElementById('toggleCalendar').classList.contains('active'),
+    };
+    localStorage.setItem('oktopus_settings_v3', JSON.stringify(s));
+    document.getElementById('eventBadge').textContent = s.event;
+  },
+
+  toggleSetting(type) {
+    const toggleMap = { email: 'toggleEmail', calendar: 'toggleCalendar' };
+    const toggle = document.getElementById(toggleMap[type]);
+    if (!toggle) return;
+    toggle.classList.toggle('active');
+    this.saveSettings();
+  },
+
+  clearAllData() {
+    if (!confirm('Wirklich ALLE Leads und Einstellungen löschen?\nDas kann nicht rückgängig gemacht werden.')) return;
+    localStorage.removeItem('oktopus_leads_v3');
+    localStorage.removeItem('oktopus_settings_v3');
+    this.leads = [];
+    this.updateStats();
+    this.showStatus('Alle Daten gelöscht', 'success');
+  },
+
+  _toastTimer: null,
+
+  showStatus(msg, type = 'success') {
+    const toast = document.getElementById('statusBar');
+    const text  = document.getElementById('statusText');
+    const icon  = document.getElementById('toastIcon');
+    text.textContent = msg;
+
+    const icons = {
+      success: '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>',
+      error:   '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>',
+      warning: '<svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>',
+      loading: '<svg viewBox="0 0 24 24" class="spin"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>',
+    };
+
+    icon.innerHTML = icons[type] || icons.success;
+    toast.className = 'toast show ' + type;
+    clearTimeout(this._toastTimer);
+    if (type !== 'loading') {
+      this._toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+    }
+  }
+};
+
+// ═══════════════════════════════════════════════
+// CAMERA & OCR MODULE
+// ═══════════════════════════════════════════════
+const CameraModule = {
+  stream: null,
+
+  async init() {
+    const zone    = document.getElementById('cameraZone');
+    const preview = document.getElementById('cameraPreview');
+    const video   = document.getElementById('cameraVideo');
+    const actions = document.getElementById('cameraActions');
+
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } }
+      });
+      video.srcObject = this.stream;
+      zone.classList.add('active');
+      document.getElementById('cameraTitle').textContent = 'Kamera aktiv';
+      document.getElementById('cameraDesc').textContent = 'Visitenkarte ins Bild halten';
+      preview.classList.add('show');
+      video.style.display = 'block';
+      document.getElementById('capturedImage').style.display = 'none';
+      actions.style.display = 'flex';
+    } catch (err) {
+      console.error('Kamera-Fehler:', err);
+      App.showStatus('Kamera nicht verfügbar (HTTPS erforderlich)', 'error');
+    }
+  },
+
+  capture() {
+    const video  = document.getElementById('cameraVideo');
+    const canvas = document.getElementById('cameraCanvas');
+    const img    = document.getElementById('capturedImage');
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    img.src = dataUrl;
+    img.style.display = 'block';
+    video.style.display = 'none';
+
+    if (this.stream) { this.stream.getTracks().forEach(t => t.stop()); this.stream = null; }
+
+    document.getElementById('cameraActions').innerHTML = `
+      <button class="btn btn-ghost" onclick="CameraModule.retake()">↺ Neu</button>
+      <button class="btn btn-accent" onclick="CameraModule.runOCR()">🔍 Text erkennen</button>
+    `;
+    App.showStatus('Foto aufgenommen', 'success');
+  },
+
+  retake() {
+    document.getElementById('cameraPreview').classList.remove('show');
+    document.getElementById('cameraActions').style.display = 'none';
+    document.getElementById('cameraZone').classList.remove('active');
+    document.getElementById('cameraTitle').textContent = 'Antippen zum Scannen';
+    document.getElementById('cameraDesc').textContent = 'Visitenkarte ins Bild halten';
+    document.getElementById('ocrProgress').classList.remove('show');
+    document.getElementById('cameraActions').innerHTML = `
+      <button class="btn btn-ghost" onclick="CameraModule.retake()">↺ Neu</button>
+      <button class="btn btn-accent" onclick="CameraModule.capture()">📷 Aufnehmen</button>
+    `;
+    this.init();
+  },
+
+  async runOCR() {
+    const img       = document.getElementById('capturedImage');
+    const progress  = document.getElementById('ocrProgress');
+    const ocrText   = document.getElementById('ocrText');
+    const ocrPercent = document.getElementById('ocrPercent');
+
+    progress.classList.add('show');
+    ocrText.textContent = 'Texterkennung wird gestartet...';
+
+    try {
+      const result = await Tesseract.recognize(img.src, 'deu+eng', {
+        logger: m => {
+          if (m.status === 'recognizing text') {
+            ocrPercent.textContent = Math.round(m.progress * 100) + '%';
+            ocrText.textContent = 'Texterkennung läuft...';
+          }
+        }
+      });
+
+      this.parseOCRResult(result.data.text);
+      ocrText.textContent = 'Fertig! Formular wurde ausgefüllt.';
+      ocrPercent.textContent = '100%';
+      setTimeout(() => progress.classList.remove('show'), 2000);
+      App.showStatus('Visitenkarte erkannt', 'success');
+    } catch (err) {
+      console.error('OCR Fehler:', err);
+      ocrText.textContent = 'Fehler bei der Texterkennung';
+      App.showStatus('OCR fehlgeschlagen', 'error');
+    }
+  },
+
+  parseOCRResult(text) {
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+    const emailMatch = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+    if (emailMatch) this.setField('email', emailMatch[0]);
+
+    const phonePatterns = text.match(/(?:\+49|0049|0)[\s.-]?\d{2,4}[\s.-]?\d{3,}[\s.-]?\d{0,}/g);
+    if (phonePatterns) {
+      if (phonePatterns[0]) this.setField('phone', phonePatterns[0].replace(/\s+/g, ' '));
+      if (phonePatterns[1]) this.setField('mobile', phonePatterns[1].replace(/\s+/g, ' '));
+    }
+
+    const webMatch = text.match(/(?:www\.|https?:\/\/)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/i);
+    if (webMatch) this.setField('website', webMatch[0]);
+
+    if (/\bProf\.\s*Dr\./i.test(text)) document.getElementById('title').value = 'Prof. Dr.';
+    else if (/\bProf\.\s/i.test(text)) document.getElementById('title').value = 'Prof.';
+    else if (/\bDr\.\s/i.test(text)) document.getElementById('title').value = 'Dr.';
+    else if (/\bDipl\.-Ing\./i.test(text)) document.getElementById('title').value = 'Dipl.-Ing.';
+
+    const companyPatterns = [/GmbH/i, /AG\b/i, /KG\b/i, /SE\b/i, /Inc\./i, /Ltd\./i, /Stadtwerke/i, /Group/i];
+    for (const line of lines) {
+      if (companyPatterns.some(p => p.test(line))) { this.setField('company', line); break; }
+    }
+
+    const positionKeywords = ['Leiter','Manager','Director','Geschäftsführ','CEO','CTO','Head of','Abteilungsleiter','Bereichsleiter','Vertrieb','Einkauf'];
+    for (const line of lines) {
+      if (positionKeywords.some(k => line.toLowerCase().includes(k.toLowerCase()))) { this.setField('jobTitle', line); break; }
+    }
+
+    for (const line of lines.slice(0, 4)) {
+      const words = line.split(/\s+/);
+      if (words.length >= 2 && words.length <= 4
+          && !line.includes('@') && !line.includes('www')
+          && !companyPatterns.some(p => p.test(line))
+          && !/\d{4,}/.test(line)) {
+        let nameWords = [...words];
+        const titlePrefixes = ['Dr.', 'Prof.', 'Dipl.-Ing.', 'MBA'];
+        while (titlePrefixes.includes(nameWords[0]) && nameWords.length > 2) nameWords.shift();
+        if (nameWords.length >= 2) {
+          this.setField('firstName', nameWords[0]);
+          this.setField('lastName', nameWords.slice(1).join(' '));
+          const femaleNames = ['Anna','Maria','Sabine','Lisa','Julia','Sarah','Laura','Petra','Claudia'];
+          const maleNames   = ['Michael','Thomas','Klaus','Peter','Andreas','Stefan','Markus','Martin','Frank'];
+          if (femaleNames.some(n => nameWords[0].includes(n))) document.getElementById('salutation').value = 'Frau';
+          else if (maleNames.some(n => nameWords[0].includes(n))) document.getElementById('salutation').value = 'Herr';
+          break;
+        }
+      }
+    }
+
+    const addressMatch = text.match(/\d{5}\s+[A-ZÄÖÜ][a-zäöüß]+/);
+    if (addressMatch) {
+      for (const line of lines) {
+        if (line.includes(addressMatch[0])) { this.setField('address', line); break; }
+      }
+    }
+  },
+
+  setField(fieldId, value) {
+    const field = document.getElementById(fieldId);
+    if (field && value) {
+      field.value = value;
+      field.classList.add('autofilled');
+      setTimeout(() => field.classList.remove('autofilled'), 3000);
+    }
+  },
+
+  reset() {
+    if (this.stream) { this.stream.getTracks().forEach(t => t.stop()); this.stream = null; }
+    document.getElementById('cameraPreview').classList.remove('show');
+    document.getElementById('cameraActions').style.display = 'none';
+    document.getElementById('cameraZone').classList.remove('active');
+    document.getElementById('cameraTitle').textContent = 'Antippen zum Scannen';
+    document.getElementById('cameraDesc').textContent = 'Visitenkarte ins Bild halten';
+    document.getElementById('ocrProgress').classList.remove('show');
+  }
+};
+
+// ═══ APP START ═══
+document.addEventListener('DOMContentLoaded', () => App.init());
+</script>
+</body>
+</html>

@@ -1,0 +1,2164 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#2A2A2C">
+    <title>OKTOPUS | Lead Management</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tesseract OCR -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-dark: #2A2A2C;
+            --bg-medium: #3A3A3C;
+            --bg-light: #4A4A4C;
+            --bg-hover: #5A5A5C;
+            --text-white: #FFFFFF;
+            --text-light: rgba(255,255,255,0.85);
+            --text-muted: rgba(255,255,255,0.55);
+            --accent: #FF9B37;
+            --accent-light: #FFB366;
+            --accent-dark: #E88A2D;
+            --success: #34C759;
+            --warning: #FF9500;
+            --danger: #FF3B30;
+            --border: rgba(255,255,255,0.08);
+            --border-light: rgba(255,255,255,0.12);
+            --shadow: 0 2px 8px rgba(0,0,0,0.3);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.4);
+            --radius: 8px;
+            --radius-lg: 12px;
+            --transition: all 0.15s ease;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-white);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: var(--bg-medium);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-mark {
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-mark svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+        
+        .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .logo-text span { color: var(--accent); }
+        
+        .header-meta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .event-name {
+            font-size: 13px;
+            color: var(--text-muted);
+            padding: 6px 12px;
+            background: var(--bg-light);
+            border-radius: 6px;
+        }
+        
+        .lead-count {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        /* Navigation */
+        .nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: var(--bg-medium);
+            border-top: 1px solid var(--border);
+            display: flex;
+            z-index: 100;
+        }
+        
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            background: none;
+            font-family: inherit;
+        }
+        
+        .nav-item:hover { color: var(--text-light); background: var(--bg-light); }
+        .nav-item.active { color: var(--accent); }
+        
+        .nav-icon {
+            width: 22px;
+            height: 22px;
+        }
+        
+        .nav-icon svg {
+            width: 100%;
+            height: 100%;
+            fill: currentColor;
+        }
+        
+        .nav-label {
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        /* Main */
+        .main {
+            padding: 72px 16px 80px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        
+        .section { display: none; animation: fadeIn 0.2s ease; }
+        .section.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--bg-medium);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+        }
+        
+        .card-body { padding: 16px; }
+        
+        /* Camera */
+        .camera-zone {
+            background: var(--bg-dark);
+            border: 2px dashed var(--border-light);
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .camera-zone:hover {
+            border-color: var(--accent);
+            background: rgba(255, 155, 55, 0.05);
+        }
+        
+        .camera-zone.active {
+            border-color: var(--success);
+            background: rgba(52, 199, 89, 0.05);
+        }
+        
+        .camera-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 12px;
+            background: var(--bg-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .camera-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--text-muted);
+        }
+        
+        .camera-zone.active .camera-icon {
+            background: var(--success);
+        }
+        
+        .camera-zone.active .camera-icon svg {
+            fill: white;
+        }
+        
+        .camera-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .camera-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .camera-preview {
+            display: none;
+            position: relative;
+            margin-top: 12px;
+        }
+        
+        .camera-preview.show { display: block; }
+        
+        .camera-preview video,
+        .camera-preview img {
+            width: 100%;
+            border-radius: var(--radius);
+        }
+        
+        .camera-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        
+        .ocr-progress {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--bg-dark);
+            border-radius: var(--radius);
+        }
+        
+        .ocr-progress.show { display: flex; }
+        
+        .ocr-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-light);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .ocr-text {
+            flex: 1;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .ocr-percent {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        /* Form */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .form-row.single { grid-template-columns: 1fr; }
+        .form-row.triple { grid-template-columns: 100px 100px 1fr; }
+        
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group.full { grid-column: 1 / -1; }
+        
+        .form-label {
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius);
+            padding: 10px 12px;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text-white);
+            transition: var(--transition);
+            width: 100%;
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .form-input::placeholder { color: var(--text-muted); }
+        
+        .form-textarea { resize: vertical; min-height: 80px; }
+        
+        .form-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+        }
+        
+        .form-input.autofilled {
+            border-color: var(--success);
+            background: rgba(52, 199, 89, 0.08);
+        }
+        
+        /* Checkboxes */
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .checkbox-item:hover {
+            border-color: var(--border-light);
+            background: var(--bg-light);
+        }
+        
+        .checkbox-item.checked {
+            border-color: var(--accent);
+            background: rgba(255, 155, 55, 0.08);
+        }
+        
+        .checkbox-item input { display: none; }
+        
+        .checkbox-box {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border-light);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        
+        .checkbox-item.checked .checkbox-box {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+        
+        .checkbox-box svg {
+            width: 12px;
+            height: 12px;
+            fill: white;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: var(--transition);
+        }
+        
+        .checkbox-item.checked .checkbox-box svg {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .checkbox-label {
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .checkbox-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        
+        /* Radio items */
+        .radio-item { grid-column: 1 / -1; }
+        .radio-item .checkbox-box { border-radius: 50%; }
+        
+        /* BANT */
+        .bant-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .bant-item {
+            background: var(--bg-dark);
+            border-radius: var(--radius);
+            padding: 12px;
+        }
+        
+        .bant-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+        
+        .bant-select {
+            width: 100%;
+            background: var(--bg-medium);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 12px;
+            color: var(--text-white);
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23888' d='M5 7L0 2h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+        }
+        
+        .bant-select:focus { outline: none; border-color: var(--accent); }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--radius);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .btn svg { width: 16px; height: 16px; fill: currentColor; }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-primary:hover { background: var(--accent-dark); }
+        
+        .btn-secondary {
+            background: var(--bg-light);
+            color: var(--text-light);
+            border: 1px solid var(--border-light);
+        }
+        
+        .btn-secondary:hover { background: var(--bg-hover); }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: rgba(255, 59, 48, 0.15);
+            color: var(--danger);
+        }
+        
+        .btn-danger:hover { background: rgba(255, 59, 48, 0.25); }
+        
+        .btn-sm { padding: 8px 14px; font-size: 12px; }
+        
+        .btn-block { width: 100%; }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        
+        .btn-group .btn { flex: 1; }
+        
+        /* Leads List */
+        .leads-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        
+        .leads-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .leads-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        
+        .leads-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-medium);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 10px 14px;
+            margin-bottom: 12px;
+        }
+        
+        .search-bar svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--text-muted);
+            flex-shrink: 0;
+        }
+        
+        .search-bar input {
+            flex: 1;
+            background: none;
+            border: none;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text-white);
+        }
+        
+        .search-bar input:focus { outline: none; }
+        .search-bar input::placeholder { color: var(--text-muted); }
+        
+        .lead-card {
+            background: var(--bg-medium);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .lead-card:hover {
+            border-color: var(--accent);
+        }
+        
+        .lead-card.synced {
+            border-left: 3px solid var(--success);
+        }
+        
+        .lead-card-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .lead-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+        
+        .lead-info { flex: 1; min-width: 0; }
+        
+        .lead-name {
+            font-size: 15px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .lead-company {
+            font-size: 13px;
+            color: var(--text-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .lead-position {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        
+        .lead-badges {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        
+        .lead-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            flex-shrink: 0;
+        }
+        
+        .lead-badge.hot { background: rgba(255, 155, 55, 0.2); color: var(--accent); }
+        .lead-badge.warm { background: rgba(255, 149, 0, 0.2); color: var(--warning); }
+        .lead-badge.new { background: rgba(52, 199, 89, 0.2); color: var(--success); }
+        .lead-badge.synced { background: rgba(52, 199, 89, 0.2); color: var(--success); }
+        .lead-badge.email { background: rgba(100, 149, 237, 0.2); color: #6495ED; }
+        
+        .lead-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        
+        .lead-tag {
+            padding: 3px 8px;
+            background: var(--bg-light);
+            border-radius: 4px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        
+        .lead-meta {
+            display: flex;
+            gap: 16px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--text-muted);
+        }
+        
+        .empty-state-title {
+            font-size: 16px;
+            margin-bottom: 4px;
+            color: var(--text-light);
+        }
+        
+        /* Settings */
+        .settings-group { margin-bottom: 24px; }
+        
+        .settings-group-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+        
+        .settings-item {
+            background: var(--bg-medium);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        
+        .settings-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .settings-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--text-muted);
+        }
+        
+        .settings-content { flex: 1; }
+        
+        .settings-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .settings-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        
+        .settings-value {
+            font-size: 14px;
+            color: var(--accent);
+            font-weight: 500;
+        }
+        
+        .settings-input {
+            width: 100%;
+            margin-top: 8px;
+        }
+        
+        .settings-toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: var(--bg-light);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .settings-toggle.active {
+            background: var(--success);
+        }
+        
+        .settings-toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+        
+        .settings-toggle.active::after {
+            left: 22px;
+        }
+        
+        /* Status */
+        .status-bar {
+            position: fixed;
+            top: 72px;
+            left: 16px;
+            right: 16px;
+            max-width: 448px;
+            margin: 0 auto;
+            background: var(--bg-medium);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 200;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-120%);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .status-bar.show { transform: translateY(0); opacity: 1; }
+        .status-bar.success { border-color: var(--success); }
+        .status-bar.error { border-color: var(--danger); }
+        
+        .status-text { flex: 1; font-size: 13px; font-weight: 500; }
+        
+        /* Responsive */
+        @media (max-width: 400px) {
+            .form-row { grid-template-columns: 1fr; }
+            .form-row.triple { grid-template-columns: 1fr 1fr; }
+            .checkbox-grid { grid-template-columns: 1fr; }
+            .bant-grid { grid-template-columns: 1fr; }
+            .event-name { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-mark">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            </div>
+            <div class="logo-text">OKTO<span>PUS</span></div>
+        </div>
+        <div class="header-meta">
+            <div class="event-name" id="eventBadge">IFAT Munich 2026</div>
+            <div class="lead-count"><span id="leadCount">0</span> Leads</div>
+        </div>
+    </header>
+
+    <!-- Status Bar -->
+    <div class="status-bar" id="statusBar">
+        <span class="status-text" id="statusText">Gespeichert</span>
+    </div>
+
+    <!-- Main -->
+    <main class="main">
+        
+        <!-- New Lead Section -->
+        <section class="section active" id="section-new">
+            
+            <!-- Camera Capture -->
+            <div class="card">
+                <div class="card-header">Visitenkarte scannen</div>
+                <div class="card-body">
+                    <div class="camera-zone" id="cameraZone" onclick="initCamera()">
+                        <div class="camera-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 15.2a3.2 3.2 0 100-6.4 3.2 3.2 0 000 6.4z"/><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+                        </div>
+                        <div class="camera-title" id="cameraTitle">Visitenkarte fotografieren</div>
+                        <div class="camera-desc" id="cameraDesc">Antippen zum Starten der Kamera</div>
+                    </div>
+                    
+                    <div class="camera-preview" id="cameraPreview">
+                        <video id="cameraVideo" autoplay playsinline></video>
+                        <canvas id="cameraCanvas" style="display: none;"></canvas>
+                        <img id="capturedImage" style="display: none;">
+                    </div>
+                    
+                    <div class="camera-actions" id="cameraActions" style="display: none;">
+                        <button class="btn btn-secondary" onclick="retakePhoto()">
+                            <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                            Neu
+                        </button>
+                        <button class="btn btn-primary" onclick="capturePhoto()">
+                            <svg viewBox="0 0 24 24"><path d="M12 15.2a3.2 3.2 0 100-6.4 3.2 3.2 0 000 6.4z"/><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+                            Aufnehmen
+                        </button>
+                    </div>
+                    
+                    <div class="ocr-progress" id="ocrProgress">
+                        <div class="ocr-spinner"></div>
+                        <span class="ocr-text" id="ocrText">Texterkennung läuft...</span>
+                        <span class="ocr-percent" id="ocrPercent">0%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Form -->
+            <div class="card">
+                <div class="card-header">Kontaktdaten</div>
+                <div class="card-body">
+                    <!-- Anrede & Titel -->
+                    <div class="form-row triple">
+                        <div class="form-group">
+                            <label class="form-label">Anrede</label>
+                            <select class="form-select" id="salutation">
+                                <option value="">--</option>
+                                <option value="Herr">Herr</option>
+                                <option value="Frau">Frau</option>
+                                <option value="Divers">Divers</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Titel</label>
+                            <select class="form-select" id="title">
+                                <option value="">--</option>
+                                <option value="Dr.">Dr.</option>
+                                <option value="Prof.">Prof.</option>
+                                <option value="Prof. Dr.">Prof. Dr.</option>
+                                <option value="Dipl.-Ing.">Dipl.-Ing.</option>
+                                <option value="MBA">MBA</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Vorname</label>
+                            <input type="text" class="form-input" id="firstName" placeholder="Max">
+                        </div>
+                    </div>
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label class="form-label">Nachname</label>
+                            <input type="text" class="form-input" id="lastName" placeholder="Mustermann">
+                        </div>
+                    </div>
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label class="form-label">Unternehmen</label>
+                            <input type="text" class="form-input" id="company" placeholder="Musterfirma GmbH">
+                        </div>
+                    </div>
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label class="form-label">Position / Funktion</label>
+                            <input type="text" class="form-input" id="jobTitle" placeholder="Leiter Entsorgung">
+                        </div>
+                    </div>
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label class="form-label">E-Mail</label>
+                            <input type="email" class="form-input" id="email" placeholder="max@firma.de">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Telefon</label>
+                            <input type="tel" class="form-input" id="phone" placeholder="+49 89 123456">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Mobil</label>
+                            <input type="tel" class="form-input" id="mobile" placeholder="+49 170 123456">
+                        </div>
+                    </div>
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label class="form-label">Website</label>
+                            <input type="url" class="form-input" id="website" placeholder="www.firma.de">
+                        </div>
+                    </div>
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label class="form-label">Adresse</label>
+                            <input type="text" class="form-input" id="address" placeholder="Musterstraße 1, 80331 München">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">Interesse an</div>
+                <div class="card-body">
+                    <div class="checkbox-grid" id="interestsGrid"></div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">Zuständiger Vertrieb</div>
+                <div class="card-body">
+                    <div class="checkbox-grid" id="salesGrid"></div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">Qualifizierung (BANT)</div>
+                <div class="card-body">
+                    <div class="bant-grid">
+                        <div class="bant-item">
+                            <div class="bant-label">Budget</div>
+                            <select class="bant-select" id="bantBudget">
+                                <option value="">Nicht ermittelt</option>
+                                <option value="vorhanden">Vorhanden</option>
+                                <option value="geplant">Geplant</option>
+                                <option value="offen">Offen</option>
+                            </select>
+                        </div>
+                        <div class="bant-item">
+                            <div class="bant-label">Entscheider</div>
+                            <select class="bant-select" id="bantAuthority">
+                                <option value="">Nicht ermittelt</option>
+                                <option value="entscheider">Entscheider</option>
+                                <option value="beeinflusser">Beeinflusser</option>
+                                <option value="anwender">Anwender</option>
+                            </select>
+                        </div>
+                        <div class="bant-item">
+                            <div class="bant-label">Bedarf</div>
+                            <select class="bant-select" id="bantNeed">
+                                <option value="">Nicht ermittelt</option>
+                                <option value="dringend">Dringend</option>
+                                <option value="konkret">Konkret</option>
+                                <option value="zukunft">Zukünftig</option>
+                            </select>
+                        </div>
+                        <div class="bant-item">
+                            <div class="bant-label">Zeitraum</div>
+                            <select class="bant-select" id="bantTiming">
+                                <option value="">Nicht ermittelt</option>
+                                <option value="sofort">Sofort</option>
+                                <option value="quartal">Dieses Quartal</option>
+                                <option value="jahr">Dieses Jahr</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">Notizen</div>
+                <div class="card-body">
+                    <textarea class="form-textarea" id="notes" placeholder="Gesprächsnotizen, besondere Anforderungen, nächste Schritte..."></textarea>
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="resetForm()">Zurücksetzen</button>
+                <button class="btn btn-primary" onclick="saveLead()">
+                    <svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+                    Speichern + E-Mail
+                </button>
+            </div>
+        </section>
+        
+        <!-- Leads List Section -->
+        <section class="section" id="section-leads">
+            <div class="leads-header">
+                <div>
+                    <div class="leads-title">Leads</div>
+                    <div class="leads-subtitle"><span id="leadsCount">0</span> Kontakte erfasst</div>
+                </div>
+                <div class="leads-actions">
+                    <button class="btn btn-secondary btn-sm" onclick="exportCSV()">
+                        <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                        CSV
+                    </button>
+                    <button class="btn btn-secondary btn-sm" onclick="syncToCRM()">
+                        <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+                        CRM
+                    </button>
+                </div>
+            </div>
+            
+            <div class="search-bar">
+                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <input type="text" id="searchInput" placeholder="Name, Firma, E-Mail suchen..." oninput="filterLeads()">
+            </div>
+            
+            <div id="leadsList"></div>
+        </section>
+        
+        <!-- Settings Section -->
+        <section class="section" id="section-settings">
+            <div class="settings-group">
+                <div class="settings-group-title">Veranstaltung</div>
+                <div class="settings-item">
+                    <div class="settings-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                    </div>
+                    <div class="settings-content">
+                        <div class="settings-label">Event Name</div>
+                        <input type="text" class="form-input settings-input" id="settingsEvent" value="IFAT Munich 2026" onchange="saveSettings()">
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>
+                    </div>
+                    <div class="settings-content">
+                        <div class="settings-label">Standnummer</div>
+                        <input type="text" class="form-input settings-input" id="settingsStand" placeholder="Halle 5, Stand A42" onchange="saveSettings()">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <div class="settings-group-title">E-Mail Versand (EmailJS)</div>
+                <div class="settings-item">
+                    <div class="settings-icon">
+                        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                    </div>
+                    <div class="settings-content">
+                        <div class="settings-label">Automatische E-Mail</div>
+                        <div class="settings-desc">Bei jedem neuen Lead senden</div>
+                    </div>
+                    <div class="settings-toggle" id="toggleEmail" onclick="toggleEmailSetting()"></div>
+                </div>
+                <div class="settings-item" id="emailConfigPanel" style="display: none;">
+                    <div class="settings-content">
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <label class="form-label">EmailJS Service ID</label>
+                            <input type="text" class="form-input" id="emailServiceId" placeholder="service_xxxxxx" onchange="saveSettings()">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <label class="form-label">EmailJS Template ID</label>
+                            <input type="text" class="form-input" id="emailTemplateId" placeholder="template_xxxxxx" onchange="saveSettings()">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">EmailJS Public Key</label>
+                            <input type="text" class="form-input" id="emailPublicKey" placeholder="Dein Public Key" onchange="saveSettings()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <div class="settings-group-title">CRM Integration</div>
+                <div class="settings-item">
+                    <div class="settings-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+                    </div>
+                    <div class="settings-content">
+                        <div class="settings-label">CRM Sync aktiv</div>
+                        <div class="settings-desc">Dynamics 365 / Webhook</div>
+                    </div>
+                    <div class="settings-toggle" id="toggleCRM" onclick="toggleCRMSetting()"></div>
+                </div>
+                <div class="settings-item" id="crmConfigPanel" style="display: none;">
+                    <div class="settings-content">
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <label class="form-label">CRM Endpoint URL</label>
+                            <input type="url" class="form-input" id="crmEndpoint" placeholder="https://your-crm.api/leads" onchange="saveSettings()">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">API Key / Token</label>
+                            <input type="password" class="form-input" id="crmApiKey" placeholder="Bearer Token oder API Key" onchange="saveSettings()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <div class="settings-group-title">Statistiken</div>
+                <div class="settings-item">
+                    <div class="settings-icon">
+                        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                    </div>
+                    <div class="settings-content">
+                        <div class="settings-label">Gesamt</div>
+                        <div class="settings-desc">Erfasste Leads</div>
+                    </div>
+                    <div class="settings-value" id="statsTotal">0</div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-icon">
+                        <svg viewBox="0 0 24 24"><path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/></svg>
+                    </div>
+                    <div class="settings-content">
+                        <div class="settings-label">Hot Leads</div>
+                        <div class="settings-desc">Qualifiziert</div>
+                    </div>
+                    <div class="settings-value" id="statsHot">0</div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-icon">
+                        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                    </div>
+                    <div class="settings-content">
+                        <div class="settings-label">E-Mails gesendet</div>
+                        <div class="settings-desc">Follow-Up</div>
+                    </div>
+                    <div class="settings-value" id="statsEmails">0</div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+                    </div>
+                    <div class="settings-content">
+                        <div class="settings-label">CRM synchronisiert</div>
+                        <div class="settings-desc">Erfolgreich übertragen</div>
+                    </div>
+                    <div class="settings-value" id="statsSynced">0</div>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <div class="settings-group-title">Daten</div>
+                <button class="btn btn-danger btn-block" onclick="clearAllData()">Alle Daten löschen</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <button class="nav-item active" onclick="showSection('new')">
+            <div class="nav-icon">
+                <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            </div>
+            <span class="nav-label">Neu</span>
+        </button>
+        <button class="nav-item" onclick="showSection('leads')">
+            <div class="nav-icon">
+                <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            </div>
+            <span class="nav-label">Leads</span>
+        </button>
+        <button class="nav-item" onclick="showSection('settings')">
+            <div class="nav-icon">
+                <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+            </div>
+            <span class="nav-label">Einstellungen</span>
+        </button>
+    </nav>
+
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+    <script>
+        // ========================================
+        // KONFIGURATION (bearbeitbar)
+        // ========================================
+        
+        const CONFIG = {
+            interests: [
+                { id: 'abfall', name: 'Abfallentsorgung', desc: 'Gewerbe & Industrie' },
+                { id: 'recycling', name: 'Recycling', desc: 'Wertstoffkreisläufe' },
+                { id: 'luft', name: 'Luftreinhaltung', desc: 'Industrieabluft' },
+                { id: 'sondermuell', name: 'Sondermüll', desc: 'Gefahrstoffe' },
+                { id: 'beratung', name: 'Umweltberatung', desc: 'Nachhaltigkeitskonzepte' },
+                { id: 'digital', name: 'Digitalisierung', desc: 'Smart Waste' },
+            ],
+            
+            salesReps: [
+                { id: 'fischer', name: 'Dr. Sabine Fischer', role: 'Geschäftsführung' },
+                { id: 'bergmann', name: 'Thomas Bergmann', role: 'Key Account Manager' },
+                { id: 'winter', name: 'Lisa Winter', role: 'Vertrieb Kommunal' },
+                { id: 'kaya', name: 'Mehmet Kaya', role: 'Technical Sales' },
+            ],
+        };
+        
+        let leads = [];
+        let editingLeadId = null;
+        let cameraStream = null;
+        
+        // ========================================
+        // INIT
+        // ========================================
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLeads();
+            renderInterests();
+            renderSalesReps();
+            updateStats();
+            loadSettings();
+            
+            if (leads.length === 0) loadDemoLeads();
+        });
+        
+        // ========================================
+        // DEMO DATA
+        // ========================================
+        
+        function loadDemoLeads() {
+            leads = [
+                {
+                    id: '1',
+                    createdAt: new Date(Date.now() - 3600000).toISOString(),
+                    salutation: 'Herr',
+                    title: '',
+                    firstName: 'Michael',
+                    lastName: 'Schneider',
+                    company: 'Stadtwerke München',
+                    jobTitle: 'Leiter Abfallwirtschaft',
+                    email: 'm.schneider@swm.de',
+                    phone: '+49 89 2361-0',
+                    mobile: '+49 170 1234567',
+                    website: 'www.swm.de',
+                    address: 'Emmy-Noether-Straße 2, 80992 München',
+                    interests: ['abfall', 'digital'],
+                    salesRep: 'winter',
+                    bantBudget: 'vorhanden',
+                    bantAuthority: 'entscheider',
+                    bantNeed: 'dringend',
+                    bantTiming: 'quartal',
+                    notes: 'Interessiert an IoT-Sensoren für Containerfüllstände. Budget für Q2 eingeplant.',
+                    event: 'IFAT Munich 2026',
+                    emailSent: true,
+                    crmSynced: true,
+                },
+                {
+                    id: '2',
+                    createdAt: new Date(Date.now() - 7200000).toISOString(),
+                    salutation: 'Frau',
+                    title: 'Dr.',
+                    firstName: 'Anna',
+                    lastName: 'Weber',
+                    company: 'BMW Group',
+                    jobTitle: 'Environmental Manager',
+                    email: 'anna.weber@bmw.de',
+                    phone: '+49 89 382-0',
+                    mobile: '',
+                    website: 'www.bmw.de',
+                    address: 'Petuelring 130, 80788 München',
+                    interests: ['recycling', 'luft', 'beratung'],
+                    salesRep: 'bergmann',
+                    bantBudget: 'geplant',
+                    bantAuthority: 'beeinflusser',
+                    bantNeed: 'konkret',
+                    bantTiming: 'jahr',
+                    notes: 'Sucht Partner für CO2-Neutralität bis 2030. Potential für Luftfilter in Lackierereien.',
+                    event: 'IFAT Munich 2026',
+                    emailSent: true,
+                    crmSynced: false,
+                },
+                {
+                    id: '3',
+                    createdAt: new Date(Date.now() - 10800000).toISOString(),
+                    salutation: 'Herr',
+                    title: 'Prof. Dr.',
+                    firstName: 'Klaus',
+                    lastName: 'Hoffmann',
+                    company: 'Chempark Leverkusen',
+                    jobTitle: 'HSE Director',
+                    email: 'k.hoffmann@chempark.de',
+                    phone: '+49 214 30-1',
+                    mobile: '+49 151 9876543',
+                    website: 'www.chempark.de',
+                    address: 'Kaiser-Wilhelm-Allee, 51373 Leverkusen',
+                    interests: ['sondermuell', 'beratung'],
+                    salesRep: 'kaya',
+                    bantBudget: 'vorhanden',
+                    bantAuthority: 'entscheider',
+                    bantNeed: 'dringend',
+                    bantTiming: 'sofort',
+                    notes: 'HOT LEAD - Akuter Bedarf an Sondermüllentsorgung. Will sofortiges Angebot.',
+                    event: 'IFAT Munich 2026',
+                    emailSent: false,
+                    crmSynced: false,
+                },
+            ];
+            saveLeads();
+            updateStats();
+        }
+        
+        // ========================================
+        // CAMERA & OCR
+        // ========================================
+        
+        async function initCamera() {
+            const zone = document.getElementById('cameraZone');
+            const preview = document.getElementById('cameraPreview');
+            const video = document.getElementById('cameraVideo');
+            const actions = document.getElementById('cameraActions');
+            
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } } 
+                });
+                video.srcObject = cameraStream;
+                
+                zone.classList.add('active');
+                document.getElementById('cameraTitle').textContent = 'Kamera aktiv';
+                document.getElementById('cameraDesc').textContent = 'Visitenkarte ins Bild halten';
+                
+                preview.classList.add('show');
+                video.style.display = 'block';
+                document.getElementById('capturedImage').style.display = 'none';
+                actions.style.display = 'flex';
+                
+            } catch (err) {
+                console.error('Kamera-Fehler:', err);
+                showStatus('Kamera nicht verfügbar (HTTPS erforderlich)', 'error');
+            }
+        }
+        
+        function capturePhoto() {
+            const video = document.getElementById('cameraVideo');
+            const canvas = document.getElementById('cameraCanvas');
+            const img = document.getElementById('capturedImage');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+            img.src = dataUrl;
+            img.style.display = 'block';
+            video.style.display = 'none';
+            
+            // Stop camera
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(t => t.stop());
+                cameraStream = null;
+            }
+            
+            document.getElementById('cameraActions').innerHTML = `
+                <button class="btn btn-secondary" onclick="retakePhoto()">
+                    <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                    Neu
+                </button>
+                <button class="btn btn-success" onclick="runOCR()">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                    Text erkennen
+                </button>
+            `;
+            
+            showStatus('Foto aufgenommen', 'success');
+        }
+        
+        function retakePhoto() {
+            document.getElementById('cameraPreview').classList.remove('show');
+            document.getElementById('cameraActions').style.display = 'none';
+            document.getElementById('cameraZone').classList.remove('active');
+            document.getElementById('cameraTitle').textContent = 'Visitenkarte fotografieren';
+            document.getElementById('cameraDesc').textContent = 'Antippen zum Starten der Kamera';
+            document.getElementById('ocrProgress').classList.remove('show');
+            
+            // Reset action buttons
+            document.getElementById('cameraActions').innerHTML = `
+                <button class="btn btn-secondary" onclick="retakePhoto()">
+                    <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                    Neu
+                </button>
+                <button class="btn btn-primary" onclick="capturePhoto()">
+                    <svg viewBox="0 0 24 24"><path d="M12 15.2a3.2 3.2 0 100-6.4 3.2 3.2 0 000 6.4z"/><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+                    Aufnehmen
+                </button>
+            `;
+            
+            initCamera();
+        }
+        
+        async function runOCR() {
+            const img = document.getElementById('capturedImage');
+            const progress = document.getElementById('ocrProgress');
+            const ocrText = document.getElementById('ocrText');
+            const ocrPercent = document.getElementById('ocrPercent');
+            
+            progress.classList.add('show');
+            ocrText.textContent = 'Texterkennung wird gestartet...';
+            
+            try {
+                const result = await Tesseract.recognize(img.src, 'deu+eng', {
+                    logger: m => {
+                        if (m.status === 'recognizing text') {
+                            const pct = Math.round(m.progress * 100);
+                            ocrPercent.textContent = pct + '%';
+                            ocrText.textContent = 'Texterkennung läuft...';
+                        }
+                    }
+                });
+                
+                parseOCRResult(result.data.text);
+                ocrText.textContent = 'Fertig! Formular wurde ausgefüllt.';
+                ocrPercent.textContent = '100%';
+                
+                setTimeout(() => progress.classList.remove('show'), 2000);
+                showStatus('Visitenkarte erkannt', 'success');
+                
+            } catch (err) {
+                console.error('OCR Fehler:', err);
+                ocrText.textContent = 'Fehler bei der Texterkennung';
+                showStatus('OCR fehlgeschlagen', 'error');
+            }
+        }
+        
+        function parseOCRResult(text) {
+            console.log('OCR Text:', text);
+            const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            
+            // Email Pattern
+            const emailMatch = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+            if (emailMatch) {
+                setFieldWithHighlight('email', emailMatch[0]);
+            }
+            
+            // Phone patterns
+            const phonePatterns = text.match(/(?:\+49|0049|0)[\s.-]?\d{2,4}[\s.-]?\d{3,}[\s.-]?\d{0,}/g);
+            if (phonePatterns) {
+                if (phonePatterns[0]) setFieldWithHighlight('phone', phonePatterns[0].replace(/\s+/g, ' '));
+                if (phonePatterns[1]) setFieldWithHighlight('mobile', phonePatterns[1].replace(/\s+/g, ' '));
+            }
+            
+            // Website
+            const webMatch = text.match(/(?:www\.|https?:\/\/)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/i);
+            if (webMatch) {
+                setFieldWithHighlight('website', webMatch[0]);
+            }
+            
+            // Title detection
+            if (/\bDr\.\s/i.test(text)) document.getElementById('title').value = 'Dr.';
+            if (/\bProf\.\s/i.test(text)) document.getElementById('title').value = 'Prof.';
+            if (/\bProf\.\s*Dr\./i.test(text)) document.getElementById('title').value = 'Prof. Dr.';
+            if (/\bDipl\.-Ing\./i.test(text)) document.getElementById('title').value = 'Dipl.-Ing.';
+            
+            // Company patterns
+            const companyPatterns = [/GmbH/i, /AG\b/i, /KG\b/i, /SE\b/i, /Inc\./i, /Ltd\./i, /Stadtwerke/i, /Group/i];
+            for (const line of lines) {
+                if (companyPatterns.some(p => p.test(line))) {
+                    setFieldWithHighlight('company', line);
+                    break;
+                }
+            }
+            
+            // Position patterns
+            const positionKeywords = ['Leiter', 'Manager', 'Director', 'Geschäftsführ', 'CEO', 'CTO', 'Head of', 'Abteilungsleiter', 'Bereichsleiter', 'Vertrieb', 'Einkauf'];
+            for (const line of lines) {
+                if (positionKeywords.some(k => line.toLowerCase().includes(k.toLowerCase()))) {
+                    setFieldWithHighlight('jobTitle', line);
+                    break;
+                }
+            }
+            
+            // Name detection (heuristic: first 1-2 lines with 2-3 words, no email/phone/company)
+            for (const line of lines.slice(0, 4)) {
+                const words = line.split(/\s+/);
+                if (words.length >= 2 && words.length <= 4 
+                    && !line.includes('@') 
+                    && !line.includes('www')
+                    && !companyPatterns.some(p => p.test(line))
+                    && !/\d{4,}/.test(line)) {
+                    
+                    // Check for title prefix
+                    let nameWords = [...words];
+                    const titlePrefixes = ['Dr.', 'Prof.', 'Dipl.-Ing.', 'MBA'];
+                    if (titlePrefixes.includes(nameWords[0])) {
+                        nameWords.shift();
+                    }
+                    if (titlePrefixes.includes(nameWords[0])) {
+                        nameWords.shift();
+                    }
+                    
+                    if (nameWords.length >= 2) {
+                        setFieldWithHighlight('firstName', nameWords[0]);
+                        setFieldWithHighlight('lastName', nameWords.slice(1).join(' '));
+                        
+                        // Salutation guess
+                        const femaleNames = ['Anna', 'Maria', 'Sabine', 'Lisa', 'Julia', 'Sarah', 'Laura', 'Petra', 'Claudia'];
+                        const maleNames = ['Michael', 'Thomas', 'Klaus', 'Peter', 'Andreas', 'Stefan', 'Markus', 'Martin', 'Frank'];
+                        if (femaleNames.some(n => nameWords[0].includes(n))) {
+                            document.getElementById('salutation').value = 'Frau';
+                        } else if (maleNames.some(n => nameWords[0].includes(n))) {
+                            document.getElementById('salutation').value = 'Herr';
+                        }
+                        break;
+                    }
+                }
+            }
+            
+            // Address (look for PLZ pattern)
+            const addressMatch = text.match(/\d{5}\s+[A-ZÄÖÜ][a-zäöüß]+/);
+            if (addressMatch) {
+                for (const line of lines) {
+                    if (line.includes(addressMatch[0])) {
+                        setFieldWithHighlight('address', line);
+                        break;
+                    }
+                }
+            }
+        }
+        
+        function setFieldWithHighlight(fieldId, value) {
+            const field = document.getElementById(fieldId);
+            if (field && value) {
+                field.value = value;
+                field.classList.add('autofilled');
+                setTimeout(() => field.classList.remove('autofilled'), 3000);
+            }
+        }
+        
+        // ========================================
+        // RENDER
+        // ========================================
+        
+        function renderInterests() {
+            const grid = document.getElementById('interestsGrid');
+            grid.innerHTML = CONFIG.interests.map(i => `
+                <div class="checkbox-item" id="int-${i.id}" onclick="toggleCheck('int-${i.id}')">
+                    <input type="checkbox" name="interests" value="${i.id}">
+                    <div class="checkbox-box">
+                        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                    </div>
+                    <div>
+                        <div class="checkbox-label">${i.name}</div>
+                        <div class="checkbox-sub">${i.desc}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function renderSalesReps() {
+            const grid = document.getElementById('salesGrid');
+            grid.innerHTML = CONFIG.salesReps.map((r, idx) => `
+                <div class="checkbox-item radio-item ${idx === 0 ? 'checked' : ''}" id="rep-${r.id}" onclick="selectRep('rep-${r.id}')">
+                    <input type="radio" name="salesRep" value="${r.id}" ${idx === 0 ? 'checked' : ''}>
+                    <div class="checkbox-box">
+                        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                    </div>
+                    <div>
+                        <div class="checkbox-label">${r.name}</div>
+                        <div class="checkbox-sub">${r.role}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function toggleCheck(id) {
+            const el = document.getElementById(id);
+            const cb = el.querySelector('input');
+            cb.checked = !cb.checked;
+            el.classList.toggle('checked', cb.checked);
+        }
+        
+        function selectRep(id) {
+            document.querySelectorAll('#salesGrid .checkbox-item').forEach(el => {
+                el.classList.remove('checked');
+                el.querySelector('input').checked = false;
+            });
+            const el = document.getElementById(id);
+            el.classList.add('checked');
+            el.querySelector('input').checked = true;
+        }
+        
+        function showSection(name) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(`section-${name}`).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const navMap = { 'new': 0, 'leads': 1, 'settings': 2 };
+            document.querySelectorAll('.nav-item')[navMap[name]].classList.add('active');
+            
+            window.scrollTo(0, 0);
+        }
+        
+        // ========================================
+        // LEADS CRUD
+        // ========================================
+        
+        function saveLead() {
+            const lead = {
+                id: editingLeadId || Date.now().toString(),
+                createdAt: editingLeadId ? leads.find(l => l.id === editingLeadId)?.createdAt : new Date().toISOString(),
+                salutation: document.getElementById('salutation').value,
+                title: document.getElementById('title').value,
+                firstName: document.getElementById('firstName').value.trim(),
+                lastName: document.getElementById('lastName').value.trim(),
+                company: document.getElementById('company').value.trim(),
+                jobTitle: document.getElementById('jobTitle').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                mobile: document.getElementById('mobile').value.trim(),
+                website: document.getElementById('website').value.trim(),
+                address: document.getElementById('address').value.trim(),
+                interests: Array.from(document.querySelectorAll('input[name="interests"]:checked')).map(c => c.value),
+                salesRep: document.querySelector('input[name="salesRep"]:checked')?.value || '',
+                bantBudget: document.getElementById('bantBudget').value,
+                bantAuthority: document.getElementById('bantAuthority').value,
+                bantNeed: document.getElementById('bantNeed').value,
+                bantTiming: document.getElementById('bantTiming').value,
+                notes: document.getElementById('notes').value.trim(),
+                event: document.getElementById('settingsEvent')?.value || 'IFAT Munich 2026',
+                emailSent: false,
+                crmSynced: false,
+            };
+            
+            // Validierung
+            if (!lead.firstName || !lead.lastName) return showStatus('Vor- und Nachname erforderlich', 'error');
+            if (!lead.email) return showStatus('E-Mail erforderlich', 'error');
+            if (!lead.company) return showStatus('Unternehmen erforderlich', 'error');
+            
+            if (editingLeadId) {
+                const idx = leads.findIndex(l => l.id === editingLeadId);
+                if (idx !== -1) {
+                    lead.emailSent = leads[idx].emailSent;
+                    lead.crmSynced = leads[idx].crmSynced;
+                    leads[idx] = lead;
+                }
+                editingLeadId = null;
+            } else {
+                leads.unshift(lead);
+            }
+            
+            saveLeads();
+            updateStats();
+            
+            // E-Mail senden (wenn aktiviert)
+            sendWelcomeEmail(lead);
+            
+            showStatus('Lead gespeichert', 'success');
+            resetForm();
+        }
+        
+        function resetForm() {
+            ['firstName', 'lastName', 'company', 'jobTitle', 'email', 'phone', 'mobile', 'website', 'address', 'notes'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            document.getElementById('salutation').value = '';
+            document.getElementById('title').value = '';
+            ['bantBudget', 'bantAuthority', 'bantNeed', 'bantTiming'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.querySelectorAll('#interestsGrid .checkbox-item').forEach(el => {
+                el.classList.remove('checked');
+                el.querySelector('input').checked = false;
+            });
+            
+            // Reset camera state
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(t => t.stop());
+                cameraStream = null;
+            }
+            document.getElementById('cameraPreview').classList.remove('show');
+            document.getElementById('cameraActions').style.display = 'none';
+            document.getElementById('cameraZone').classList.remove('active');
+            document.getElementById('cameraTitle').textContent = 'Visitenkarte fotografieren';
+            document.getElementById('cameraDesc').textContent = 'Antippen zum Starten der Kamera';
+            document.getElementById('ocrProgress').classList.remove('show');
+            
+            editingLeadId = null;
+        }
+        
+        function editLead(id) {
+            const lead = leads.find(l => l.id === id);
+            if (!lead) return;
+            
+            editingLeadId = id;
+            
+            document.getElementById('salutation').value = lead.salutation || '';
+            document.getElementById('title').value = lead.title || '';
+            document.getElementById('firstName').value = lead.firstName;
+            document.getElementById('lastName').value = lead.lastName;
+            document.getElementById('company').value = lead.company;
+            document.getElementById('jobTitle').value = lead.jobTitle || '';
+            document.getElementById('email').value = lead.email;
+            document.getElementById('phone').value = lead.phone || '';
+            document.getElementById('mobile').value = lead.mobile || '';
+            document.getElementById('website').value = lead.website || '';
+            document.getElementById('address').value = lead.address || '';
+            document.getElementById('notes').value = lead.notes || '';
+            document.getElementById('bantBudget').value = lead.bantBudget || '';
+            document.getElementById('bantAuthority').value = lead.bantAuthority || '';
+            document.getElementById('bantNeed').value = lead.bantNeed || '';
+            document.getElementById('bantTiming').value = lead.bantTiming || '';
+            
+            document.querySelectorAll('#interestsGrid .checkbox-item').forEach(el => {
+                const val = el.querySelector('input').value;
+                const checked = lead.interests?.includes(val);
+                el.classList.toggle('checked', checked);
+                el.querySelector('input').checked = checked;
+            });
+            
+            document.querySelectorAll('#salesGrid .checkbox-item').forEach(el => {
+                const val = el.querySelector('input').value;
+                const checked = lead.salesRep === val;
+                el.classList.toggle('checked', checked);
+                el.querySelector('input').checked = checked;
+            });
+            
+            showSection('new');
+        }
+        
+        function deleteLead(id) {
+            if (!confirm('Lead wirklich löschen?')) return;
+            leads = leads.filter(l => l.id !== id);
+            saveLeads();
+            updateStats();
+            showStatus('Lead gelöscht', 'success');
+        }
+        
+        // ========================================
+        // EMAIL (Frontend vorbereitet)
+        // ========================================
+        
+        async function sendWelcomeEmail(lead) {
+            const settings = JSON.parse(localStorage.getItem('oktopus_settings_pro') || '{}');
+            
+            if (!settings.emailEnabled) {
+                console.log('E-Mail Versand deaktiviert');
+                return;
+            }
+            
+            if (!settings.emailServiceId || !settings.emailTemplateId || !settings.emailPublicKey) {
+                console.log('EmailJS nicht konfiguriert');
+                return;
+            }
+            
+            try {
+                emailjs.init(settings.emailPublicKey);
+                
+                const templateParams = {
+                    to_email: lead.email,
+                    to_name: `${lead.salutation || ''} ${lead.title || ''} ${lead.firstName} ${lead.lastName}`.trim(),
+                    from_name: 'OKTOPUS Umweltwirtschaft',
+                    company_name: lead.company,
+                    event_name: lead.event,
+                    sales_rep: CONFIG.salesReps.find(r => r.id === lead.salesRep)?.name || 'Unser Team',
+                    interests: lead.interests.map(id => CONFIG.interests.find(i => i.id === id)?.name).filter(Boolean).join(', '),
+                };
+                
+                await emailjs.send(settings.emailServiceId, settings.emailTemplateId, templateParams);
+                
+                const idx = leads.findIndex(l => l.id === lead.id);
+                if (idx !== -1) {
+                    leads[idx].emailSent = true;
+                    saveLeads();
+                    updateStats();
+                }
+                
+                showStatus('E-Mail gesendet', 'success');
+                
+            } catch (err) {
+                console.error('E-Mail Fehler:', err);
+                // Don't show error to user, just log
+            }
+        }
+        
+        // ========================================
+        // CRM SYNC
+        // ========================================
+        
+        async function syncToCRM() {
+            const settings = JSON.parse(localStorage.getItem('oktopus_settings_pro') || '{}');
+            
+            if (!settings.crmEnabled || !settings.crmEndpoint) {
+                showStatus('CRM nicht konfiguriert - nutze CSV Export', 'error');
+                setTimeout(() => exportCSV(), 500);
+                return;
+            }
+            
+            const unsyncedLeads = leads.filter(l => !l.crmSynced);
+            if (!unsyncedLeads.length) {
+                showStatus('Alle Leads bereits synchronisiert', 'success');
+                return;
+            }
+            
+            let successCount = 0;
+            
+            for (const lead of unsyncedLeads) {
+                try {
+                    // CRM Payload (Dynamics 365 Format)
+                    const payload = {
+                        salutation: lead.salutation,
+                        title: lead.title,
+                        firstname: lead.firstName,
+                        lastname: lead.lastName,
+                        companyname: lead.company,
+                        jobtitle: lead.jobTitle,
+                        emailaddress1: lead.email,
+                        telephone1: lead.phone,
+                        mobilephone: lead.mobile,
+                        websiteurl: lead.website,
+                        address1_composite: lead.address,
+                        description: lead.notes,
+                        leadsourcecode: 4, // Trade Show
+                        subject: `Lead: ${lead.firstName} ${lead.lastName} - ${lead.event}`,
+                        new_interests: lead.interests.join(';'),
+                        new_bantbudget: lead.bantBudget,
+                        new_bantauthority: lead.bantAuthority,
+                        new_bantneed: lead.bantNeed,
+                        new_banttiming: lead.bantTiming,
+                        new_event: lead.event,
+                        new_salesrep: lead.salesRep,
+                    };
+                    
+                    const response = await fetch(settings.crmEndpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': settings.crmApiKey ? `Bearer ${settings.crmApiKey}` : '',
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (response.ok) {
+                        const idx = leads.findIndex(l => l.id === lead.id);
+                        if (idx !== -1) {
+                            leads[idx].crmSynced = true;
+                        }
+                        successCount++;
+                    }
+                    
+                } catch (err) {
+                    console.error('CRM Sync Fehler für Lead ' + lead.id, err);
+                }
+            }
+            
+            saveLeads();
+            updateStats();
+            showStatus(`${successCount}/${unsyncedLeads.length} Leads synchronisiert`, successCount > 0 ? 'success' : 'error');
+        }
+        
+        // ========================================
+        // STORAGE
+        // ========================================
+        
+        function saveLeads() {
+            localStorage.setItem('oktopus_leads_pro', JSON.stringify(leads));
+        }
+        
+        function loadLeads() {
+            const stored = localStorage.getItem('oktopus_leads_pro');
+            if (stored) leads = JSON.parse(stored);
+        }
+        
+        function updateStats() {
+            document.getElementById('leadCount').textContent = leads.length;
+            document.getElementById('leadsCount').textContent = leads.length;
+            document.getElementById('statsTotal').textContent = leads.length;
+            
+            const hot = leads.filter(l => 
+                (l.bantTiming === 'sofort' || l.bantTiming === 'quartal') && l.bantBudget === 'vorhanden'
+            ).length;
+            document.getElementById('statsHot').textContent = hot;
+            
+            const emailsSent = leads.filter(l => l.emailSent).length;
+            document.getElementById('statsEmails').textContent = emailsSent;
+            
+            const crmSynced = leads.filter(l => l.crmSynced).length;
+            document.getElementById('statsSynced').textContent = crmSynced;
+            
+            renderLeadsList();
+        }
+        
+        function renderLeadsList() {
+            const list = document.getElementById('leadsList');
+            const search = document.getElementById('searchInput')?.value.toLowerCase() || '';
+            
+            let filtered = leads;
+            if (search) {
+                filtered = leads.filter(l => 
+                    l.firstName.toLowerCase().includes(search) ||
+                    l.lastName.toLowerCase().includes(search) ||
+                    l.company.toLowerCase().includes(search) ||
+                    l.email.toLowerCase().includes(search)
+                );
+            }
+            
+            if (!filtered.length) {
+                list.innerHTML = `<div class="empty-state"><div class="empty-state-title">${search ? 'Keine Treffer' : 'Keine Leads'}</div><div>${search ? 'Andere Suche probieren' : 'Ersten Lead erfassen'}</div></div>`;
+                return;
+            }
+            
+            list.innerHTML = filtered.map(lead => {
+                let status = 'new', label = 'Neu';
+                if ((lead.bantTiming === 'sofort' || lead.bantTiming === 'quartal') && lead.bantBudget === 'vorhanden') {
+                    status = 'hot'; label = 'Hot';
+                } else if (lead.bantNeed === 'konkret' || lead.bantNeed === 'dringend') {
+                    status = 'warm'; label = 'Warm';
+                }
+                
+                const initials = (lead.firstName[0] || '') + (lead.lastName[0] || '');
+                const tags = lead.interests?.map(id => {
+                    const i = CONFIG.interests.find(x => x.id === id);
+                    return i ? `<span class="lead-tag">${i.name}</span>` : '';
+                }).join('') || '';
+                
+                const time = new Date(lead.createdAt).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+                
+                const badges = [
+                    `<span class="lead-badge ${status}">${label}</span>`,
+                    lead.emailSent ? '<span class="lead-badge email">Mail</span>' : '',
+                    lead.crmSynced ? '<span class="lead-badge synced">CRM</span>' : '',
+                ].filter(Boolean).join('');
+                
+                const displayName = [lead.title, lead.firstName, lead.lastName].filter(Boolean).join(' ');
+                
+                return `
+                    <div class="lead-card ${lead.crmSynced ? 'synced' : ''}" onclick="editLead('${lead.id}')">
+                        <div class="lead-card-top">
+                            <div class="lead-avatar">${initials}</div>
+                            <div class="lead-info">
+                                <div class="lead-name">${displayName}</div>
+                                <div class="lead-company">${lead.company}</div>
+                                <div class="lead-position">${lead.jobTitle || 'Keine Position'}</div>
+                            </div>
+                            <div class="lead-badges">${badges}</div>
+                        </div>
+                        <div class="lead-tags">${tags}</div>
+                        <div class="lead-meta">
+                            <span>${lead.email}</span>
+                            <span>${time}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function filterLeads() { renderLeadsList(); }
+        
+        // ========================================
+        // EXPORT
+        // ========================================
+        
+        function exportCSV() {
+            if (!leads.length) return showStatus('Keine Leads', 'error');
+            
+            // CRM-kompatibler CSV Export (Excel/Dynamics 365 friendly)
+            const headers = [
+                'Anrede', 'Titel', 'Vorname', 'Nachname', 'Unternehmen', 'Position', 
+                'E-Mail', 'Telefon', 'Mobil', 'Website', 'Adresse',
+                'Interessen', 'Vertrieb', 'Budget', 'Entscheider', 'Bedarf', 'Timing', 
+                'Notizen', 'Event', 'E-Mail gesendet', 'CRM synchronisiert', 'Erstellt'
+            ];
+            
+            const rows = leads.map(l => [
+                l.salutation || '',
+                l.title || '',
+                l.firstName, 
+                l.lastName, 
+                l.company, 
+                l.jobTitle || '',
+                l.email, 
+                l.phone || '', 
+                l.mobile || '',
+                l.website || '',
+                l.address || '',
+                l.interests?.map(id => CONFIG.interests.find(i => i.id === id)?.name).filter(Boolean).join('; ') || '',
+                CONFIG.salesReps.find(r => r.id === l.salesRep)?.name || '',
+                l.bantBudget || '', 
+                l.bantAuthority || '', 
+                l.bantNeed || '', 
+                l.bantTiming || '',
+                l.notes?.replace(/\n/g, ' ') || '',
+                l.event || '',
+                l.emailSent ? 'Ja' : 'Nein',
+                l.crmSynced ? 'Ja' : 'Nein',
+                new Date(l.createdAt).toLocaleString('de-DE')
+            ]);
+            
+            const csv = [headers, ...rows].map(r => r.map(c => `"${(c || '').replace(/"/g, '""')}"`).join(',')).join('\n');
+            
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `oktopus_leads_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            
+            showStatus('CSV exportiert', 'success');
+        }
+        
+        // ========================================
+        // SETTINGS
+        // ========================================
+        
+        function loadSettings() {
+            const s = JSON.parse(localStorage.getItem('oktopus_settings_pro') || '{}');
+            
+            if (s.event) {
+                document.getElementById('settingsEvent').value = s.event;
+                document.getElementById('eventBadge').textContent = s.event;
+            }
+            if (s.stand) document.getElementById('settingsStand').value = s.stand;
+            
+            // Email settings
+            if (s.emailEnabled) {
+                document.getElementById('toggleEmail').classList.add('active');
+                document.getElementById('emailConfigPanel').style.display = 'block';
+            }
+            if (s.emailServiceId) document.getElementById('emailServiceId').value = s.emailServiceId;
+            if (s.emailTemplateId) document.getElementById('emailTemplateId').value = s.emailTemplateId;
+            if (s.emailPublicKey) document.getElementById('emailPublicKey').value = s.emailPublicKey;
+            
+            // CRM settings
+            if (s.crmEnabled) {
+                document.getElementById('toggleCRM').classList.add('active');
+                document.getElementById('crmConfigPanel').style.display = 'block';
+            }
+            if (s.crmEndpoint) document.getElementById('crmEndpoint').value = s.crmEndpoint;
+            if (s.crmApiKey) document.getElementById('crmApiKey').value = s.crmApiKey;
+        }
+        
+        function saveSettings() {
+            const s = {
+                event: document.getElementById('settingsEvent').value,
+                stand: document.getElementById('settingsStand').value,
+                emailEnabled: document.getElementById('toggleEmail').classList.contains('active'),
+                emailServiceId: document.getElementById('emailServiceId').value,
+                emailTemplateId: document.getElementById('emailTemplateId').value,
+                emailPublicKey: document.getElementById('emailPublicKey').value,
+                crmEnabled: document.getElementById('toggleCRM').classList.contains('active'),
+                crmEndpoint: document.getElementById('crmEndpoint').value,
+                crmApiKey: document.getElementById('crmApiKey').value,
+            };
+            localStorage.setItem('oktopus_settings_pro', JSON.stringify(s));
+            document.getElementById('eventBadge').textContent = s.event;
+        }
+        
+        function toggleEmailSetting() {
+            const toggle = document.getElementById('toggleEmail');
+            const panel = document.getElementById('emailConfigPanel');
+            toggle.classList.toggle('active');
+            panel.style.display = toggle.classList.contains('active') ? 'block' : 'none';
+            saveSettings();
+        }
+        
+        function toggleCRMSetting() {
+            const toggle = document.getElementById('toggleCRM');
+            const panel = document.getElementById('crmConfigPanel');
+            toggle.classList.toggle('active');
+            panel.style.display = toggle.classList.contains('active') ? 'block' : 'none';
+            saveSettings();
+        }
+        
+        function clearAllData() {
+            if (!confirm('Alle Leads und Einstellungen löschen?')) return;
+            localStorage.removeItem('oktopus_leads_pro');
+            localStorage.removeItem('oktopus_settings_pro');
+            leads = [];
+            updateStats();
+            loadSettings();
+            showStatus('Daten gelöscht', 'success');
+        }
+        
+        // ========================================
+        // STATUS
+        // ========================================
+        
+        function showStatus(msg, type = 'success') {
+            const bar = document.getElementById('statusBar');
+            document.getElementById('statusText').textContent = msg;
+            bar.className = 'status-bar show ' + type;
+            setTimeout(() => bar.classList.remove('show'), 2500);
+        }
+    </script>
+</body>
+</html>
