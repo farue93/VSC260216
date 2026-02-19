@@ -98,20 +98,25 @@ body {
   gap: 0;
 }
 
-/* The O logo mark — starts big, shrinks to text size */
+/* The O logo mark — starts huge, shrinks to text size */
 .splash-o {
-  width: 280px; height: 280px; flex-shrink: 0;
+  width: min(40vw, 320px); height: min(40vw, 320px); flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   animation: splashBreathe 6s ease-in-out infinite;
-  transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1),
-              height 0.8s cubic-bezier(0.34,1.56,0.64,1);
+  transition: width 0.9s cubic-bezier(0.22,1,0.36,1),
+              height 0.9s cubic-bezier(0.22,1,0.36,1),
+              margin-right 0.9s cubic-bezier(0.22,1,0.36,1);
+  margin-right: 0;
 }
 .splash-o img {
   width: 100%; height: 100%; object-fit: contain;
 }
 .splash-o.to-text {
   animation: none;
-  width: 72px; height: 72px;
+  /* O is ~16.4% of total OCTRION width; at font-size 11vw the text is ~5.5vw tall */
+  /* The O Bildmarke height = text height, so O size = text height */
+  width: min(11vw, 80px); height: min(11vw, 80px);
+  margin-right: min(0.9vw, 6px); /* gap ratio: 8.2% of O width */
 }
 
 @keyframes splashBreathe {
@@ -120,27 +125,29 @@ body {
   100% { opacity: 1; }
 }
 
-/* Letters C T R I O N */
+/* Letters C T R I O N — matched to original logo proportions */
 .splash-letters {
   display: flex; align-items: center;
-  overflow: hidden; height: 90px;
+  overflow: hidden;
   max-width: 0;
-  transition: max-width 0.8s cubic-bezier(0.34,1.56,0.64,1);
+  transition: max-width 1s cubic-bezier(0.22,1,0.36,1);
 }
-.splash-letters.expand { max-width: 600px; }
+.splash-letters.expand { max-width: 90vw; }
 .splash-letter {
-  font-size: 72px; font-weight: 900; color: var(--purple);
-  letter-spacing: 2px; line-height: 1;
+  font-size: min(11vw, 80px); font-weight: 800; color: var(--purple);
+  line-height: 1;
+  font-family: 'Segoe UI', 'Arial Black', 'Helvetica Neue', sans-serif;
+  letter-spacing: min(0.6vw, 4px);
   display: inline-block;
   opacity: 0;
-  transform: translateX(-50px);
+  transform: translateX(-40px);
   transition: none;
 }
 .splash-letter.fly-in {
   opacity: 1;
   transform: translateX(0);
-  transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1),
-              transform 0.45s cubic-bezier(0.16,1,0.3,1);
+  transition: opacity 0.4s cubic-bezier(0.16,1,0.3,1),
+              transform 0.5s cubic-bezier(0.16,1,0.3,1);
 }
 
 /* ═══ FRAME ═══════════════════════════════════ */
@@ -171,21 +178,22 @@ body {
 }
 
 .logo {
-  display: flex; align-items: center; gap: 10px;
+  display: flex; align-items: center; gap: 0;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
 }
 
 .logo-icon {
-  width: 36px; height: 36px;
+  width: 32px; height: 32px;
   display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-right: 3px;
 }
 .logo-icon img { width: 100%; height: 100%; object-fit: contain; }
 
 .logo-text {
-  height: 24px; display: flex; align-items: center;
-}
-.logo-text img {
-  height: 100%; width: auto; object-fit: contain;
+  font-size: 20px; font-weight: 800; color: var(--purple);
+  letter-spacing: 1.5px; line-height: 1;
+  font-family: 'Segoe UI', 'Arial Black', 'Helvetica Neue', sans-serif;
 }
 
 .tb-sep {
@@ -1143,13 +1151,15 @@ select.form-control {
   .frame { border: none; border-radius: 0; max-width: 100%; height: 100dvh; }
   .tablet-grid { grid-template-columns: 1fr; }
   .main { padding: 12px; }
-  .topbar { padding: 0 10px; gap: 8px; height: 48px; }
+  .topbar { padding: 0 8px; gap: 6px; height: 44px; }
   .event-pill { display: none; }
   .tb-sep { display: none; }
   .bottom-nav .nav-tab span { font-size: 9px; }
   .logo-text { display: none; }
+  .logo-icon { margin-right: 0; width: 28px; height: 28px; }
   .view-toggle-btn span { display: none; }
-  .view-toggle-btn { padding: 5px 6px; }
+  .view-toggle-btn { padding: 4px; min-width: 28px; min-height: 28px; justify-content: center; border: none; background: transparent; }
+  .view-toggle-btn svg { width: 18px; height: 18px; }
   .rep-full { display: none; }
   .rep-initials { display: inline !important; }
   .settings-interest-row { flex-wrap: wrap; }
@@ -1165,10 +1175,9 @@ select.form-control {
   .interest-grid { grid-template-columns: 1fr; }
   .interest-overlay-grid { grid-template-columns: 1fr; }
   .bant-grid { grid-template-columns: 1fr; }
-  .splash-o { width: 200px; height: 200px; }
-  .splash-o.to-text { width: 52px; height: 52px; }
-  .splash-letter { font-size: 52px; }
-  .splash-letters { height: 66px; }
+  .splash-o { width: min(50vw, 260px); height: min(50vw, 260px); }
+  .splash-o.to-text { width: min(13vw, 56px); height: min(13vw, 56px); margin-right: min(1vw, 4px); }
+  .splash-letter { font-size: min(13vw, 56px); }
 }
 
 /* ═══ TABLET COMPACT (no-scroll fit) ═════════ */
@@ -1254,13 +1263,16 @@ select.form-control {
 
 /* Mobile: hide logo text, show only initials for rep */
 .frame.mobile-mode .logo-text { display: none; }
+.frame.mobile-mode .logo-icon { margin-right: 0; }
 .frame.mobile-mode .rep-full { display: none; }
 .frame.mobile-mode .event-pill { display: none; }
 .frame.mobile-mode .tb-sep { display: none; }
 .frame.mobile-mode .view-toggle-btn span { display: none; }
-.frame.mobile-mode .view-toggle-btn { padding: 5px 6px; }
-.frame.mobile-mode .topbar { gap: 8px; height: 48px; padding: 0 10px; }
+.frame.mobile-mode .view-toggle-btn { padding: 4px; min-width: 28px; min-height: 28px; justify-content: center; border: none; background: transparent; }
+.frame.mobile-mode .view-toggle-btn svg { width: 18px; height: 18px; }
+.frame.mobile-mode .topbar { gap: 6px; height: 44px; padding: 0 8px; }
 .frame.mobile-mode .main { padding: 12px; }
+.frame.mobile-mode .logo-icon { width: 28px; height: 28px; }
 .frame.mobile-mode .crm-interests-card .crm-interest-row { grid-template-columns: 22px 1fr 70px minmax(0,1fr); gap: 4px; }
 .frame:not(.mobile-mode) .rep-initials { display: none; }
 
@@ -1696,9 +1708,7 @@ select.form-control {
       <div class="logo-icon">
         <img src="13459_OCTRION_Bildmarke_RGB_lila.png" alt="OCTRION">
       </div>
-      <div class="logo-text">
-        <img src="13459_OCTRION_GROUP_Logo_RGB_lila_neu.png" alt="OCTRION">
-      </div>
+      <div class="logo-text">CTRION</div>
     </div>
 
     <!-- Tablet/Mobile Toggle -->
