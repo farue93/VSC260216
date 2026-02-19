@@ -1844,6 +1844,121 @@ body {
   initParticles();
   resetIdle();
 
+  // ═══════════════════════════════════════════════════════════════
+  // DEBUG-MODUS: Taste "D" drücken → Buttons sichtbar machen
+  // Nochmal "D" → wieder ausblenden
+  // Die angezeigten Werte (bottom/left/width/height) kannst du
+  // direkt in den CSS-Block ".tentacle-btn.t-left/center/right"
+  // übernehmen.
+  // ═══════════════════════════════════════════════════════════════
+  let debugActive = false;
+  const debugColors = { 'left': '#ff3366', 'center': '#33cc66', 'right': '#3399ff' };
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'd' || e.key === 'D') {
+      debugActive = !debugActive;
+      document.querySelectorAll('.tentacle-btn').forEach(btn => {
+        const side = btn.classList.contains('t-left') ? 'left'
+                   : btn.classList.contains('t-center') ? 'center' : 'right';
+        const color = debugColors[side];
+
+        if (debugActive) {
+          // Sichtbar machen
+          btn.style.background = color + '30';
+          btn.style.border = '2px solid ' + color;
+          btn.style.boxShadow = '0 0 12px ' + color + '80';
+
+          // Position-Label erzeugen
+          let label = btn.querySelector('.debug-label');
+          if (!label) {
+            label = document.createElement('div');
+            label.className = 'debug-label';
+            label.style.cssText = `
+              position: absolute; top: -28px; left: 50%;
+              transform: translateX(-50%);
+              background: ${color}; color: #fff;
+              font-size: 10px; font-weight: 700; font-family: monospace;
+              padding: 2px 8px; border-radius: 4px;
+              white-space: nowrap; pointer-events: none; z-index: 999;
+              clip-path: none;
+            `;
+            btn.appendChild(label);
+          }
+
+          // Werte auslesen
+          const cs = getComputedStyle(btn);
+          const parent = btn.parentElement;
+          const pw = parent.offsetWidth;
+          const ph = parent.offsetHeight;
+          const bLeft = Math.round(btn.offsetLeft / pw * 100);
+          const bBottom = Math.round((ph - btn.offsetTop - btn.offsetHeight) / ph * 100);
+          const bW = Math.round(btn.offsetWidth / pw * 100);
+          const bH = Math.round(btn.offsetHeight / ph * 100);
+          label.textContent = `${side}: L${bLeft}% B${bBottom}% W${bW}% H${bH}%`;
+          label.style.display = 'block';
+
+          // Drag-Unterstützung
+          btn.style.cursor = 'move';
+          btn.dataset.debugDrag = 'true';
+        } else {
+          // Zurücksetzen
+          btn.style.background = 'transparent';
+          btn.style.border = 'none';
+          btn.style.boxShadow = 'none';
+          btn.style.cursor = 'pointer';
+          const label = btn.querySelector('.debug-label');
+          if (label) label.style.display = 'none';
+          delete btn.dataset.debugDrag;
+        }
+      });
+      console.log(debugActive ? '🔧 DEBUG ON — Buttons sichtbar. Nochmal D zum Ausblenden.' : '🔧 DEBUG OFF');
+    }
+  });
+
+  // Drag-Logik: Buttons mit Maus verschieben im Debug-Modus
+  let dragBtn = null, dragStartX, dragStartY, dragOrigLeft, dragOrigTop;
+  document.addEventListener('mousedown', function(e) {
+    const btn = e.target.closest('.tentacle-btn[data-debug-drag]');
+    if (!btn || !debugActive) return;
+    e.preventDefault(); e.stopPropagation();
+    dragBtn = btn;
+    dragStartX = e.clientX; dragStartY = e.clientY;
+    dragOrigLeft = btn.offsetLeft; dragOrigTop = btn.offsetTop;
+    btn.style.zIndex = '999';
+  });
+  document.addEventListener('mousemove', function(e) {
+    if (!dragBtn) return;
+    const dx = e.clientX - dragStartX;
+    const dy = e.clientY - dragStartY;
+    const parent = dragBtn.parentElement;
+    const newLeft = ((dragOrigLeft + dx) / parent.offsetWidth * 100).toFixed(1);
+    const newBottom = ((parent.offsetHeight - (dragOrigTop + dy) - dragBtn.offsetHeight) / parent.offsetHeight * 100).toFixed(1);
+    dragBtn.style.left = newLeft + '%';
+    dragBtn.style.bottom = newBottom + '%';
+    dragBtn.style.top = 'auto';
+    // Label aktualisieren
+    const label = dragBtn.querySelector('.debug-label');
+    if (label) {
+      const side = dragBtn.classList.contains('t-left') ? 'left'
+                 : dragBtn.classList.contains('t-center') ? 'center' : 'right';
+      const bW = Math.round(dragBtn.offsetWidth / parent.offsetWidth * 100);
+      const bH = Math.round(dragBtn.offsetHeight / parent.offsetHeight * 100);
+      label.textContent = `${side}: L${newLeft}% B${newBottom}% W${bW}% H${bH}%`;
+    }
+  });
+  document.addEventListener('mouseup', function() {
+    if (!dragBtn) return;
+    dragBtn.style.zIndex = '5';
+    // Finale Werte in Konsole ausgeben
+    const parent = dragBtn.parentElement;
+    const side = dragBtn.classList.contains('t-left') ? 't-left'
+               : dragBtn.classList.contains('t-center') ? 't-center' : 't-right';
+    const finalLeft = parseFloat(dragBtn.style.left).toFixed(1);
+    const finalBottom = parseFloat(dragBtn.style.bottom).toFixed(1);
+    console.log(`📌 .tentacle-btn.${side} { bottom: ${finalBottom}%; left: ${finalLeft}%; }`);
+    dragBtn = null;
+  });
+
 })();
 </script>
 </body>
