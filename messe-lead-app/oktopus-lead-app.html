@@ -117,9 +117,9 @@ body {
 }
 .splash-o.to-text {
   animation: none;
-  /* Container = font-size so visible O matches letter height */
-  width: min(11vw, 80px); height: min(11vw, 80px);
-  margin-right: min(0.9vw, 6px);
+  /* Bildmarke O height = text height in original logo (563 vs 563). Match letter img height */
+  width: min(10vw, 72px); height: min(10vw, 72px);
+  margin-right: min(0.85vw, 6px); /* O->C gap: 48/563 = 8.5% */
 }
 
 @keyframes splashBreathe {
@@ -128,24 +128,33 @@ body {
   100% { opacity: 1; }
 }
 
-/* Letters C T R I O N — matched to original logo proportions */
+/* Letters C T R I O N — actual PNG crops from original logo */
 .splash-letters {
-  display: flex; align-items: center;
+  display: flex; align-items: flex-end;
   overflow: hidden;
   max-width: 0;
   transition: max-width 1s cubic-bezier(0.22,1,0.36,1);
 }
 .splash-letters.expand { max-width: 90vw; }
 .splash-letter {
-  font-size: min(11vw, 80px); font-weight: 800; color: var(--purple);
-  line-height: 1;
-  font-family: 'Segoe UI', 'Arial Black', 'Helvetica Neue', sans-serif;
-  letter-spacing: min(0.6vw, 4px);
+  height: min(10vw, 72px); /* same height as Bildmarke O */
+  width: auto;
   display: inline-block;
   opacity: 0;
   transform: translateX(-40px);
   transition: none;
 }
+.splash-letter img {
+  height: 100%; width: auto;
+  display: block;
+}
+/* Gaps between letters match original logo proportions */
+/* C->T: 29/563=5.2%, T->R: 44/563=7.8%, R->I: 69/563=12.3%, I->O: 69/563=12.3%, O->N: 76/563=13.5% */
+.splash-letter:nth-child(2) { margin-left: min(0.52vw, 3.7px); }
+.splash-letter:nth-child(3) { margin-left: min(0.78vw, 5.6px); }
+.splash-letter:nth-child(4) { margin-left: min(1.23vw, 8.8px); }
+.splash-letter:nth-child(5) { margin-left: min(1.23vw, 8.8px); }
+.splash-letter:nth-child(6) { margin-left: min(1.35vw, 9.7px); }
 .splash-letter.fly-in {
   opacity: 1;
   transform: translateX(0);
@@ -200,9 +209,11 @@ body {
 }
 
 .logo-text {
-  font-size: 20px; font-weight: 800; color: var(--purple);
-  letter-spacing: 1.5px; line-height: 1;
-  font-family: 'Segoe UI', 'Arial Black', 'Helvetica Neue', sans-serif;
+  height: 22px; display: flex; align-items: center;
+}
+.logo-text img {
+  height: 100%; width: auto;
+  display: block;
 }
 
 .tb-sep {
@@ -1186,8 +1197,20 @@ select.form-control {
   .bant-grid { grid-template-columns: 1fr; }
   .splash-o { width: min(65vw, 300px); height: min(65vw, 300px); }
   .splash-o.to-text { width: min(13vw, 56px); height: min(13vw, 56px); margin-right: min(1vw, 4px); }
-  .splash-letter { font-size: min(13vw, 56px); }
+  .splash-letter { height: min(13vw, 56px); }
 }
+
+/* ═══ TABLET MODE OVERRIDES (force tablet look even on small screens) ═════════ */
+.frame:not(.mobile-mode) .logo-text { display: flex !important; }
+.frame:not(.mobile-mode) .logo-icon { width: 22px !important; height: 22px !important; margin-right: 2px !important; }
+.frame:not(.mobile-mode) .event-pill { display: inline-block !important; }
+.frame:not(.mobile-mode) .tb-sep { display: block !important; }
+.frame:not(.mobile-mode) .topbar { padding: 0 20px !important; gap: 14px !important; height: 56px !important; }
+.frame:not(.mobile-mode) .view-toggle-btn { padding: 5px 10px !important; border: 1.5px solid var(--border) !important; background: var(--card) !important; }
+.frame:not(.mobile-mode) .view-toggle-btn span { display: inline !important; }
+.frame:not(.mobile-mode) .view-toggle-btn svg { width: 16px !important; height: 16px !important; }
+.frame:not(.mobile-mode) .rep-full { display: inline !important; }
+.frame:not(.mobile-mode) .rep-initials { display: none !important; }
 
 /* ═══ TABLET COMPACT (no-scroll fit) ═════════ */
 .frame:not(.mobile-mode) .main { padding: 10px 16px; max-width: 100%; }
@@ -1637,12 +1660,12 @@ select.form-control {
       <img src="13459_OCTRION_Bildmarke_RGB_lila.png" alt="O">
     </div>
     <div class="splash-letters" id="splashLetters">
-      <span class="splash-letter">C</span>
-      <span class="splash-letter">T</span>
-      <span class="splash-letter">R</span>
-      <span class="splash-letter">I</span>
-      <span class="splash-letter">O</span>
-      <span class="splash-letter">N</span>
+      <span class="splash-letter"><img src="letter_c.png" alt="C"></span>
+      <span class="splash-letter"><img src="letter_t.png" alt="T"></span>
+      <span class="splash-letter"><img src="letter_r.png" alt="R"></span>
+      <span class="splash-letter"><img src="letter_i.png" alt="I"></span>
+      <span class="splash-letter"><img src="letter_o2.png" alt="O"></span>
+      <span class="splash-letter"><img src="letter_n.png" alt="N"></span>
     </div>
   </div>
   <div class="splash-hint" id="splashHint">Tippen zum Starten</div>
@@ -1717,7 +1740,7 @@ select.form-control {
       <div class="logo-icon">
         <img src="13459_OCTRION_Bildmarke_RGB_lila.png" alt="OCTRION">
       </div>
-      <div class="logo-text">CTRION</div>
+      <div class="logo-text"><img src="ctrion_text.png" alt="CTRION"></div>
     </div>
 
     <!-- Tablet/Mobile Toggle -->
