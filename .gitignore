@@ -7,3 +7,22 @@ desktop.ini
 .vscode/
 *.swp
 *.swo
+
+# Non-relevant project folders
+Klausuren/
+MManager/
+
+# Backups & old versions
+messe-lead-app/*-backup*.html
+messe-lead-app/oktopus-lead-app-v2.html
+messe-lead-app/oktopus-complete.html
+messe-lead-app/octrion-dashboard.html
+
+# Old backend/frontend
+messe-lead-app/backend/
+messe-lead-app/frontend/
+
+# Docs/PDF
+messe-lead-app/*.md
+messe-lead-app/*.pdf
+messe-lead-app/.gitignore
