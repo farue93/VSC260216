@@ -2,11 +2,12 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#F0EFF6">
-  <title>OKTOPUS | Kontakt Manager</title>
+  <title>OCTRION | Kontakt Manager</title>
   <!-- OFFLINE-FIRST: No CDN dependencies. Tesseract loaded locally for offline OCR. -->
   <script src="tesseract/tesseract.min.js"></script>
   <style>
@@ -61,8 +62,9 @@ html { scroll-behavior: smooth; }
 body {
   font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
   background: var(--bg); color: var(--text);
-  min-height: 100vh; -webkit-font-smoothing: antialiased;
+  min-height: 100dvh; -webkit-font-smoothing: antialiased;
   font-size: 14px; line-height: 1.5; overflow-x: hidden;
+  overscroll-behavior: none;
 }
 
 /* ═══ SPLASH SCREEN ═════════════════════════════ */
@@ -98,11 +100,10 @@ body {
 
 /* The O logo mark */
 .splash-o {
-  width: 160px; height: 160px; flex-shrink: 0;
+  width: 280px; height: 280px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   animation: splashBreathe 6s ease-in-out infinite;
-  transition: width 0.7s cubic-bezier(0.34,1.56,0.64,1),
-              height 0.7s cubic-bezier(0.34,1.56,0.64,1);
+  transition: all 0.8s cubic-bezier(0.34,1.56,0.64,1);
 }
 .splash-o img {
   width: 100%; height: 100%; object-fit: contain;
@@ -110,7 +111,20 @@ body {
 .splash-o.slide-left {
   animation: none;
   opacity: 1;
-  width: 62px; height: 62px;
+  width: 0; height: 0; overflow: hidden;
+  margin: 0; padding: 0;
+}
+
+/* Full OCTRION logo after animation */
+.splash-final-logo {
+  display: none; 
+  max-width: 420px; width: 70vw;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.splash-final-logo.show {
+  display: block;
+  opacity: 1;
 }
 
 @keyframes splashBreathe {
@@ -119,33 +133,14 @@ body {
   100% { opacity: 1; }
 }
 
-/* Letters C T R I O N */
-.splash-letters {
-  display: flex; align-items: center;
-  overflow: hidden; height: 80px;
-  max-width: 0;
-  transition: max-width 0.7s cubic-bezier(0.34,1.56,0.64,1);
-}
-.splash-letter {
-  font-size: 64px; font-weight: 900; color: var(--purple);
-  letter-spacing: 3px; line-height: 1;
-  display: inline-block;
-  opacity: 0;
-  transform: translateX(-60px);
-  transition: none;
-}
-.splash-letter.fly-in {
-  opacity: 1;
-  transform: translateX(0);
-  transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1),
-              transform 0.45s cubic-bezier(0.16,1,0.3,1);
-}
+/* Letters C T R I O N (hidden, replaced by final logo) */
+.splash-letters { display: none; }
 
 /* ═══ FRAME ═══════════════════════════════════ */
 .frame {
   position: relative;
   display: flex; flex-direction: column;
-  height: 100vh; margin: 0 auto;
+  height: 100dvh; margin: 0 auto;
   max-width: 1200px;
   border: 3px solid var(--purple);
   border-radius: 16px;
@@ -937,8 +932,8 @@ select.form-control {
 
 .crm-interests-card .crm-interest-row {
   display: grid;
-  grid-template-columns: 24px 1fr 90px 1fr;
-  align-items: center; gap: 8px;
+  grid-template-columns: 24px 1fr 80px minmax(0, 1fr);
+  align-items: center; gap: 6px;
   padding: 10px 0; border-bottom: 1px solid var(--border);
 }
 .crm-interests-card .crm-interest-row:last-child { border-bottom: none; }
@@ -955,7 +950,7 @@ select.form-control {
 }
 .crm-interest-rep {
   font-size: 11px; color: var(--text-muted);
-  max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 /* Scrollable interests list */
 .crm-interests-scroll {
@@ -974,11 +969,12 @@ select.form-control {
 
 /* Settings: interest rep mapping */
 .settings-interest-row {
-  display: flex; align-items: center; gap: 8px;
+  display: flex; align-items: center; gap: 6px;
   padding: 8px 0; border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
 }
 .settings-interest-row:last-child { border-bottom: none; }
-.settings-interest-name { font-size: 12px; font-weight: 700; width: 100px; flex-shrink: 0; }
+.settings-interest-name { font-size: 12px; font-weight: 700; width: 80px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .settings-interest-repname, .settings-interest-repemail {
   flex: 1; font-size: 12px; padding: 5px 8px; border: 1px solid var(--border);
   border-radius: 8px; background: var(--input-bg); font-family: inherit;
@@ -1138,16 +1134,22 @@ select.form-control {
 
 /* ═══ RESPONSIVE ═════════════════════════════ */
 @media (max-width: 768px) {
-  .frame { border: none; border-radius: 0; max-width: 100%; }
+  .frame { border: none; border-radius: 0; max-width: 100%; height: 100dvh; }
   .tablet-grid { grid-template-columns: 1fr; }
-  .main { padding: 16px; }
-  .topbar { padding: 0 12px; }
+  .main { padding: 12px; }
+  .topbar { padding: 0 10px; gap: 8px; height: 48px; }
   .event-pill { display: none; }
+  .tb-sep { display: none; }
   .view-toggle-btn { display: none; }
   .bottom-nav .nav-tab span { font-size: 9px; }
   .logo-text { display: none; }
   .rep-full { display: none; }
   .rep-initials { display: inline !important; }
+  .settings-interest-row { flex-wrap: wrap; }
+  .settings-interest-name { width: 100%; }
+  .crm-interests-card .crm-interest-row { grid-template-columns: 22px 1fr 70px minmax(0,1fr); gap: 4px; padding: 6px 0; }
+  .crm-interest-name { font-size: 12px; }
+  .crm-interest-prob { width: 70px; }
 }
 
 @media (max-width: 440px) {
@@ -1156,8 +1158,8 @@ select.form-control {
   .interest-grid { grid-template-columns: 1fr; }
   .interest-overlay-grid { grid-template-columns: 1fr; }
   .bant-grid { grid-template-columns: 1fr; }
-  .splash-o { width: 120px; height: 120px; }
-  .splash-letter { font-size: 44px; }
+  .splash-o { width: 200px; height: 200px; }
+  .splash-final-logo { max-width: 280px; }
 }
 
 /* ═══ TABLET COMPACT (no-scroll fit) ═════════ */
@@ -1244,6 +1246,11 @@ select.form-control {
 /* Mobile: hide logo text, show only initials for rep */
 .frame.mobile-mode .logo-text { display: none; }
 .frame.mobile-mode .rep-full { display: none; }
+.frame.mobile-mode .event-pill { display: none; }
+.frame.mobile-mode .tb-sep { display: none; }
+.frame.mobile-mode .topbar { gap: 8px; height: 48px; padding: 0 10px; }
+.frame.mobile-mode .main { padding: 12px; }
+.frame.mobile-mode .crm-interests-card .crm-interest-row { grid-template-columns: 22px 1fr 70px minmax(0,1fr); gap: 4px; }
 .frame:not(.mobile-mode) .rep-initials { display: none; }
 
 /* --- SCROLLBAR ------------------------------ */
@@ -1597,14 +1604,7 @@ select.form-control {
     <div class="splash-o" id="splashO">
       <img src="13459_OCTRION_Bildmarke_RGB_lila.png" alt="O">
     </div>
-    <div class="splash-letters" id="splashLetters">
-      <span class="splash-letter">C</span>
-      <span class="splash-letter">T</span>
-      <span class="splash-letter">R</span>
-      <span class="splash-letter">I</span>
-      <span class="splash-letter">O</span>
-      <span class="splash-letter">N</span>
-    </div>
+    <img class="splash-final-logo" id="splashFinalLogo" src="13459_OCTRION_GROUP_Logo_RGB_lila_neu.png" alt="OCTRION">
   </div>
   <div class="splash-hint" id="splashHint">Tippen zum Starten</div>
 </div>
@@ -1681,6 +1681,12 @@ select.form-control {
       <div class="logo-text">OCTRION</div>
     </div>
 
+    <!-- Tablet/Mobile Toggle -->
+    <button class="view-toggle-btn" id="viewToggle" onclick="App.toggleViewMode()" title="Ansicht wechseln">
+      <svg viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
+      <span id="viewToggleLabel">Handy</span>
+    </button>
+
     <div class="tb-sep"></div>
     <div class="event-pill" id="eventBadge">IFAT Munich 2026</div>
 
@@ -1690,12 +1696,6 @@ select.form-control {
     </div>
 
     <div class="tb-spacer"></div>
-
-    <!-- Tablet/Mobile Toggle -->
-    <button class="view-toggle-btn" id="viewToggle" onclick="App.toggleViewMode()" title="Ansicht wechseln">
-      <svg viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
-      <span id="viewToggleLabel">Handy</span>
-    </button>
 
   </header>
 
@@ -2297,7 +2297,6 @@ const SplashModule = {
 
   activate() {
     if (this.activated) {
-      // Second click — skip to app if animation already running
       this.dismiss();
       return;
     }
@@ -2307,28 +2306,21 @@ const SplashModule = {
     const hint = document.getElementById('splashHint');
     if (hint) hint.style.opacity = '0';
 
-    // Stop breathing, shrink O to text size
+    // Shrink O to nothing, then show full OCTRION logo
     const oLogo = document.getElementById('splashO');
     oLogo.classList.add('slide-left');
-    oLogo.style.opacity = '1';
 
-    // Expand letters container
-    document.getElementById('splashLetters').style.maxWidth = '500px';
+    // After O shrinks, show the full OCTRION GROUP logo
+    setTimeout(() => {
+      const finalLogo = document.getElementById('splashFinalLogo');
+      finalLogo.classList.add('show');
+    }, 400);
 
-    // Fly in letters one by one
-    const letters = document.querySelectorAll('#splashLetters .splash-letter');
-    letters.forEach((el, i) => {
-      setTimeout(() => {
-        el.classList.add('fly-in');
-      }, 120 + i * 120);
-    });
-
-    // After all letters are in, wait 1.5s then open app
-    const totalTime = 120 + letters.length * 120 + 1500;
+    // After logo shows, wait 1.5s then open app
     setTimeout(() => {
       this.animationDone = true;
       this.dismiss();
-    }, totalTime);
+    }, 2400);
   },
 
   dismiss() {
@@ -3132,9 +3124,15 @@ const App = {
     SplashModule.autoHide();
     this.updateTabArrows();
 
-    // Load saved view mode
+    // Auto-detect mobile vs tablet, allow manual override
     const savedMode = localStorage.getItem('oktopus_view_mode');
-    if (savedMode === 'mobile') this.toggleViewMode(true);
+    if (savedMode) {
+      this.toggleViewMode(savedMode === 'mobile');
+    } else {
+      // Auto-detect: screen width <= 768px or user agent hints at phone
+      const isPhone = window.innerWidth <= 768 || /iPhone|Android.*Mobile/i.test(navigator.userAgent);
+      this.toggleViewMode(isPhone);
+    }
 
     // Load saved contact view mode
     const savedContactView = localStorage.getItem('oktopus_contact_view');
