@@ -11,6 +11,25 @@
   <title>OCTRION | Kontakt Manager</title>
   <!-- OFFLINE-FIRST: No CDN dependencies. Tesseract loaded locally for offline OCR. -->
   <script src="tesseract/tesseract.min.js"></script>
+  <script>
+  // iframe embed fix: detect Wix/iframe context and fix viewport scaling
+  (function() {
+    var inIframe = false;
+    try { inIframe = window.self !== window.top; } catch(e) { inIframe = true; }
+    if (inIframe) {
+      // Force viewport reset inside iframe
+      var vp = document.querySelector('meta[name="viewport"]');
+      if (vp) vp.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+      document.documentElement.classList.add('in-iframe');
+      // Notify parent frame of content height for auto-resize
+      function postHeight() {
+        try { window.parent.postMessage({ type: 'resize', height: document.body.scrollHeight }, '*'); } catch(e) {}
+      }
+      window.addEventListener('load', postHeight);
+      new MutationObserver(postHeight).observe(document.body, { childList: true, subtree: true, attributes: true });
+    }
+  })();
+  </script>
   <style>
 /* ═══════════════════════════════════════════════════
    OKTOPUS Lead Capture — v3 Dashboard Design · Offline
@@ -59,6 +78,7 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
 
 body {
   font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
@@ -67,6 +87,11 @@ body {
   font-size: 14px; line-height: 1.5; overflow-x: hidden;
   overscroll-behavior: none;
 }
+
+/* iframe embed fix (Wix, etc.) */
+.in-iframe { width: 100% !important; max-width: 100vw !important; }
+.in-iframe .frame { border: none !important; border-radius: 0 !important; max-width: 100% !important; }
+.in-iframe .splash { border-radius: 0; }
 
 /* ═══ SPLASH SCREEN ═════════════════════════════ */
 .splash {
