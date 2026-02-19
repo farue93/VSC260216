@@ -87,37 +87,6 @@ body {
   pointer-events: none;
 }
 
-/* Subtle animated background */
-.splash::before {
-  content: ''; position: absolute; inset: -50%;
-  background: 
-    radial-gradient(circle at 30% 40%, rgba(76,48,168,0.04) 0%, transparent 50%),
-    radial-gradient(circle at 70% 60%, rgba(255,155,55,0.03) 0%, transparent 50%),
-    radial-gradient(circle at 50% 80%, rgba(76,48,168,0.05) 0%, transparent 40%);
-  animation: splashGlow 4s ease-in-out infinite alternate;
-}
-@keyframes splashGlow {
-  0% { opacity: 0.5; transform: scale(1) rotate(0deg); }
-  100% { opacity: 1; transform: scale(1.08) rotate(2deg); }
-}
-
-/* Floating orbs (subtle purple on white) */
-.splash-orb {
-  position: absolute; border-radius: 50%;
-  background: rgba(76,48,168,0.025);
-  animation: floatOrb linear infinite;
-}
-.splash-orb:nth-child(1) { width: 200px; height: 200px; top: 10%; left: 5%; animation-duration: 18s; }
-.splash-orb:nth-child(2) { width: 120px; height: 120px; top: 60%; right: 10%; animation-duration: 14s; animation-delay: -4s; }
-.splash-orb:nth-child(3) { width: 80px; height: 80px; top: 30%; right: 20%; animation-duration: 22s; animation-delay: -8s; }
-.splash-orb:nth-child(4) { width: 160px; height: 160px; bottom: 15%; left: 15%; animation-duration: 20s; animation-delay: -2s; }
-@keyframes floatOrb {
-  0% { transform: translateY(0) translateX(0) scale(1); }
-  33% { transform: translateY(-40px) translateX(20px) scale(1.1); }
-  66% { transform: translateY(20px) translateX(-30px) scale(0.95); }
-  100% { transform: translateY(0) translateX(0) scale(1); }
-}
-
 /* ─── Splash main content area (logo + wordmark in a row) ─── */
 .splash-content {
   display: flex; flex-direction: column;
@@ -132,35 +101,39 @@ body {
   gap: 0;
 }
 
-/* The O logo mark — LARGE, breathing, then shrinks on activate */
+/* The O logo mark — starts HUGE, shrinks to text size on click */
 .splash-o {
   position: relative;
-  width: 500px; height: 500px; flex-shrink: 0;
+  width: min(80vw, 600px); height: min(80vw, 600px); flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  animation: splashBreathe 5s ease-in-out infinite;
-  transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1),
-              height 0.8s cubic-bezier(0.34,1.56,0.64,1);
+  overflow: visible;
+  animation: splashBreathe 6s ease-in-out infinite;
+  transition: width 0.9s cubic-bezier(0.22,1,0.36,1),
+              height 0.9s cubic-bezier(0.22,1,0.36,1),
+              margin-right 0.9s cubic-bezier(0.22,1,0.36,1);
+  margin-right: 0;
   z-index: 2;
 }
 .splash-o img {
   width: 100%; height: 100%; object-fit: contain;
-  filter: drop-shadow(0 16px 50px rgba(76,48,168,0.25));
+  filter: drop-shadow(0 8px 30px rgba(76,48,168,0.15));
   transition: filter 0.8s ease;
 }
-/* Activated: shrink to wordmark O size — matches CTRION text 1:1 */
-.splash-o.activated {
+/* Activated: shrink to text-size O (like lead app) */
+.splash-o.to-text {
   animation: none;
   opacity: 1;
-  width: 160px; height: 160px;
+  width: min(10vw, 72px); height: min(10vw, 72px);
+  margin-right: min(0.85vw, 6px);
 }
-.splash-o.activated img {
-  filter: drop-shadow(0 4px 16px rgba(76,48,168,0.15));
+.splash-o.to-text img {
+  filter: drop-shadow(0 2px 8px rgba(76,48,168,0.1));
 }
 
 @keyframes splashBreathe {
-  0%   { opacity: 1; transform: scale(1); }
-  50%  { opacity: 0.2; transform: scale(0.96); }
-  100% { opacity: 1; transform: scale(1); }
+  0%   { opacity: 1; }
+  50%  { opacity: 0.25; }
+  100% { opacity: 1; }
 }
 
 /* ═══ 3 RING-SEGMENT HOTSPOTS ═══
@@ -201,47 +174,7 @@ body {
   fill: rgba(76, 48, 168, 0.3);
 }
 
-/* Glow-Punkte auf der Mitte jedes Segments */
-.ring-glow {
-  position: absolute;
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.85);
-  box-shadow: 0 0 8px 3px rgba(255,255,255,0.6), 0 0 16px 6px rgba(76,48,168,0.2);
-  animation: ringGlow 2.5s ease-in-out infinite;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  z-index: 6;
-}
-.ring-glow.g-center { animation-delay: 0.8s; }
-.ring-glow.g-right  { animation-delay: 1.6s; }
-
-/* Glow positions — auf der Mitte jedes Ring-Segments
-   Berechnet aus: center + midRadius * cos/sin(angle)
-   Content: 596x564, center at 50%/50%
-   midR = 237px, content_w=596, content_h=564
-   Links (120°):  x = 50 + 237*cos(120°)/596*100 = 50 - 19.9 = 30.1%, y = 50 + 237*sin(120°)/564*100 = 50 + 36.4 = 86.4%
-   Mitte (90°):   x = 50%, y = 50 + 237/564*100 = 50 + 42.0 = 92.0%
-   Rechts (60°):  x = 50 + 237*cos(60°)/596*100 = 50 + 19.9 = 69.9%, y = 86.4% */
-.ring-glow.g-left   { left: 30.1%; top: 86.4%; }
-.ring-glow.g-center { left: 50.0%; top: 92.0%; }
-.ring-glow.g-right  { left: 69.9%; top: 86.4%; }
-
-@keyframes ringGlow {
-  0%, 100% {
-    opacity: 0.3;
-    box-shadow: 0 0 4px 2px rgba(255,255,255,0.3), 0 0 8px 3px rgba(76,48,168,0.1);
-    transform: translate(-50%,-50%) scale(0.6);
-  }
-  50% {
-    opacity: 1;
-    box-shadow: 0 0 10px 4px rgba(255,255,255,0.8), 0 0 20px 8px rgba(76,48,168,0.25);
-    transform: translate(-50%,-50%) scale(1);
-  }
-}
-
-.splash-o.activated .ring-buttons-svg,
-.splash-o.activated .ring-glow { display: none; }
+.splash-o.to-text .ring-buttons-svg { display: none; }
 
 /* Tooltip labels — appear on hover */
 .ring-tooltip {
@@ -272,24 +205,24 @@ body {
 .ring-tooltip.tt-center { left: 50.0%; top: 84%; }
 .ring-tooltip.tt-right  { left: 69.9%; top: 78%; }
 
-.splash-o.activated .ring-tooltip { display: none; }
+.splash-o.to-text .ring-tooltip { display: none; }
 
-/* ─── CTRION letters — sized 1:1 with logo (matching GROUP PNG proportions) ─── */
+/* ─── CTRION letters — sized to match lead app proportions ─── */
 .splash-letters {
-  display: flex; align-items: center;
-  overflow: hidden; height: 160px;
+  display: flex; align-items: flex-end;
+  overflow: hidden;
   max-width: 0;
-  transition: max-width 0.8s cubic-bezier(0.34,1.56,0.64,1);
+  transition: max-width 1s cubic-bezier(0.22,1,0.36,1);
 }
 .splash-letters.expand {
-  max-width: 900px;
+  max-width: 90vw;
 }
 .splash-letter {
-  font-size: 160px; font-weight: 900; color: var(--purple);
-  letter-spacing: 4px; line-height: 1;
+  font-size: min(10vw, 72px); font-weight: 900; color: var(--purple);
+  line-height: 1;
   display: inline-block;
   opacity: 0;
-  transform: translateX(-80px);
+  transform: translateX(-40px);
   transition: none;
 }
 .splash-letter.fly-in {
@@ -308,21 +241,7 @@ body {
 }
 .splash-sub.show { opacity: 1; }
 
-/* ─── Responsive: smaller screens ─── */
-@media (max-width: 1100px) {
-  .splash-o { width: 380px; height: 380px; }
-  .splash-o.activated { width: 120px; height: 120px; }
-  .splash-letters { height: 120px; }
-  .splash-letter { font-size: 120px; }
-  .splash-letters.expand { max-width: 700px; }
-}
-@media (max-width: 768px) {
-  .splash-o { width: 280px; height: 280px; }
-  .splash-o.activated { width: 90px; height: 90px; }
-  .splash-letters { height: 90px; }
-  .splash-letter { font-size: 90px; }
-  .splash-letters.expand { max-width: 520px; }
-}
+/* \u2500\u2500\u2500 Responsive: smaller screens \u2500\u2500\u2500 */\n@media (max-width: 768px) {\n  .splash-o.to-text { width: min(13vw, 56px); height: min(13vw, 56px); margin-right: min(1vw, 4px); }\n  .splash-letter { font-size: min(13vw, 56px); }\n}
 
 /* Hint pulsing at bottom */
 .splash-hint {
@@ -830,12 +749,6 @@ body {
   margin-top: 12px; letter-spacing: 2px;
 }
 
-/* Particle canvas for splash background */
-#particleCanvas {
-  position: absolute; inset: 0; z-index: 1;
-  pointer-events: none;
-}
-
 /* Toast */
 .toast {
   position: fixed; top: 70px; left: 50%;
@@ -892,14 +805,6 @@ body {
      Logo = the "O" in OCTRION wordmark · Purple on White
      ═══════════════════════════════════════════════════ -->
 <div class="splash" id="splash">
-  <!-- Floating orbs background -->
-  <div class="splash-orb"></div>
-  <div class="splash-orb"></div>
-  <div class="splash-orb"></div>
-  <div class="splash-orb"></div>
-
-  <!-- Particle canvas -->
-  <canvas id="particleCanvas"></canvas>
 
   <!-- Main content -->
   <div class="splash-content" id="splashContent">
@@ -926,10 +831,7 @@ body {
                 onclick="openSection('contact')" />
         </svg>
 
-        <!-- Glow-Punkte auf jedem Segment -->
-        <div class="ring-glow g-left"></div>
-        <div class="ring-glow g-center"></div>
-        <div class="ring-glow g-right"></div>
+        <!-- Glow-Punkte entfernt — nur Hover-Highlight pro Segment -->
 
         <!-- Tooltip-Labels -->
         <span class="ring-tooltip tt-left">Lösungen</span>
@@ -1530,36 +1432,35 @@ body {
     const hint = document.getElementById('splashHint');
     if (hint) hint.style.opacity = '0';
 
-    // Stop breathing, shrink logo to wordmark size (160px)
+    // Shrink O to its text position in OCTRION (like lead app)
     const oLogo = document.getElementById('splashO');
-    oLogo.classList.add('activated');
+    oLogo.classList.add('to-text');
     oLogo.style.opacity = '1';
 
     // Expand letters container
-    document.getElementById('splashLetters').classList.add('expand');
+    const lettersBox = document.getElementById('splashLetters');
+    setTimeout(() => lettersBox.classList.add('expand'), 300);
 
-    // Fly in letters one by one
+    // Fly in letters one by one: C, T, R, I, O, N
     const letters = document.querySelectorAll('#splashLetters .splash-letter');
     letters.forEach((el, i) => {
-      setTimeout(() => {
-        el.classList.add('fly-in');
-      }, 150 + i * 130);
+      setTimeout(() => el.classList.add('fly-in'), 500 + i * 130);
     });
 
     // Show subtitle after letters
     setTimeout(() => {
       document.getElementById('splashSub').classList.add('show');
-    }, 150 + letters.length * 130 + 300);
+    }, 500 + letters.length * 130 + 300);
   }
 
-  // ─── Open section from splash (tentacle buttons) ──────────────
+  // ─── Open section from splash (ring segment buttons) ──────────────
   window.openSection = function(section) {
     // Run activation animation, then transition
     if (!splashActivated) {
       activateSplash();
       // Wait for wordmark animation to complete, then open
       const letters = document.querySelectorAll('#splashLetters .splash-letter');
-      const animTime = 150 + letters.length * 130 + 800;
+      const animTime = 500 + letters.length * 130 + 1200;
       setTimeout(() => {
         document.getElementById('splash').classList.add('fade-out');
         setTimeout(() => {
@@ -1567,7 +1468,7 @@ body {
           document.getElementById('appFrame').style.display = 'flex';
           switchSection(section);
           resetIdle();
-        }, 700);
+        }, 800);
       }, animTime);
     } else {
       document.getElementById('splash').classList.add('fade-out');
@@ -1576,7 +1477,7 @@ body {
         document.getElementById('appFrame').style.display = 'flex';
         switchSection(section);
         resetIdle();
-      }, 700);
+      }, 800);
     }
   };
 
@@ -1641,7 +1542,7 @@ body {
     // Reset splash state
     splashActivated = false;
     const oLogo = document.getElementById('splashO');
-    oLogo.classList.remove('activated');
+    oLogo.classList.remove('to-text');
     oLogo.style.opacity = '';
     document.getElementById('splashLetters').classList.remove('expand');
     document.querySelectorAll('#splashLetters .splash-letter').forEach(el => {
@@ -1797,78 +1698,12 @@ body {
     document.addEventListener(evt, resetIdle, { passive: true });
   });
 
-  // ─── Particle animation on splash ─────────
-  function initParticles() {
-    const canvas = document.getElementById('particleCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let W, H, particles = [];
-
-    function resize() {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    }
-    resize();
-    window.addEventListener('resize', resize);
-
-    class Particle {
-      constructor() { this.reset(); }
-      reset() {
-        this.x = Math.random() * W;
-        this.y = Math.random() * H;
-        this.r = Math.random() * 2 + 0.5;
-        this.dx = (Math.random() - 0.5) * 0.4;
-        this.dy = (Math.random() - 0.5) * 0.4;
-        this.alpha = Math.random() * 0.3 + 0.05;
-      }
-      update() {
-        this.x += this.dx;
-        this.y += this.dy;
-        if (this.x < 0 || this.x > W) this.dx *= -1;
-        if (this.y < 0 || this.y > H) this.dy *= -1;
-      }
-      draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(76,48,168,${this.alpha * 0.4})`;
-        ctx.fill();
-      }
-    }
-
-    for (let i = 0; i < 60; i++) particles.push(new Particle());
-
-    function animate() {
-      ctx.clearRect(0, 0, W, H);
-      particles.forEach(p => { p.update(); p.draw(); });
-
-      // Draw connections
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(76,48,168,${0.04 * (1 - dist / 120)})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        }
-      }
-      requestAnimationFrame(animate);
-    }
-    animate();
-  }
-
   // ─── Spin animation (used in demo) ────────
   const spinStyle = document.createElement('style');
   spinStyle.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
   document.head.appendChild(spinStyle);
 
   // ─── Init ──────────────────────────────────
-  initParticles();
   resetIdle();
 
   // ═══════════════════════════════════════════════════════════════
