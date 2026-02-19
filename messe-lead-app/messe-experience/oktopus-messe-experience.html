@@ -86,14 +86,24 @@ body {
   pointer-events: none;
 }
 .splash-hint {
-  position: absolute; bottom: 48px; left: 50%; transform: translateX(-50%);
-  font-size: 11px; color: rgba(76,48,168,0.35); font-weight: 600;
-  letter-spacing: 3px; text-transform: uppercase;
-  animation: hintPulse 2s ease-in-out infinite;
+  position: absolute; bottom: 34px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  animation: hintPulse 2.5s ease-in-out infinite;
+}
+.splash-hint-label {
+  font-size: 10px; color: rgba(76,48,168,0.3); font-weight: 600;
+  letter-spacing: 2.5px; text-transform: uppercase;
+}
+.splash-hint-dots {
+  display: flex; gap: 28px;
+}
+.splash-hint-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(76,48,168,0.25);
 }
 @keyframes hintPulse {
-  0%, 100% { opacity: 0.35; }
-  50% { opacity: 0.7; }
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
 }
 
 /* Splash content: O logo + letter spans in a row */
@@ -185,9 +195,9 @@ body {
   border: 5px solid transparent;
   border-top-color: var(--purple);
 }
-.ring-tooltip.tt-left   { left: 29.5%; top: 70%; }
-.ring-tooltip.tt-center { left: 50.0%; top: 76%; }
-.ring-tooltip.tt-right  { left: 70.5%; top: 70%; }
+.ring-tooltip.tt-left   { left: 30.9%; top: 73%; }
+.ring-tooltip.tt-center { left: 50.0%; top: 78%; }
+.ring-tooltip.tt-right  { left: 69.0%; top: 73%; }
 .splash-o.to-text .ring-tooltip { display: none; }
 
 /* Letters C T R I O N — actual PNG crops from original logo */
@@ -264,14 +274,24 @@ body {
 }
 
 .logo {
-  display: flex; align-items: center; gap: 10px;
+  display: flex; align-items: center; gap: 0;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
 }
-.logo-icon { width: 36px; height: 36px; }
-.logo-icon img { width: 100%; height: 100%; object-fit: contain; }
+.logo-icon {
+  width: 22px; height: 22px;
+  overflow: hidden; flex-shrink: 0;
+  margin-right: 2px;
+}
+.logo-icon img {
+  width: 300%; height: 300%;
+  max-width: none; max-height: none;
+  margin: -100%; display: block;
+}
 .logo-text {
-  font-size: 20px; font-weight: 900;
-  color: var(--purple); letter-spacing: 2px;
+  height: 22px; display: flex; align-items: center;
+}
+.logo-text img {
+  height: 100%; width: auto; display: block;
 }
 
 .tb-sep { width: 1px; height: 28px; background: var(--border); }
@@ -766,17 +786,17 @@ body {
 
       <!-- 3 klickbare Ring-Segmente als SVG-Arcs exakt auf dem lila Ring -->
       <svg class="ring-buttons-svg" viewBox="597.3 562.7 597.3 562.7" preserveAspectRatio="none">
-        <!-- Links: 112°–128° -->
+        <!-- Links (Lösungen): 108.5°–131° -->
         <path class="ring-btn-path" id="ringLeft"
-              d="M 788.1 1111.0 A 288 288 0 0 1 718.7 1070.9 L 782.1 989.8 A 185 185 0 0 0 826.7 1015.5 Z"
+              d="M 807.2 1109.5 A 280 280 0 0 1 712.3 1055.3 L 792.3 963.2 A 158 158 0 0 0 845.9 993.8 Z"
               onclick="openSection('solutions')" />
-        <!-- Mitte: 80°–100° -->
+        <!-- Mitte (Showcase): 76.5°–103.5° -->
         <path class="ring-btn-path" id="ringCenter"
-              d="M 946.0 1127.6 A 288 288 0 0 1 846.0 1127.6 L 863.9 1026.2 A 185 185 0 0 0 928.1 1026.2 Z"
+              d="M 961.4 1116.3 A 280 280 0 0 1 830.6 1116.3 L 858.2 1001.5 A 162 162 0 0 0 933.8 1001.5 Z"
               onclick="openSection('showcase')" />
-        <!-- Rechts: 52°–68° -->
+        <!-- Rechts (Kontakt): 49.5°–71.5° -->
         <path class="ring-btn-path" id="ringRight"
-              d="M 1073.3 1070.9 A 288 288 0 0 1 1003.9 1111.0 L 965.3 1015.5 A 185 185 0 0 0 1009.9 989.8 Z"
+              d="M 1077.8 1056.9 A 280 280 0 0 1 984.8 1109.5 L 946.1 993.8 A 158 158 0 0 0 998.6 964.1 Z"
               onclick="openSection('contact')" />
       </svg>
 
@@ -794,7 +814,14 @@ body {
       <span class="splash-letter"><img src="../letter_n.png" alt="N"></span>
     </div>
   </div>
-  <div class="splash-hint" id="splashHint">Tippen zum Starten</div>
+  <div class="splash-hint" id="splashHint">
+    <div class="splash-hint-dots">
+      <span class="splash-hint-dot"></span>
+      <span class="splash-hint-dot"></span>
+      <span class="splash-hint-dot"></span>
+    </div>
+    <span class="splash-hint-label">Bereiche entdecken</span>
+  </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════
@@ -817,7 +844,7 @@ body {
       <div class="logo-icon">
         <img src="../13459_OCTRION_Bildmarke_RGB_lila.png" alt="OCTRION">
       </div>
-      <span class="logo-text">OCTRION</span>
+      <div class="logo-text"><img src="../ctrion_text.png" alt="CTRION"></div>
     </div>
     <div class="tb-sep"></div>
     <span class="event-pill">🎪 Messe 2026</span>
@@ -1370,9 +1397,9 @@ body {
     oLogo.classList.add('to-text');
     oLogo.style.opacity = '1';
 
-    // Expand letters container
+    // Expand letters container immediately so flex reflow stays smooth
     const lettersBox = document.getElementById('splashLetters');
-    setTimeout(() => lettersBox.classList.add('expand'), 300);
+    lettersBox.classList.add('expand');
 
     // Fly in letters one by one: C, T, R, I, O, N
     const letters = document.querySelectorAll('#splashLetters .splash-letter');
