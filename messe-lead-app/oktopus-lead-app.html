@@ -98,33 +98,20 @@ body {
   gap: 0;
 }
 
-/* The O logo mark */
+/* The O logo mark — starts big, shrinks to text size */
 .splash-o {
   width: 280px; height: 280px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   animation: splashBreathe 6s ease-in-out infinite;
-  transition: all 0.8s cubic-bezier(0.34,1.56,0.64,1);
+  transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1),
+              height 0.8s cubic-bezier(0.34,1.56,0.64,1);
 }
 .splash-o img {
   width: 100%; height: 100%; object-fit: contain;
 }
-.splash-o.slide-left {
+.splash-o.to-text {
   animation: none;
-  opacity: 1;
-  width: 0; height: 0; overflow: hidden;
-  margin: 0; padding: 0;
-}
-
-/* Full OCTRION logo after animation */
-.splash-final-logo {
-  display: none; 
-  max-width: 420px; width: 70vw;
-  opacity: 0;
-  transition: opacity 0.6s ease;
-}
-.splash-final-logo.show {
-  display: block;
-  opacity: 1;
+  width: 72px; height: 72px;
 }
 
 @keyframes splashBreathe {
@@ -133,8 +120,28 @@ body {
   100% { opacity: 1; }
 }
 
-/* Letters C T R I O N (hidden, replaced by final logo) */
-.splash-letters { display: none; }
+/* Letters C T R I O N */
+.splash-letters {
+  display: flex; align-items: center;
+  overflow: hidden; height: 90px;
+  max-width: 0;
+  transition: max-width 0.8s cubic-bezier(0.34,1.56,0.64,1);
+}
+.splash-letters.expand { max-width: 600px; }
+.splash-letter {
+  font-size: 72px; font-weight: 900; color: var(--purple);
+  letter-spacing: 2px; line-height: 1;
+  display: inline-block;
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: none;
+}
+.splash-letter.fly-in {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1),
+              transform 0.45s cubic-bezier(0.16,1,0.3,1);
+}
 
 /* ═══ FRAME ═══════════════════════════════════ */
 .frame {
@@ -160,7 +167,6 @@ body {
   background: var(--card);
   padding: 0 20px; height: 56px;
   display: flex; align-items: center; gap: 14px;
-  box-shadow: var(--shadow-sm);
   flex-shrink: 0;
 }
 
@@ -176,10 +182,11 @@ body {
 .logo-icon img { width: 100%; height: 100%; object-fit: contain; }
 
 .logo-text {
-  font-size: 18px; font-weight: 900;
-  color: var(--purple); letter-spacing: 1.5px;
+  height: 24px; display: flex; align-items: center;
 }
-.logo-text span { color: var(--purple); }
+.logo-text img {
+  height: 100%; width: auto; object-fit: contain;
+}
 
 .tb-sep {
   width: 1px; height: 24px;
@@ -252,7 +259,6 @@ body {
 .bottom-nav {
   background: var(--card);
   display: flex; height: 52px;
-  box-shadow: 0 -1px 4px rgba(0,0,0,0.03);
   flex-shrink: 0;
 }
 .nav-tab {
@@ -1140,9 +1146,10 @@ select.form-control {
   .topbar { padding: 0 10px; gap: 8px; height: 48px; }
   .event-pill { display: none; }
   .tb-sep { display: none; }
-  .view-toggle-btn { display: none; }
   .bottom-nav .nav-tab span { font-size: 9px; }
   .logo-text { display: none; }
+  .view-toggle-btn span { display: none; }
+  .view-toggle-btn { padding: 5px 6px; }
   .rep-full { display: none; }
   .rep-initials { display: inline !important; }
   .settings-interest-row { flex-wrap: wrap; }
@@ -1159,7 +1166,9 @@ select.form-control {
   .interest-overlay-grid { grid-template-columns: 1fr; }
   .bant-grid { grid-template-columns: 1fr; }
   .splash-o { width: 200px; height: 200px; }
-  .splash-final-logo { max-width: 280px; }
+  .splash-o.to-text { width: 52px; height: 52px; }
+  .splash-letter { font-size: 52px; }
+  .splash-letters { height: 66px; }
 }
 
 /* ═══ TABLET COMPACT (no-scroll fit) ═════════ */
@@ -1248,6 +1257,8 @@ select.form-control {
 .frame.mobile-mode .rep-full { display: none; }
 .frame.mobile-mode .event-pill { display: none; }
 .frame.mobile-mode .tb-sep { display: none; }
+.frame.mobile-mode .view-toggle-btn span { display: none; }
+.frame.mobile-mode .view-toggle-btn { padding: 5px 6px; }
 .frame.mobile-mode .topbar { gap: 8px; height: 48px; padding: 0 10px; }
 .frame.mobile-mode .main { padding: 12px; }
 .frame.mobile-mode .crm-interests-card .crm-interest-row { grid-template-columns: 22px 1fr 70px minmax(0,1fr); gap: 4px; }
@@ -1604,7 +1615,14 @@ select.form-control {
     <div class="splash-o" id="splashO">
       <img src="13459_OCTRION_Bildmarke_RGB_lila.png" alt="O">
     </div>
-    <img class="splash-final-logo" id="splashFinalLogo" src="13459_OCTRION_GROUP_Logo_RGB_lila_neu.png" alt="OCTRION">
+    <div class="splash-letters" id="splashLetters">
+      <span class="splash-letter">C</span>
+      <span class="splash-letter">T</span>
+      <span class="splash-letter">R</span>
+      <span class="splash-letter">I</span>
+      <span class="splash-letter">O</span>
+      <span class="splash-letter">N</span>
+    </div>
   </div>
   <div class="splash-hint" id="splashHint">Tippen zum Starten</div>
 </div>
@@ -1678,7 +1696,9 @@ select.form-control {
       <div class="logo-icon">
         <img src="13459_OCTRION_Bildmarke_RGB_lila.png" alt="OCTRION">
       </div>
-      <div class="logo-text">OCTRION</div>
+      <div class="logo-text">
+        <img src="13459_OCTRION_GROUP_Logo_RGB_lila_neu.png" alt="OCTRION">
+      </div>
     </div>
 
     <!-- Tablet/Mobile Toggle -->
@@ -2306,21 +2326,26 @@ const SplashModule = {
     const hint = document.getElementById('splashHint');
     if (hint) hint.style.opacity = '0';
 
-    // Shrink O to nothing, then show full OCTRION logo
+    // Shrink O to its text position in OCTRION
     const oLogo = document.getElementById('splashO');
-    oLogo.classList.add('slide-left');
+    oLogo.classList.add('to-text');
 
-    // After O shrinks, show the full OCTRION GROUP logo
-    setTimeout(() => {
-      const finalLogo = document.getElementById('splashFinalLogo');
-      finalLogo.classList.add('show');
-    }, 400);
+    // Expand letters container
+    const lettersBox = document.getElementById('splashLetters');
+    setTimeout(() => lettersBox.classList.add('expand'), 300);
 
-    // After logo shows, wait 1.5s then open app
+    // Fly in letters one by one: C, T, R, I, O, N
+    const letters = document.querySelectorAll('#splashLetters .splash-letter');
+    letters.forEach((el, i) => {
+      setTimeout(() => el.classList.add('fly-in'), 500 + i * 130);
+    });
+
+    // After all letters are in, wait 1.5s then open app
+    const totalTime = 500 + letters.length * 130 + 1500;
     setTimeout(() => {
       this.animationDone = true;
       this.dismiss();
-    }, 2400);
+    }, totalTime);
   },
 
   dismiss() {
