@@ -78,11 +78,11 @@ body {
   background: #ffffff;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
-  transition: opacity 0.8s ease, transform 0.8s ease;
+  transition: opacity 1s cubic-bezier(0.4,0,0.2,1), transform 1s cubic-bezier(0.4,0,0.2,1);
   overflow: hidden;
 }
 .splash.fade-out {
-  opacity: 0; transform: scale(1.1);
+  opacity: 0; transform: scale(1.08) translateY(-30px);
   pointer-events: none;
 }
 .splash-hint {
@@ -119,9 +119,9 @@ body {
   width: min(70vw, 440px); height: min(70vw, 440px); flex-shrink: 0;
   overflow: hidden;
   animation: splashBreathe 6s ease-in-out infinite;
-  transition: width 0.9s cubic-bezier(0.22,1,0.36,1),
-              height 0.9s cubic-bezier(0.22,1,0.36,1),
-              margin-right 0.9s cubic-bezier(0.22,1,0.36,1);
+  transition: width 1.0s cubic-bezier(0.22,1,0.36,1),
+              height 1.0s cubic-bezier(0.22,1,0.36,1),
+              margin-right 1.0s cubic-bezier(0.22,1,0.36,1);
   margin-right: 0;
 }
 /* Crop: PNG has ~33% content centered; 300%/-100% shows only the O mark */
@@ -195,9 +195,9 @@ body {
   border: 5px solid transparent;
   border-top-color: var(--purple);
 }
-.ring-tooltip.tt-left   { left: 30.9%; top: 73%; }
-.ring-tooltip.tt-center { left: 50.0%; top: 78%; }
-.ring-tooltip.tt-right  { left: 69.0%; top: 73%; }
+.ring-tooltip.tt-left   { left: 25.1%; top: 82%; }
+.ring-tooltip.tt-center { left: 50.0%; top: 87%; }
+.ring-tooltip.tt-right  { left: 74.6%; top: 82%; }
 .splash-o.to-text .ring-tooltip { display: none; }
 
 /* Letters C T R I O N — actual PNG crops from original logo */
@@ -205,7 +205,7 @@ body {
   display: flex; align-items: flex-end;
   overflow: hidden;
   max-width: 0;
-  transition: max-width 1s cubic-bezier(0.22,1,0.36,1);
+  transition: max-width 1.1s cubic-bezier(0.22,1,0.36,1);
 }
 .splash-letters.expand { max-width: 90vw; }
 .splash-letter {
@@ -229,8 +229,8 @@ body {
 .splash-letter.fly-in {
   opacity: 1;
   transform: translateX(0);
-  transition: opacity 0.4s cubic-bezier(0.16,1,0.3,1),
-              transform 0.5s cubic-bezier(0.16,1,0.3,1);
+  transition: opacity 0.44s cubic-bezier(0.16,1,0.3,1),
+              transform 0.55s cubic-bezier(0.16,1,0.3,1);
 }
 
 @media (max-width: 768px) {
@@ -786,17 +786,17 @@ body {
 
       <!-- 3 klickbare Ring-Segmente als SVG-Arcs exakt auf dem lila Ring -->
       <svg class="ring-buttons-svg" viewBox="597.3 562.7 597.3 562.7" preserveAspectRatio="none">
-        <!-- Links (Lösungen): 108.5°–131° -->
+        <!-- Links (Lösungen): 108.5°–131° — halbe Ringbreite weiter außen -->
         <path class="ring-btn-path" id="ringLeft"
-              d="M 807.2 1109.5 A 280 280 0 0 1 712.3 1055.3 L 792.3 963.2 A 158 158 0 0 0 845.9 993.8 Z"
+              d="M 784.9 1175.9 A 350 350 0 0 1 666.4 1108.1 L 759.5 1001.0 A 208 208 0 0 0 830.0 1041.3 Z"
               onclick="openSection('solutions')" />
         <!-- Mitte (Showcase): 76.5°–103.5° -->
         <path class="ring-btn-path" id="ringCenter"
-              d="M 961.4 1116.3 A 280 280 0 0 1 830.6 1116.3 L 858.2 1001.5 A 162 162 0 0 0 933.8 1001.5 Z"
+              d="M 975.8 1176.6 A 342 342 0 0 1 816.2 1176.6 L 846.5 1050.1 A 212 212 0 0 0 945.5 1050.1 Z"
               onclick="openSection('showcase')" />
         <!-- Rechts (Kontakt): 49.5°–71.5° -->
         <path class="ring-btn-path" id="ringRight"
-              d="M 1077.8 1056.9 A 280 280 0 0 1 984.8 1109.5 L 946.1 993.8 A 158 158 0 0 0 998.6 964.1 Z"
+              d="M 1122.7 1109.4 A 349 349 0 0 1 1006.7 1175.0 L 962.0 1041.3 A 208 208 0 0 0 1031.1 1002.2 Z"
               onclick="openSection('contact')" />
       </svg>
 
@@ -1401,10 +1401,10 @@ body {
     const lettersBox = document.getElementById('splashLetters');
     lettersBox.classList.add('expand');
 
-    // Fly in letters one by one: C, T, R, I, O, N
+    // Fly in letters one by one: C, T, R, I, O, N (10% slower timing)
     const letters = document.querySelectorAll('#splashLetters .splash-letter');
     letters.forEach((el, i) => {
-      setTimeout(() => el.classList.add('fly-in'), 500 + i * 130);
+      setTimeout(() => el.classList.add('fly-in'), 550 + i * 143);
     });
 
   }
@@ -1414,26 +1414,52 @@ body {
     // Run activation animation, then transition
     if (!splashActivated) {
       activateSplash();
-      // Wait for wordmark animation to complete, then open
+      // Wait for wordmark animation, then transition quickly
       const letters = document.querySelectorAll('#splashLetters .splash-letter');
-      const animTime = 500 + letters.length * 130 + 1200;
+      const animTime = 550 + letters.length * 143 + 600; // less wait after letters
       setTimeout(() => {
+        // Prepare app frame behind splash before fading
+        document.getElementById('appFrame').style.display = 'flex';
+        document.getElementById('appFrame').style.opacity = '0';
+        document.getElementById('appFrame').style.transform = 'translateY(20px)';
+        document.getElementById('appFrame').style.transition = 'opacity 0.8s cubic-bezier(0.4,0,0.2,1), transform 0.8s cubic-bezier(0.4,0,0.2,1)';
+        // Fade out splash
         document.getElementById('splash').classList.add('fade-out');
+        // Simultaneously fade in app frame
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            document.getElementById('appFrame').style.opacity = '1';
+            document.getElementById('appFrame').style.transform = 'translateY(0)';
+          });
+        });
         setTimeout(() => {
           document.getElementById('splash').style.display = 'none';
-          document.getElementById('appFrame').style.display = 'flex';
           switchSection(section);
           resetIdle();
-        }, 800);
+          // Clean up inline transition styles
+          document.getElementById('appFrame').style.transition = '';
+          document.getElementById('appFrame').style.transform = '';
+        }, 1000);
       }, animTime);
     } else {
+      document.getElementById('appFrame').style.display = 'flex';
+      document.getElementById('appFrame').style.opacity = '0';
+      document.getElementById('appFrame').style.transform = 'translateY(20px)';
+      document.getElementById('appFrame').style.transition = 'opacity 0.8s cubic-bezier(0.4,0,0.2,1), transform 0.8s cubic-bezier(0.4,0,0.2,1)';
       document.getElementById('splash').classList.add('fade-out');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.getElementById('appFrame').style.opacity = '1';
+          document.getElementById('appFrame').style.transform = 'translateY(0)';
+        });
+      });
       setTimeout(() => {
         document.getElementById('splash').style.display = 'none';
-        document.getElementById('appFrame').style.display = 'flex';
         switchSection(section);
         resetIdle();
-      }, 800);
+        document.getElementById('appFrame').style.transition = '';
+        document.getElementById('appFrame').style.transform = '';
+      }, 1000);
     }
   };
 
