@@ -71,63 +71,60 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════
-   SPLASH / LANDING SCREEN — White BG · Purple Logo
+   SPLASH / LANDING SCREEN — 1:1 wie Lead-App
    ═══════════════════════════════════════════════════ */
 .splash {
   position: fixed; inset: 0; z-index: 9999;
-  background: #FFFFFF;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
+  background: #ffffff;
+  display: flex; align-items: center; justify-content: center;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
-  overflow: hidden;
   transition: opacity 0.8s ease, transform 0.8s ease;
+  overflow: hidden;
 }
 .splash.fade-out {
   opacity: 0; transform: scale(1.1);
   pointer-events: none;
 }
+.splash-hint {
+  position: absolute; bottom: 48px; left: 50%; transform: translateX(-50%);
+  font-size: 11px; color: rgba(76,48,168,0.35); font-weight: 600;
+  letter-spacing: 3px; text-transform: uppercase;
+  animation: hintPulse 2s ease-in-out infinite;
+}
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.7; }
+}
 
-/* ─── Splash main content area (logo + wordmark in a row) ─── */
+/* Splash content: O logo + letter spans in a row */
 .splash-content {
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  position: relative; z-index: 2;
-  gap: 0;
-}
-
-/* Logo + Wordmark row */
-.splash-wordmark {
   display: flex; align-items: center; justify-content: center;
+  position: relative; z-index: 1;
   gap: 0;
 }
 
-/* The O logo mark — starts HUGE, shrinks to text size on click */
+/* The O logo mark — starts huge, shrinks to text size */
 .splash-o {
   position: relative;
-  width: min(80vw, 600px); height: min(80vw, 600px); flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  overflow: visible;
+  width: min(70vw, 440px); height: min(70vw, 440px); flex-shrink: 0;
+  overflow: hidden;
   animation: splashBreathe 6s ease-in-out infinite;
   transition: width 0.9s cubic-bezier(0.22,1,0.36,1),
               height 0.9s cubic-bezier(0.22,1,0.36,1),
               margin-right 0.9s cubic-bezier(0.22,1,0.36,1);
   margin-right: 0;
-  z-index: 2;
 }
-.splash-o img {
-  width: 100%; height: 100%; object-fit: contain;
-  filter: drop-shadow(0 8px 30px rgba(76,48,168,0.15));
-  transition: filter 0.8s ease;
+/* Crop: PNG has ~33% content centered; 300%/-100% shows only the O mark */
+.splash-o img.logo-img {
+  width: 300%; height: 300%;
+  max-width: none; max-height: none;
+  margin: -100%;
+  display: block;
 }
-/* Activated: shrink to text-size O (like lead app) */
 .splash-o.to-text {
   animation: none;
-  opacity: 1;
   width: min(10vw, 72px); height: min(10vw, 72px);
   margin-right: min(0.85vw, 6px);
-}
-.splash-o.to-text img {
-  filter: drop-shadow(0 2px 8px rgba(76,48,168,0.1));
 }
 
 @keyframes splashBreathe {
@@ -136,26 +133,17 @@ body {
   100% { opacity: 1; }
 }
 
-/* ═══ 3 RING-SEGMENT HOTSPOTS ═══
-   Pixel-analyzed from Bildmarke PNG:
-   Ring: inner_r=185px, outer_r=288px (mittlerer r=237px)
-   Der Ring ist unten offen. 3 kleine Segmente unten:
-     Links:  112°–128° (Mitte 120°)
-     Mitte:   80°–100° (Mitte 90°)
-     Rechts:  52°– 68° (Mitte 60°)
-   Lücken (weiß) bei: 45-52°, 68-80°, 100-112°, 128-135°
-   Buttons liegen als unsichtbare SVG-Arcs exakt auf dem Ring. */
-
-/* SVG Overlay — exakt über dem Logo */
+/* ═══ 3 RING-SEGMENT HOTSPOTS (Messe-Erweiterung) ═══
+   Invisible SVG arcs exactly on the 3 ring segments.
+   Only visible when logo is large (before to-text). */
 .ring-buttons-svg {
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  inset: 0;
   z-index: 5;
   pointer-events: none;
+  /* The SVG maps to the full PNG coordinate space.
+     The logo img is 300%/-100% cropped, so we need to match. */
 }
-
-/* Jeder Arc-Pfad ist klickbar */
 .ring-btn-path {
   pointer-events: all;
   cursor: pointer;
@@ -164,8 +152,6 @@ body {
   stroke-width: 0;
   transition: fill 0.3s ease, filter 0.3s ease;
 }
-
-/* Hover: Segment leuchtet orange auf */
 .ring-btn-path:hover {
   fill: rgba(255, 155, 55, 0.25);
   filter: drop-shadow(0 0 8px rgba(255,155,55,0.4));
@@ -173,7 +159,6 @@ body {
 .ring-btn-path:active {
   fill: rgba(76, 48, 168, 0.3);
 }
-
 .splash-o.to-text .ring-buttons-svg { display: none; }
 
 /* Tooltip labels — appear on hover */
@@ -200,31 +185,37 @@ body {
   border: 5px solid transparent;
   border-top-color: var(--purple);
 }
-/* Position: direkt über dem jeweiligen Glow-Punkt */
-.ring-tooltip.tt-left   { left: 30.1%; top: 78%; }
-.ring-tooltip.tt-center { left: 50.0%; top: 84%; }
-.ring-tooltip.tt-right  { left: 69.9%; top: 78%; }
-
+.ring-tooltip.tt-left   { left: 29.5%; top: 70%; }
+.ring-tooltip.tt-center { left: 50.0%; top: 76%; }
+.ring-tooltip.tt-right  { left: 70.5%; top: 70%; }
 .splash-o.to-text .ring-tooltip { display: none; }
 
-/* ─── CTRION letters — sized to match lead app proportions ─── */
+/* Letters C T R I O N — actual PNG crops from original logo */
 .splash-letters {
   display: flex; align-items: flex-end;
   overflow: hidden;
   max-width: 0;
   transition: max-width 1s cubic-bezier(0.22,1,0.36,1);
 }
-.splash-letters.expand {
-  max-width: 90vw;
-}
+.splash-letters.expand { max-width: 90vw; }
 .splash-letter {
-  font-size: min(10vw, 72px); font-weight: 900; color: var(--purple);
-  line-height: 1;
+  height: min(10vw, 72px);
+  width: auto;
   display: inline-block;
   opacity: 0;
   transform: translateX(-40px);
   transition: none;
 }
+.splash-letter img {
+  height: 100%; width: auto;
+  display: block;
+}
+/* Gaps between letters match original logo proportions */
+.splash-letter:nth-child(2) { margin-left: min(0.52vw, 3.7px); }
+.splash-letter:nth-child(3) { margin-left: min(0.78vw, 5.6px); }
+.splash-letter:nth-child(4) { margin-left: min(1.23vw, 8.8px); }
+.splash-letter:nth-child(5) { margin-left: min(1.23vw, 8.8px); }
+.splash-letter:nth-child(6) { margin-left: min(1.35vw, 9.7px); }
 .splash-letter.fly-in {
   opacity: 1;
   transform: translateX(0);
@@ -232,45 +223,9 @@ body {
               transform 0.5s cubic-bezier(0.16,1,0.3,1);
 }
 
-/* Subtitle under the wordmark */
-.splash-sub {
-  font-size: 16px; color: var(--text-muted);
-  font-weight: 600; letter-spacing: 8px; text-transform: uppercase;
-  margin-top: 24px; position: relative; z-index: 2;
-  opacity: 0; transition: opacity 0.5s ease 0.3s;
-}
-.splash-sub.show { opacity: 1; }
-
-/* \u2500\u2500\u2500 Responsive: smaller screens \u2500\u2500\u2500 */\n@media (max-width: 768px) {\n  .splash-o.to-text { width: min(13vw, 56px); height: min(13vw, 56px); margin-right: min(1vw, 4px); }\n  .splash-letter { font-size: min(13vw, 56px); }\n}
-
-/* Hint pulsing at bottom */
-.splash-hint {
-  position: absolute; bottom: 40px; z-index: 2;
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-}
-.splash-hint-text {
-  font-size: 11px; font-weight: 600; color: rgba(76,48,168,0.3);
-  letter-spacing: 2px; text-transform: uppercase;
-  animation: hintPulse 2s ease-in-out infinite;
-}
-@keyframes hintPulse {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.7; }
-}
-.splash-hint-arrows {
-  display: flex; gap: 10px;
-}
-.splash-hint-arrow {
-  width: 8px; height: 8px; border-right: 2px solid rgba(76,48,168,0.25);
-  border-bottom: 2px solid rgba(76,48,168,0.25);
-  transform: rotate(45deg);
-  animation: hintBounce 1.8s ease-in-out infinite;
-}
-.splash-hint-arrow:nth-child(2) { animation-delay: 0.2s; }
-.splash-hint-arrow:nth-child(3) { animation-delay: 0.4s; }
-@keyframes hintBounce {
-  0%, 100% { transform: rotate(45deg) translate(0,0); opacity: 0.3; }
-  50% { transform: rotate(45deg) translate(4px,4px); opacity: 1; }
+@media (max-width: 768px) {
+  .splash-o.to-text { width: min(13vw, 56px); height: min(13vw, 56px); margin-right: min(1vw, 4px); }
+  .splash-letter { height: min(13vw, 56px); }
 }
 
 /* Ripple effect on tentacle click */
@@ -805,63 +760,41 @@ body {
      Logo = the "O" in OCTRION wordmark · Purple on White
      ═══════════════════════════════════════════════════ -->
 <div class="splash" id="splash">
-
-  <!-- Main content -->
   <div class="splash-content" id="splashContent">
+    <div class="splash-o" id="splashO">
+      <img class="logo-img" src="../13459_OCTRION_Bildmarke_RGB_lila.png" alt="O">
 
-    <!-- Logo (big, centered, breathing) + CTRION wordmark row -->
-    <div class="splash-wordmark">
-      <!-- The "O" = original OCTRION Bildmarke -->
-      <div class="splash-o" id="splashO">
-        <img src="../13459_OCTRION_Bildmarke_RGB_lila.png" alt="OCTRION">
+      <!-- 3 klickbare Ring-Segmente als SVG-Arcs exakt auf dem lila Ring -->
+      <svg class="ring-buttons-svg" viewBox="597.3 562.7 597.3 562.7" preserveAspectRatio="none">
+        <!-- Links: 112°–128° -->
+        <path class="ring-btn-path" id="ringLeft"
+              d="M 788.1 1111.0 A 288 288 0 0 1 718.7 1070.9 L 782.1 989.8 A 185 185 0 0 0 826.7 1015.5 Z"
+              onclick="openSection('solutions')" />
+        <!-- Mitte: 80°–100° -->
+        <path class="ring-btn-path" id="ringCenter"
+              d="M 946.0 1127.6 A 288 288 0 0 1 846.0 1127.6 L 863.9 1026.2 A 185 185 0 0 0 928.1 1026.2 Z"
+              onclick="openSection('showcase')" />
+        <!-- Rechts: 52°–68° -->
+        <path class="ring-btn-path" id="ringRight"
+              d="M 1073.3 1070.9 A 288 288 0 0 1 1003.9 1111.0 L 965.3 1015.5 A 185 185 0 0 0 1009.9 989.8 Z"
+              onclick="openSection('contact')" />
+      </svg>
 
-        <!-- 3 klickbare Ring-Segmente als SVG-Arcs exakt auf dem lila Ring -->
-        <svg class="ring-buttons-svg" viewBox="0 0 1792 1688" preserveAspectRatio="xMidYMid meet">
-          <!-- Links: 112°–128° -->
-          <path class="ring-btn-path" id="ringLeft"
-                d="M 788.1 1111.0 A 288 288 0 0 1 718.7 1070.9 L 782.1 989.8 A 185 185 0 0 0 826.7 1015.5 Z"
-                onclick="openSection('solutions')" />
-          <!-- Mitte: 80°–100° -->
-          <path class="ring-btn-path" id="ringCenter"
-                d="M 946.0 1127.6 A 288 288 0 0 1 846.0 1127.6 L 863.9 1026.2 A 185 185 0 0 0 928.1 1026.2 Z"
-                onclick="openSection('showcase')" />
-          <!-- Rechts: 52°–68° -->
-          <path class="ring-btn-path" id="ringRight"
-                d="M 1073.3 1070.9 A 288 288 0 0 1 1003.9 1111.0 L 965.3 1015.5 A 185 185 0 0 0 1009.9 989.8 Z"
-                onclick="openSection('contact')" />
-        </svg>
-
-        <!-- Glow-Punkte entfernt — nur Hover-Highlight pro Segment -->
-
-        <!-- Tooltip-Labels -->
-        <span class="ring-tooltip tt-left">Lösungen</span>
-        <span class="ring-tooltip tt-center">Showcase</span>
-        <span class="ring-tooltip tt-right">Kontakt</span>
-      </div>
-
-      <!-- Letters C T R I O N fly in after logo -->
-      <div class="splash-letters" id="splashLetters">
-        <span class="splash-letter">C</span>
-        <span class="splash-letter">T</span>
-        <span class="splash-letter">R</span>
-        <span class="splash-letter">I</span>
-        <span class="splash-letter">O</span>
-        <span class="splash-letter">N</span>
-      </div>
+      <!-- Tooltip-Labels -->
+      <span class="ring-tooltip tt-left">Lösungen</span>
+      <span class="ring-tooltip tt-center">Showcase</span>
+      <span class="ring-tooltip tt-right">Kontakt</span>
     </div>
-
-    <div class="splash-sub" id="splashSub">Digitalisierung. Vernetzt. Intelligent.</div>
-  </div>
-
-  <!-- Hint -->
-  <div class="splash-hint" id="splashHint">
-    <span class="splash-hint-text">Entdecken Sie die drei Bereiche</span>
-    <div class="splash-hint-arrows">
-      <div class="splash-hint-arrow"></div>
-      <div class="splash-hint-arrow"></div>
-      <div class="splash-hint-arrow"></div>
+    <div class="splash-letters" id="splashLetters">
+      <span class="splash-letter"><img src="../letter_c.png" alt="C"></span>
+      <span class="splash-letter"><img src="../letter_t.png" alt="T"></span>
+      <span class="splash-letter"><img src="../letter_r.png" alt="R"></span>
+      <span class="splash-letter"><img src="../letter_i.png" alt="I"></span>
+      <span class="splash-letter"><img src="../letter_o2.png" alt="O"></span>
+      <span class="splash-letter"><img src="../letter_n.png" alt="N"></span>
     </div>
   </div>
+  <div class="splash-hint" id="splashHint">Tippen zum Starten</div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════
@@ -1447,10 +1380,6 @@ body {
       setTimeout(() => el.classList.add('fly-in'), 500 + i * 130);
     });
 
-    // Show subtitle after letters
-    setTimeout(() => {
-      document.getElementById('splashSub').classList.add('show');
-    }, 500 + letters.length * 130 + 300);
   }
 
   // ─── Open section from splash (ring segment buttons) ──────────────
@@ -1548,7 +1477,6 @@ body {
     document.querySelectorAll('#splashLetters .splash-letter').forEach(el => {
       el.classList.remove('fly-in');
     });
-    document.getElementById('splashSub').classList.remove('show');
     const hint = document.getElementById('splashHint');
     if (hint) hint.style.opacity = '';
 
