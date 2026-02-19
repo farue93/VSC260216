@@ -233,6 +233,10 @@ body {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.25; transform: scale(1.08); }
 }
+@keyframes tentaclePulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(76,48,168,0.2); }
+  50% { transform: scale(1.15); box-shadow: 0 0 0 8px rgba(76,48,168,0); }
+}
 .tentacle-btn.t-center::before { animation-delay: 0.8s; }
 .tentacle-btn.t-right::before  { animation-delay: 1.6s; }
 
