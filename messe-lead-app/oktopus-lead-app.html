@@ -6,6 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="mobile-web-app-capable" content="yes">
+  <meta name="screen-orientation" content="portrait">
   <meta name="theme-color" content="#F0EFF6">
   <title>OCTRION | Kontakt Manager</title>
   <!-- OFFLINE-FIRST: No CDN dependencies. Tesseract loaded locally for offline OCR. -->
@@ -444,11 +445,20 @@ body {
 .camera-preview {
   border-radius: var(--radius); overflow: hidden;
   margin-top: 12px; display: none;
+  position: relative;
 }
 .camera-preview.show { display: block; }
 .camera-preview video,
 .camera-preview img {
   width: 100%; border-radius: var(--radius);
+}
+.camera-preview video { cursor: pointer; }
+.camera-tap-hint {
+  position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.6); color: #fff;
+  font-size: 11px; font-weight: 700; padding: 4px 12px;
+  border-radius: 20px; pointer-events: none;
+  letter-spacing: 0.5px;
 }
 .camera-actions {
   display: flex; gap: 8px; margin-top: 12px;
@@ -1317,6 +1327,26 @@ select.form-control {
 @keyframes spin-slow { to { transform: rotate(360deg); } }
 .spin { animation: spin-slow 1s linear infinite; }
 
+/* ═══ ORIENTATION LOCK: force portrait ═══════ */
+@media (orientation: landscape) and (max-height: 500px) {
+  body::before {
+    content: '📱 Bitte Hochformat verwenden';
+    position: fixed; inset: 0; z-index: 99999;
+    background: var(--bg, #F0EFF6);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700; color: var(--purple, #4c30a8);
+    text-align: center; padding: 40px;
+  }
+  body > *:not(style):not(script):not(link) {
+    visibility: hidden;
+  }
+  /* Exception: video fullscreen should still be visible */
+  .video-container:fullscreen,
+  .video-container:-webkit-full-screen {
+    visibility: visible !important;
+  }
+}
+
 /* ═══ PRODUCT DEMO MODAL ═══════════════════ */
 .demo-modal {
   position: fixed; inset: 0; z-index: 5000;
@@ -1817,9 +1847,10 @@ select.form-control {
             <div class="camera-sub" id="cameraDesc">Visitenkarte ins Bild halten</div>
           </div>
           <div class="camera-preview" id="cameraPreview">
-            <video id="cameraVideo" autoplay playsinline></video>
+            <video id="cameraVideo" autoplay playsinline onclick="CameraModule.capture()"></video>
             <canvas id="cameraCanvas" style="display:none;"></canvas>
             <img id="capturedImage" style="display:none;">
+            <div class="camera-tap-hint" id="cameraTapHint">Antippen zum Aufnehmen</div>
           </div>
           <div class="camera-actions" id="cameraActions" style="display:none;">
             <button class="btn btn-ghost" onclick="CameraModule.retake()">↺ Neu</button>
@@ -2458,7 +2489,15 @@ const VideoModule = {
     if (!container) return;
     if (document.fullscreenElement) {
       document.exitFullscreen();
+      // Re-lock portrait after exiting fullscreen
+      if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('portrait').catch(() => {});
+      }
     } else {
+      // Unlock orientation for fullscreen video (allow landscape)
+      if (screen.orientation && screen.orientation.unlock) {
+        screen.orientation.unlock();
+      }
       container.requestFullscreen().catch(() => {
         const video = document.getElementById('videoPlayer');
         if (video.webkitEnterFullscreen) video.webkitEnterFullscreen();
@@ -3190,6 +3229,17 @@ const App = {
     this.renderSettingsInterestReps();
     SplashModule.autoHide();
     this.updateTabArrows();
+
+    // Lock portrait orientation
+    if (screen.orientation && screen.orientation.lock) {
+      screen.orientation.lock('portrait').catch(() => {});
+    }
+    // Re-lock portrait when exiting fullscreen
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement && screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('portrait').catch(() => {});
+      }
+    });
 
     // Auto-detect mobile vs tablet, allow manual override
     const savedMode = localStorage.getItem('oktopus_view_mode');
@@ -4331,7 +4381,9 @@ const CameraModule = {
       preview.classList.add('show');
       video.style.display = 'block';
       document.getElementById('capturedImage').style.display = 'none';
-      actions.style.display = 'flex';
+      const tapHint = document.getElementById('cameraTapHint');
+      if (tapHint) tapHint.style.display = 'block';
+      actions.style.display = 'none'; // hide buttons while live — tap video to capture
     } catch (err) {
       console.error('Kamera-Fehler:', err);
       App.showStatus('Kamera nicht verfügbar (HTTPS erforderlich)', 'error');
@@ -4355,6 +4407,8 @@ const CameraModule = {
     img.src = dataUrl;
     img.style.display = 'block';
     video.style.display = 'none';
+    const tapHint = document.getElementById('cameraTapHint');
+    if (tapHint) tapHint.style.display = 'none';
 
     if (this.stream) { this.stream.getTracks().forEach(t => t.stop()); this.stream = null; }
 
@@ -4362,6 +4416,7 @@ const CameraModule = {
       <button class="btn btn-ghost" onclick="CameraModule.retake()">↺ Neu</button>
       <button class="btn btn-accent" onclick="CameraModule.runOCR()">🔍 Text erkennen</button>
     `;
+    document.getElementById('cameraActions').style.display = 'flex';
     App.showStatus('Foto aufgenommen', 'success');
   },
 
