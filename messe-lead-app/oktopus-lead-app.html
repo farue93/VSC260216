@@ -41,8 +41,8 @@
 
 :root {
   --purple:        #4c30a8;
-  --purple-dark:   #3a2480;
-  --purple-light:  #7a63c7;
+  --purple-dark:   #4c30a8;
+  --purple-light:  #4c30a8;
   --purple-bg:     rgba(76,48,168,0.06);
   --purple-10:     rgba(76,48,168,0.10);
   --purple-15:     rgba(76,48,168,0.15);
@@ -58,9 +58,9 @@
   --red-bg:        rgba(239,68,68,0.08);
   --blue:          #3B82F6;
   --blue-bg:       rgba(59,130,246,0.08);
-  --bg:            #F0EFF6;
-  --bg-subtle:     #E8E6F0;
-  --card:          #FFFFFF;
+  --bg:            #ECEAF4;
+  --bg-subtle:     #E4E1EE;
+  --card:          #F5F3FA;
   --border:        #E0DDE9;
   --border-focus:  var(--purple);
   --text:          #424248;
@@ -110,7 +110,7 @@ body {
 /* ═══ SPLASH SCREEN ═════════════════════════════ */
 .splash {
   position: fixed; inset: 0; z-index: 9999;
-  background: #ffffff;
+  background: var(--bg);
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   transition: opacity 0.8s ease, transform 0.8s ease;
@@ -1741,7 +1741,7 @@ select.form-control {
 </div>
 
 <!-- ═══ VIDEO MODAL ═══ -->
-<div class="video-modal" id="videoModal">
+<div class="video-modal" id="videoModal" onclick="if(event.target===this)VideoModule.close()">
   <button class="video-close" onclick="VideoModule.close()">✕</button>
   <div class="video-container" id="videoContainer">
     <video class="video-player" id="videoPlayer" playsinline preload="metadata"
@@ -1762,7 +1762,7 @@ select.form-control {
 </div>
 
 <!-- ═══ PRODUCT DEMO MODAL ═══ -->
-<div class="demo-modal" id="demoModal">
+<div class="demo-modal" id="demoModal" onclick="if(event.target===this)ProductDemoModule.close()">
   <button class="demo-close" onclick="ProductDemoModule.close()">✕</button>
   <div class="demo-container" id="demoContainer"></div>
 </div>
@@ -1781,7 +1781,7 @@ select.form-control {
 <div class="frame">
 
 <!-- ═══ CONFIRM MODAL (Email/Calendar) ═══ -->
-<div class="confirm-overlay" id="confirmOverlay">
+<div class="confirm-overlay" id="confirmOverlay" onclick="if(event.target===this)App.closeConfirm()">
   <div class="confirm-box">
     <div class="confirm-header">
       <div class="confirm-icon" id="confirmIcon">📧</div>
@@ -2993,7 +2993,7 @@ const ProductModule = {
       badge: 'IoT',
       tags: [{ text: 'IoT', class: 'purple' }, { text: 'Sensorik', class: 'orange' }, { text: 'Cloud', class: 'green' }],
       interest: 'digital',
-      bgGradient: 'linear-gradient(135deg, #4c30a8, #3a2480)',
+      bgGradient: 'linear-gradient(135deg, #4c30a8, #4c30a8)',
       videoTitle: 'Smart Waste Sensorik'
     },
     {
@@ -3440,9 +3440,9 @@ const App = {
       return;
     }
     confetti({ particleCount: 60, angle: 60, spread: 55, origin: { x: 0, y: 0.65 },
-      colors: ['#4c30a8', '#7a63c7', '#3a2480', '#ff9b37', '#ffd026'] });
+      colors: ['#4c30a8', '#4c30a8', '#4c30a8', '#ff9b37', '#ffd026'] });
     confetti({ particleCount: 60, angle: 120, spread: 55, origin: { x: 1, y: 0.65 },
-      colors: ['#4c30a8', '#7a63c7', '#3a2480', '#ff9b37', '#ffd026'] });
+      colors: ['#4c30a8', '#4c30a8', '#4c30a8', '#ff9b37', '#ffd026'] });
   },
 
   resetForm() {
