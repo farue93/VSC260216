@@ -712,28 +712,57 @@ body {
 /* Idle / screensaver overlay */
 .idle-overlay {
   position: fixed; inset: 0; z-index: 8000;
-  background: linear-gradient(145deg, #4c30a8ee 0%, #2d1b66ee 100%);
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   opacity: 0; pointer-events: none;
-  transition: opacity 0.8s ease;
+  transition: opacity 0.5s ease;
 }
 .idle-overlay.active {
   opacity: 1; pointer-events: auto;
 }
-.idle-text {
-  font-size: 24px; font-weight: 900; color: #fff;
-  letter-spacing: 3px; text-transform: uppercase;
-  animation: idlePulseText 3s ease-in-out infinite;
+.idle-card {
+  background: var(--card); border-radius: var(--radius-xl);
+  padding: 40px 48px; text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  max-width: 380px; width: 90%;
+  position: relative; overflow: hidden;
 }
-@keyframes idlePulseText {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.03); }
+.idle-card::after {
+  content: ''; position: absolute; bottom: 0; left: 0;
+  height: 4px; background: var(--purple);
+  width: 100%;
+  animation: idleCountdown 60s linear forwards;
+}
+@keyframes idleCountdown {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+.idle-icon {
+  font-size: 48px; margin-bottom: 16px;
+}
+.idle-text {
+  font-size: 22px; font-weight: 900; color: var(--text);
+  letter-spacing: 0.5px; margin-bottom: 6px;
 }
 .idle-sub {
-  font-size: 14px; color: rgba(255,255,255,0.4);
-  margin-top: 12px; letter-spacing: 2px;
+  font-size: 13px; color: var(--text-muted);
+  margin-bottom: 24px;
 }
+.idle-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 36px; border-radius: var(--radius);
+  background: var(--purple); color: #fff;
+  font-family: inherit; font-size: 15px; font-weight: 700;
+  border: none; cursor: pointer;
+  transition: var(--transition-spring);
+  box-shadow: var(--shadow-purple);
+}
+.idle-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+}
+.idle-btn:active { transform: scale(0.96); }
 
 /* Toast */
 .toast {
@@ -841,9 +870,12 @@ body {
      IDLE OVERLAY — Returns to splash after inactivity
      ═══════════════════════════════════════════════════ -->
 <div class="idle-overlay" id="idleOverlay">
-  <img src="../13459_OCTRION_Bildmarke_RGB_lila.png" alt="OCTRION" style="width: 80px; height: 80px; object-fit: contain; filter: brightness(0) invert(1); margin-bottom: 20px; opacity: 0.8;">
-  <div class="idle-text">Berühren zum Starten</div>
-  <div class="idle-sub">OCTRION Messe Experience</div>
+  <div class="idle-card">
+    <div class="idle-icon">👋</div>
+    <div class="idle-text">Noch da?</div>
+    <div class="idle-sub">Die Sitzung wird gleich automatisch beendet</div>
+    <button class="idle-btn" id="idleStayBtn">Ja, weiter!</button>
+  </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════
@@ -1366,8 +1398,10 @@ body {
   // ─── State ──────────────────────────────────
   let currentSection = null;
   let idleTimer = null;
+  let idleAutoBackTimer = null;
   let splashActivated = false;
-  const IDLE_TIMEOUT = 120000; // 2 min idle → screensaver
+  const IDLE_TIMEOUT = 60000; // 60s idle → "Noch da?" prompt
+  const IDLE_AUTO_BACK = 60000; // 60s more → auto back to splash
 
   // ─── Splash activation (like lead app) ─────
   // First click/tap: Logo stops breathing, shrinks, CTRION letters fly in
@@ -1674,19 +1708,35 @@ body {
   // ─── Idle / Screensaver ────────────────────
   function resetIdle() {
     clearTimeout(idleTimer);
-    document.getElementById('idleOverlay').classList.remove('active');
+    clearTimeout(idleAutoBackTimer);
+    const overlay = document.getElementById('idleOverlay');
+    overlay.classList.remove('active');
+    // Restart countdown animation
+    const card = overlay.querySelector('.idle-card');
+    if (card) { card.style.animation = 'none'; void card.offsetWidth; card.style.animation = ''; }
     idleTimer = setTimeout(goIdle, IDLE_TIMEOUT);
   }
 
   function goIdle() {
     if (!currentSection) return; // Already on splash
-    document.getElementById('idleOverlay').classList.add('active');
+    const overlay = document.getElementById('idleOverlay');
+    overlay.classList.add('active');
+    // After another 60s, auto-return to splash
+    idleAutoBackTimer = setTimeout(() => {
+      overlay.classList.remove('active');
+      backToSplash();
+    }, IDLE_AUTO_BACK);
   }
 
-  // Touch/click on idle → back to splash
-  document.getElementById('idleOverlay').addEventListener('click', function() {
-    this.classList.remove('active');
-    backToSplash();
+  // "Ja, weiter!" button → dismiss & reset
+  document.getElementById('idleStayBtn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    resetIdle();
+  });
+
+  // Touch/click on overlay background → also dismiss
+  document.getElementById('idleOverlay').addEventListener('click', function(e) {
+    if (e.target === this) resetIdle();
   });
 
   // Reset idle on any interaction
