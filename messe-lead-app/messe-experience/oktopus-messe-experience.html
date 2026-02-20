@@ -198,6 +198,19 @@ body {
 .ring-tooltip.tt-right  { left: 63.4%; top: 64%; }
 .splash-o.to-text .ring-tooltip { display: none; }
 
+/* ═══ IDLE ATTENTION: Tooltip flash to show clickable areas ═══ */
+@keyframes tooltipFlashIn {
+  0%   { opacity: 0; transform: translate(-50%, 12px) scale(0.8); }
+  15%  { opacity: 1; transform: translate(-50%, 0) scale(1.05); }
+  30%  { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  70%  { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  85%  { opacity: 0.6; transform: translate(-50%, -2px) scale(0.98); }
+  100% { opacity: 0; transform: translate(-50%, 8px) scale(0.9); }
+}
+.ring-tooltip.attention-flash {
+  animation: tooltipFlashIn 1.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+
 /* Letters C T R I O N — actual PNG crops from original logo */
 .splash-letters {
   display: flex; align-items: flex-end;
@@ -255,9 +268,6 @@ body {
   position: relative;
   display: flex; flex-direction: column;
   height: 100dvh; width: 100vw;
-  max-width: 1200px; margin: 0 auto;
-  border: 3px solid var(--purple);
-  border-radius: 16px;
   background: var(--card);
   overflow: hidden;
 }
@@ -349,10 +359,8 @@ body {
 .main {
   flex: 1; overflow-y: auto; overflow-x: hidden;
   padding: 20px 24px;
-  max-width: 900px; margin: 8px auto; width: calc(100% - 16px);
   display: flex; flex-direction: column;
   background: var(--bg);
-  border-radius: var(--radius-xl);
 }
 
 .section { display: none; }
@@ -681,22 +689,24 @@ body {
 .cta-btn {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 12px 28px; border-radius: var(--radius);
-  background: linear-gradient(135deg, var(--purple), var(--purple-dark));
-  color: #fff; font-family: inherit;
+  background: #fff;
+  color: var(--purple); font-family: inherit;
   font-size: 14px; font-weight: 700;
-  border: none; cursor: pointer;
+  border: 2px solid var(--border);
+  cursor: pointer;
   transition: var(--transition-spring);
-  box-shadow: var(--shadow-purple);
+  box-shadow: var(--shadow-sm);
   letter-spacing: 0.5px;
 }
 .cta-btn:hover {
   transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 6px 24px rgba(76,48,168,0.35);
+  border-color: var(--purple);
+  box-shadow: var(--shadow-purple);
 }
 .cta-btn:active { transform: scale(0.96); }
 .cta-btn.orange {
-  background: linear-gradient(135deg, var(--orange), #e8872a);
-  box-shadow: 0 4px 16px rgba(255,155,55,0.3);
+  color: var(--orange);
+  border-color: var(--orange);
 }
 
 /* Idle / screensaver overlay */
@@ -1390,6 +1400,7 @@ body {
   function activateSplash() {
     if (splashActivated) return;
     splashActivated = true;
+    stopSplashAttention();
 
     // Hide hint
     const hint = document.getElementById('splashHint');
@@ -1538,6 +1549,7 @@ body {
 
     currentSection = null;
     resetIdle();
+    startSplashAttention();
   };
 
   // ─── Animate stat bars ─────────────────────
@@ -1686,6 +1698,61 @@ body {
   const spinStyle = document.createElement('style');
   spinStyle.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
   document.head.appendChild(spinStyle);
+
+  // ─── Splash idle attention: flash tooltips after inactivity ────
+  let splashAttentionTimer = null;
+  let splashAttentionInterval = null;
+  const SPLASH_ATTENTION_DELAY = 8000; // 8s before first attention flash
+  const SPLASH_ATTENTION_REPEAT = 12000; // repeat every 12s
+
+  function startSplashAttention() {
+    stopSplashAttention();
+    splashAttentionTimer = setTimeout(() => {
+      flashTooltipsSequence();
+      splashAttentionInterval = setInterval(flashTooltipsSequence, SPLASH_ATTENTION_REPEAT);
+    }, SPLASH_ATTENTION_DELAY);
+  }
+
+  function stopSplashAttention() {
+    clearTimeout(splashAttentionTimer);
+    clearInterval(splashAttentionInterval);
+    splashAttentionTimer = null;
+    splashAttentionInterval = null;
+    // Remove any active flash classes
+    document.querySelectorAll('.ring-tooltip').forEach(tt => {
+      tt.classList.remove('attention-flash');
+    });
+  }
+
+  function flashTooltipsSequence() {
+    if (splashActivated) { stopSplashAttention(); return; }
+    const tooltips = [
+      document.querySelector('.ring-tooltip.tt-left'),
+      document.querySelector('.ring-tooltip.tt-center'),
+      document.querySelector('.ring-tooltip.tt-right')
+    ];
+    tooltips.forEach((tt, i) => {
+      if (!tt) return;
+      setTimeout(() => {
+        tt.classList.remove('attention-flash');
+        // Force reflow to restart animation
+        void tt.offsetWidth;
+        tt.classList.add('attention-flash');
+        // Clean up after animation ends
+        setTimeout(() => tt.classList.remove('attention-flash'), 1600);
+      }, i * 400); // stagger: 0ms, 400ms, 800ms
+    });
+  }
+
+  // Reset splash attention on any touch/interaction while on splash
+  ['touchstart', 'click', 'mousemove'].forEach(evt => {
+    document.getElementById('splash').addEventListener(evt, function() {
+      if (!splashActivated) startSplashAttention();
+    }, { passive: true });
+  });
+
+  // Start attention timer on load
+  startSplashAttention();
 
   // ─── Init ──────────────────────────────────
   resetIdle();
