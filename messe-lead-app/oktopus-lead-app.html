@@ -1674,6 +1674,20 @@ select.form-control {
 .lead-action-btn:active { transform: scale(0.96); }
 .lead-action-btn.sent { background: var(--green-bg); border-color: var(--green); color: var(--green); }
 .lead-action-btn.pending { background: var(--orange-bg); border-color: var(--orange); color: var(--orange); }
+.lead-action-btn.queued { background: var(--orange-bg); border-color: var(--orange); color: var(--orange); }
+.lead-action-btn.queued::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--orange); animation: queuePulse 1.5s ease-in-out infinite; margin-right: 2px; }
+@keyframes queuePulse { 0%,100%{opacity:.3;transform:scale(.8)} 50%{opacity:1;transform:scale(1.2)} }
+
+/* Queue banner */
+.queue-banner { display: none; align-items: center; gap: 8px; padding: 8px 14px; margin: 0 0 6px; border-radius: var(--radius); background: var(--orange-bg); border: 1.5px solid var(--orange); font-size: 11px; font-weight: 600; color: var(--orange); }
+.queue-banner.show { display: flex; }
+.queue-banner-icon { font-size: 14px; animation: queuePulse 1.5s ease-in-out infinite; }
+.queue-banner-text { flex: 1; }
+
+/* Sent-Toast (transient success banner) */
+.sent-toast { display: none; align-items: center; gap: 8px; padding: 8px 14px; margin: 0 0 6px; border-radius: var(--radius); background: var(--green-bg); border: 1.5px solid var(--green); font-size: 11px; font-weight: 600; color: var(--green); animation: sentToastFade 4s ease forwards; }
+.sent-toast.show { display: flex; }
+@keyframes sentToastFade { 0%{opacity:1} 75%{opacity:1} 100%{opacity:0} }
 .lead-card.compact .lead-actions-row { display: none; }
 
 /* Video hold-seek indicator */
@@ -2105,6 +2119,16 @@ select.form-control {
 
     <!-- ═══ SECTION: KONTAKTLISTE ═══ -->
     <section class="section" id="section-leads">
+
+      <!-- Queue Banner -->
+      <div class="queue-banner" id="queueBanner">
+        <span class="queue-banner-icon">⏳</span>
+        <span class="queue-banner-text" id="queueBannerText"></span>
+      </div>
+      <!-- Sent Toast (appears after queue items are sent) -->
+      <div class="sent-toast" id="sentToast">
+        <span id="sentToastText"></span>
+      </div>
 
       <!-- Quick Stats -->
       <div class="quick-stats">
@@ -3300,6 +3324,9 @@ const App = {
       this._processEmailQueue();
       this._processCalendarQueue();
     }
+
+    // Show queue banner on startup
+    this._updateQueueBanner();
   },
 
   toggleViewMode(forceState) {
@@ -3742,16 +3769,17 @@ const App = {
       const time = new Date(lead.createdAt).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
       const badges = [
         `<span class="lead-badge ${status}">${label}</span>`,
-        lead.emailSent ? '<span class="lead-badge email">📧</span>' : '',
+        lead.emailQueued ? '<span class="lead-badge crm-pending" title="E-Mail in Warteschlange">⏳ Mail</span>' : lead.emailSent ? '<span class="lead-badge email">📧</span>' : '',
+        lead.calendarQueued ? '<span class="lead-badge crm-pending" title="Termin in Warteschlange">⏳ Termin</span>' : '',
         lead.crmDone ? '<span class="lead-badge crm-done">✓ CRM</span>' : '<span class="lead-badge crm-pending">⚠ CRM offen</span>',
       ].filter(Boolean).join('');
 
       const displayName = [lead.title, lead.firstName, lead.lastName].filter(Boolean).join(' ');
       const cardClass = isCompact ? 'lead-card compact' : 'lead-card';
-      const emailBtnClass = lead.emailSent ? 'lead-action-btn sent' : 'lead-action-btn pending';
-      const emailBtnLabel = lead.emailSent ? '✓ Mail gesendet' : '📧 Mail senden';
-      const calBtnClass = lead.followUp ? 'lead-action-btn sent' : 'lead-action-btn';
-      const calBtnLabel = lead.followUp ? '✓ Termin erstellt' : '📅 Termin';
+      const emailBtnClass = lead.emailQueued ? 'lead-action-btn queued' : lead.emailSent ? 'lead-action-btn sent' : 'lead-action-btn pending';
+      const emailBtnLabel = lead.emailQueued ? 'Warteschlange' : lead.emailSent ? '✓ Mail gesendet' : '📧 Mail senden';
+      const calBtnClass = lead.calendarQueued ? 'lead-action-btn queued' : lead.followUp ? 'lead-action-btn sent' : 'lead-action-btn';
+      const calBtnLabel = lead.calendarQueued ? 'Warteschlange' : lead.followUp ? '✓ Termin erstellt' : '📅 Termin';
 
       return `
         <div class="${cardClass}" onclick="App.editLead('${lead.id}')">
@@ -4014,7 +4042,15 @@ const App = {
     const queue = JSON.parse(localStorage.getItem('oktopus_email_queue') || '[]');
     queue.push({ leadId: lead.id, to: lead.email, ccEmails, subject, body, queuedAt: new Date().toISOString() });
     localStorage.setItem('oktopus_email_queue', JSON.stringify(queue));
-    this._markEmailSent(lead); // Mark locally so UI shows pending state
+    // Mark as queued (not yet sent)
+    const idx = this.leads.findIndex(l => l.id === lead.id);
+    if (idx !== -1) {
+      this.leads[idx].emailQueued = true;
+      this.saveLeads();
+      this.updateStats();
+      this.renderLeads();
+    }
+    this._updateQueueBanner();
   },
 
   async _processEmailQueue() {
@@ -4031,13 +4067,24 @@ const App = {
       const sender = this.getSenderInfo();
       queue.forEach(item => {
         this._downloadEml({ email: item.to, lastName: 'Queue', firstName: '' }, item.ccEmails, sender, item.subject, item.body);
+        // Mark lead as sent (via .eml download)
+        const idx = this.leads.findIndex(l => l.id === item.leadId);
+        if (idx !== -1) {
+          this.leads[idx].emailSent = true;
+          this.leads[idx].emailSentAt = new Date().toISOString();
+          this.leads[idx].emailQueued = false;
+        }
       });
       localStorage.setItem('oktopus_email_queue', '[]');
+      if (queue.length) { this.saveLeads(); this.renderLeads(); }
+      this._updateQueueBanner();
       this.showStatus(`${queue.length} ausstehende Mail(s) als .eml heruntergeladen`, 'warning');
+      this._showSentToast(`📧 ${queue.length} E-Mail(s) aus Warteschlange als .eml heruntergeladen`);
       return;
     }
 
     let sent = 0;
+    const sentLeadIds = [];
     const remaining = [];
     for (const item of queue) {
       try {
@@ -4054,12 +4101,27 @@ const App = {
         });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         sent++;
+        sentLeadIds.push(item.leadId);
       } catch (e) {
         remaining.push(item);
       }
     }
     localStorage.setItem('oktopus_email_queue', JSON.stringify(remaining));
-    if (sent > 0) this.showStatus(`✅ ${sent} ausstehende E-Mail(s) nachträglich gesendet!`, 'success');
+    // Mark leads as actually sent
+    sentLeadIds.forEach(id => {
+      const idx = this.leads.findIndex(l => l.id === id);
+      if (idx !== -1) {
+        this.leads[idx].emailSent = true;
+        this.leads[idx].emailSentAt = new Date().toISOString();
+        this.leads[idx].emailQueued = false;
+      }
+    });
+    if (sentLeadIds.length) { this.saveLeads(); this.renderLeads(); }
+    this._updateQueueBanner();
+    if (sent > 0) {
+      this.showStatus(`✅ ${sent} ausstehende E-Mail(s) nachträglich gesendet!`, 'success');
+      this._showSentToast(`✅ ${sent} E-Mail(s) aus Warteschlange erfolgreich gesendet`);
+    }
     if (remaining.length > 0) this.showStatus(`${remaining.length} E-Mail(s) konnten nicht gesendet werden`, 'warning');
   },
 
@@ -4143,14 +4205,15 @@ const App = {
       queuedAt: new Date().toISOString()
     });
     localStorage.setItem('oktopus_calendar_queue', JSON.stringify(queue));
-    // Mark follow-up locally
+    // Mark as queued (not yet downloaded)
     const idx = this.leads.findIndex(l => l.id === lead.id);
     if (idx !== -1) {
-      this.leads[idx].followUp = true;
-      this.leads[idx].followUpAt = new Date().toISOString();
+      this.leads[idx].calendarQueued = true;
       this.saveLeads();
       this.updateStats();
+      this.renderLeads();
     }
+    this._updateQueueBanner();
   },
 
   _processCalendarQueue() {
@@ -4186,7 +4249,19 @@ const App = {
       }
     });
     localStorage.setItem('oktopus_calendar_queue', '[]');
+    // Mark leads as calendar done
+    queue.forEach(item => {
+      const idx = this.leads.findIndex(l => l.id === item.leadId);
+      if (idx !== -1) {
+        this.leads[idx].followUp = true;
+        this.leads[idx].followUpAt = new Date().toISOString();
+        this.leads[idx].calendarQueued = false;
+      }
+    });
+    if (queue.length) { this.saveLeads(); this.renderLeads(); }
+    this._updateQueueBanner();
     this.showStatus(`${queue.length} ausstehende(r) Termin(e) nachträglich heruntergeladen!`, 'success');
+    this._showSentToast(`📅 ${queue.length} Termin(e) aus Warteschlange heruntergeladen`);
   },
 
   _downloadICS(lead, attendees, start, end, displayName, interestNames, settings, fileName) {
@@ -4247,7 +4322,7 @@ const App = {
     const total    = this.leads.length;
     const hot      = this.leads.filter(l => (l.bantTiming === 'sofort' || l.bantTiming === 'quartal') && l.bantBudget === 'vorhanden').length;
     const today    = this.leads.filter(l => new Date(l.createdAt).toDateString() === new Date().toDateString()).length;
-    const emails   = this.leads.filter(l => l.emailSent).length;
+    const emails   = this.leads.filter(l => l.emailSent || l.emailQueued).length;
     const followups = this.leads.filter(l => l.followUp).length;
     const repName = this.getSettings().repName || '';
 
@@ -4370,6 +4445,34 @@ const App = {
   },
 
   _toastTimer: null,
+
+  _updateQueueBanner() {
+    const emailQ = JSON.parse(localStorage.getItem('oktopus_email_queue') || '[]');
+    const calQ = JSON.parse(localStorage.getItem('oktopus_calendar_queue') || '[]');
+    const banner = document.getElementById('queueBanner');
+    const text = document.getElementById('queueBannerText');
+    if (!banner || !text) return;
+    const parts = [];
+    if (emailQ.length) parts.push(`${emailQ.length} E-Mail(s)`);
+    if (calQ.length) parts.push(`${calQ.length} Termin(e)`);
+    if (parts.length) {
+      text.textContent = `${parts.join(' & ')} in Warteschlange — wird${emailQ.length + calQ.length > 1 ? '' : ''} bei Verbindung automatisch gesendet`;
+      banner.classList.add('show');
+    } else {
+      banner.classList.remove('show');
+    }
+  },
+
+  _showSentToast(msg) {
+    const el = document.getElementById('sentToast');
+    const text = document.getElementById('sentToastText');
+    if (!el || !text) return;
+    text.textContent = msg;
+    el.classList.remove('show');
+    void el.offsetWidth; // reflow to restart animation
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 4000);
+  },
 
   showStatus(msg, type = 'success') {
     const toast = document.getElementById('statusBar');
