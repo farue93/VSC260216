@@ -2373,7 +2373,7 @@ select.form-control {
       </div>
 
       <div class="settings-group">
-        <div class="settings-title">�🔧 System</div>
+        <div class="settings-title">🔧 System</div>
         <div class="settings-card">
           <div class="sc-row">
             <div class="sc-icon">💾</div>
@@ -2384,7 +2384,13 @@ select.form-control {
             <div class="sc-value" style="color:var(--green);">Aktiv</div>
           </div>
         </div>
-        <button class="btn btn-danger btn-block" onclick="App.clearAllData()" style="margin-top:12px;">🗑️ Alle Daten zurücksetzen</button>
+
+        <div style="display:flex; gap:8px; margin-top:12px;">
+          <button class="btn btn-ghost btn-block" onclick="App.exportLeads()" style="flex:1;">📤 Kontakte exportieren</button>
+          <button class="btn btn-ghost btn-block" onclick="document.getElementById('importFile').click()" style="flex:1;">📥 Kontakte importieren</button>
+          <input type="file" id="importFile" accept=".json" style="display:none;" onchange="App.importLeads(this)">
+        </div>
+        <button class="btn btn-danger btn-block" onclick="App.clearAllData()" style="margin-top:8px;">🗑️ Alle Daten zurücksetzen</button>
       </div>
     </section>
 
@@ -4441,7 +4447,62 @@ const App = {
     localStorage.removeItem('oktopus_settings_v3');
     this.leads = [];
     this.updateStats();
+    this.renderLeads();
     this.showStatus('Alle Daten gelöscht', 'success');
+  },
+
+  exportLeads() {
+    if (!this.leads.length) return this.showStatus('Keine Kontakte zum Exportieren', 'warning');
+    const data = {
+      exportedAt: new Date().toISOString(),
+      version: 'v3',
+      event: this.getSettings().event || 'IFAT Munich 2026',
+      rep: this.getSettings().repName || '',
+      count: this.leads.length,
+      leads: this.leads
+    };
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    const date = new Date().toISOString().slice(0,10);
+    const rep = (this.getSettings().repName || 'export').replace(/\s+/g, '_');
+    a.download = `octrion_kontakte_${rep}_${date}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    this.showStatus(`${this.leads.length} Kontakt(e) exportiert`, 'success');
+  },
+
+  importLeads(input) {
+    const file = input.files[0];
+    if (!file) return;
+    input.value = ''; // Reset so same file can be re-imported
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target.result);
+        const imported = data.leads || data;
+        if (!Array.isArray(imported)) throw new Error('Ungültiges Format');
+
+        // Merge: skip duplicates by ID
+        let added = 0;
+        const existingIds = new Set(this.leads.map(l => l.id));
+        imported.forEach(lead => {
+          if (!lead.id || existingIds.has(lead.id)) return;
+          this.leads.push(lead);
+          existingIds.add(lead.id);
+          added++;
+        });
+
+        this.saveLeads();
+        this.updateStats();
+        this.renderLeads();
+        this.showStatus(`${added} neue Kontakt(e) importiert (${imported.length - added} Duplikate übersprungen)`, 'success');
+      } catch (err) {
+        this.showStatus('Import fehlgeschlagen: ' + err.message, 'error');
+      }
+    };
+    reader.readAsText(file);
   },
 
   _toastTimer: null,

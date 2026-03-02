@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OCTRION Lead-App — Download</title>
+<style>
+  :root {
+    --purple: #4c30a8;
+    --bg: #ECEAF4;
+    --card: #F5F3FA;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg); color: #333;
+    min-height: 100dvh; display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .container {
+    max-width: 520px; width: 100%;
+    background: var(--card); border-radius: 20px;
+    padding: 40px 32px; box-shadow: 0 8px 32px rgba(76,48,168,0.1);
+    text-align: center;
+  }
+  .logo { height: 48px; margin-bottom: 16px; }
+  h1 { font-size: 22px; color: var(--purple); margin-bottom: 4px; font-weight: 800; }
+  .sub { font-size: 13px; color: #888; margin-bottom: 28px; }
+  .options { text-align: left; margin-bottom: 28px; }
+  .option {
+    background: #fff; border: 2px solid #e0dce8; border-radius: 12px;
+    padding: 16px; margin-bottom: 12px; cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    text-decoration: none; display: block; color: inherit;
+  }
+  .option:hover { border-color: var(--purple); box-shadow: 0 2px 12px rgba(76,48,168,0.12); }
+  .option-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+  .option-desc { font-size: 12px; color: #888; line-height: 1.5; }
+  .option-size { font-size: 11px; color: var(--purple); font-weight: 600; margin-top: 6px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+  .badge-rec { background: rgba(76,48,168,0.1); color: var(--purple); }
+  .badge-light { background: rgba(76,48,168,0.06); color: #888; }
+
+  .steps { text-align: left; margin-bottom: 24px; }
+  .steps h3 { font-size: 14px; font-weight: 700; color: var(--purple); margin-bottom: 10px; }
+  .step { display: flex; gap: 10px; margin-bottom: 10px; font-size: 13px; line-height: 1.5; }
+  .step-num {
+    width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+    background: var(--purple); color: #fff; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .step-text b { color: var(--purple); }
+
+  .note {
+    background: rgba(255,155,55,0.08); border: 1px solid rgba(255,155,55,0.2);
+    border-radius: 10px; padding: 12px; font-size: 11px; color: #886633;
+    text-align: left; line-height: 1.6;
+  }
+  .note b { color: #cc7700; }
+  .version { font-size: 10px; color: #bbb; margin-top: 20px; }
+
+  .btn-online {
+    display: inline-block; padding: 12px 28px; background: var(--purple);
+    color: #fff; border-radius: 10px; font-size: 14px; font-weight: 700;
+    text-decoration: none; margin-bottom: 24px;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn-online:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(76,48,168,0.3); }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <img src="13459_OCTRION_Bildmarke_RGB_lila.png" alt="OCTRION" class="logo">
+  <h1>OCTRION Lead-App</h1>
+  <div class="sub">Messe-Kontakterfassung für den Vertrieb</div>
+
+  <!-- Online starten -->
+  <a href="oktopus-lead-app.html" class="btn-online">▶ App direkt öffnen</a>
+
+  <!-- Download-Optionen -->
+  <div class="options">
+    <a href="OCTRION-Lead-App.zip" class="option" download>
+      <div class="option-title">
+        📦 Komplett-Paket herunterladen
+        <span class="badge badge-rec">Empfohlen</span>
+      </div>
+      <div class="option-desc">
+        App + Video + OCR — alles in einer ZIP-Datei.<br>
+        Entpacken, HTML-Datei öffnen, fertig. Kein Internet nötig.
+      </div>
+      <div class="option-size">~54 MB (inkl. Video + Tesseract OCR)</div>
+    </a>
+
+    <a href="OCTRION-Lead-App-Light.zip" class="option" download>
+      <div class="option-title">
+        📄 Light-Version
+        <span class="badge badge-light">Ohne Video</span>
+      </div>
+      <div class="option-desc">
+        Nur App + Bilder — ohne Video und OCR.<br>
+        Für schnellen Download bei schlechtem Netz.
+      </div>
+      <div class="option-size">~1 MB</div>
+    </a>
+  </div>
+
+  <!-- Anleitung -->
+  <div class="steps">
+    <h3>So geht's</h3>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-text">ZIP-Datei herunterladen und <b>entpacken</b></div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-text"><b>oktopus-lead-app.html</b> im Browser öffnen (Chrome/Edge/Firefox)</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-text">Kontakte erfassen — alles wird <b>automatisch gespeichert</b></div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-text">Nach der Messe: <b>Einstellungen → Kontakte exportieren</b></div>
+    </div>
+  </div>
+
+  <!-- Hinweis -->
+  <div class="note">
+    <b>⚠ Wichtig:</b> Browser-Cache nicht löschen — sonst gehen gespeicherte Kontakte verloren.
+    Bei App-Updates nur die HTML-Datei ersetzen, die Kontakte bleiben erhalten.
+    <br><br>
+    <b>iOS/iPadOS:</b> Chrome verwenden (Safari blockiert lokalen Speicher bei Datei-URLs).
+  </div>
+
+  <div class="version">OCTRION Lead-App v3 — IFAT Munich 2026</div>
+</div>
+
+</body>
+</html>
