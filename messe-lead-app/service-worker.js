@@ -2,7 +2,7 @@
 // OCTRION Lead-App — Service Worker (PWA Offline)
 // ═══════════════════════════════════════════════════
 
-const CACHE_NAME = 'octrion-lead-app-v1';
+const CACHE_NAME = 'octrion-lead-app-v2';
 
 // Files to cache for full offline support
 const PRECACHE_URLS = [
