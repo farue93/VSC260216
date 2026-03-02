@@ -76,20 +76,41 @@
   <div class="sub">Messe-Kontakterfassung für den Vertrieb</div>
 
   <!-- Online starten -->
-  <a href="oktopus-lead-app.html" class="btn-online">▶ App direkt öffnen</a>
+  <a href="oktopus-lead-app.html" class="btn-online">▶ App öffnen & installieren</a>
 
-  <!-- Download-Optionen -->
+  <!-- PWA Anleitung -->
+  <div class="steps">
+    <h3>📱 Als App installieren (empfohlen)</h3>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-text">Oben auf <b>"App öffnen"</b> tippen</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-text"><b>Android/Chrome:</b> Banner "App installieren" bestätigen — oder ⋮ Menü → <b>"App installieren"</b></div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-text"><b>iOS/Safari:</b> Teilen-Button (□↑) → <b>"Zum Home-Bildschirm"</b></div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-text">App startet jetzt <b>offline vom Homescreen</b> — wie eine native App</div>
+    </div>
+  </div>
+
+  <!-- Offline-Download als Alternative -->
   <div class="options">
+    <div style="font-size:12px;font-weight:700;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Alternative: Offline-ZIP</div>
     <a href="OCTRION-Lead-App.zip" class="option" download>
       <div class="option-title">
-        📦 Komplett-Paket herunterladen
-        <span class="badge badge-rec">Empfohlen</span>
+        📦 Komplett-Paket
+        <span class="badge badge-light">ZIP</span>
       </div>
       <div class="option-desc">
-        App + Video + OCR — alles in einer ZIP-Datei.<br>
-        Entpacken, HTML-Datei öffnen, fertig. Kein Internet nötig.
+        App + Video + OCR in einer ZIP-Datei. Entpacken und HTML öffnen.
       </div>
-      <div class="option-size">~54 MB (inkl. Video + Tesseract OCR)</div>
+      <div class="option-size">~54 MB</div>
     </a>
 
     <a href="OCTRION-Lead-App-Light.zip" class="option" download>
@@ -98,43 +119,20 @@
         <span class="badge badge-light">Ohne Video</span>
       </div>
       <div class="option-desc">
-        Nur App + Bilder — ohne Video und OCR.<br>
-        Für schnellen Download bei schlechtem Netz.
+        Nur App + Bilder — ohne Video und OCR.
       </div>
       <div class="option-size">~1 MB</div>
     </a>
   </div>
 
-  <!-- Anleitung -->
-  <div class="steps">
-    <h3>So geht's</h3>
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-text">ZIP-Datei herunterladen und <b>entpacken</b></div>
-    </div>
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-text"><b>oktopus-lead-app.html</b> im Browser öffnen (Chrome/Edge/Firefox)</div>
-    </div>
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-text">Kontakte erfassen — alles wird <b>automatisch gespeichert</b></div>
-    </div>
-    <div class="step">
-      <div class="step-num">4</div>
-      <div class="step-text">Nach der Messe: <b>Einstellungen → Kontakte exportieren</b></div>
-    </div>
-  </div>
-
   <!-- Hinweis -->
   <div class="note">
-    <b>⚠ Wichtig:</b> Browser-Cache nicht löschen — sonst gehen gespeicherte Kontakte verloren.
-    Bei App-Updates nur die HTML-Datei ersetzen, die Kontakte bleiben erhalten.
+    <b>✅ PWA-Vorteile:</b> Automatische Updates, Offline-Betrieb, Homescreen-Icon, kein App Store nötig.
     <br><br>
-    <b>iOS/iPadOS:</b> Chrome verwenden (Safari blockiert lokalen Speicher bei Datei-URLs).
+    <b>💾 Daten:</b> Kontakte werden lokal im Browser gespeichert. Regelmäßig unter <b>Einstellungen → Exportieren</b> sichern.
   </div>
 
-  <div class="version">OCTRION Lead-App v3 — IFAT Munich 2026</div>
+  <div class="version">OCTRION Lead-App v3 (PWA) — IFAT Munich 2026</div>
 </div>
 
 </body>
