@@ -1,0 +1,31 @@
+{
+  "name": "platform-web-crm",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "dev:remote": "vite dev --mode dev-remote",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.90.21",
+    "@tanstack/react-router": "^1.69.0",
+    "@tanstack/react-start": "^1.166.1",
+    "axios": "^1.13.6",
+    "better-sqlite3": "^11.8.1",
+    "dotenv": "^17.3.1",
+    "nodemailer": "^8.0.1",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.7.0",
+    "typescript": "^5.7.0",
+    "vite": "^7.3.1",
+    "vite-tsconfig-paths": "^5.0.0"
+  }
+}

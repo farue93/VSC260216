@@ -1,0 +1,39 @@
+services:
+  platform-web-crm:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: platform-web-crm:latest
+    container_name: platform-web-crm
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    environment:
+      LEAD_APP_DB_PATH: /var/lib/lead-app/lead-app.db
+      LEAD_APP_AUTH_API_TARGET: https://test-100.ecotec-digital.de
+      LEAD_APP_SMTP_HOST: ${LEAD_APP_SMTP_HOST}
+      LEAD_APP_SMTP_PORT: ${LEAD_APP_SMTP_PORT}
+      LEAD_APP_SMTP_USER: ${LEAD_APP_SMTP_USER}
+      LEAD_APP_SMTP_PASS: ${LEAD_APP_SMTP_PASS}
+      LEAD_APP_FIXED_SENDER_EMAIL: ${LEAD_APP_FIXED_SENDER_EMAIL}
+    volumes:
+      - ./docker-data:/var/lib/lead-app
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=opt_default"
+      - "traefik.http.routers.platform-web-crm.rule=Host(`crm.octrion.ai`)"
+      - "traefik.http.routers.platform-web-crm.entrypoints=websecure"
+      - "traefik.http.routers.platform-web-crm.tls.certresolver=le"
+      - "traefik.http.routers.platform-web-crm.tls=true"
+      - "traefik.http.routers.platform-web-crm.service=platform-web-crm"
+      - "traefik.http.services.platform-web-crm.loadbalancer.server.port=80"
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    name: opt_default
+    external: true

@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#F0EFF6">
+  <title>OCTRION | Messe Experience</title>
+  <style>
+/* ═══════════════════════════════════════════════════
+   OCTRION Messe Experience — Interactive Tablet Kiosk
+   Brand: #4c30a8 · #ff9b37 · #ffd026 · #424248
+   Tablet-optimized · Offline-First · Original PNG Logo
+   ═══════════════════════════════════════════════════ */
+
+:root {
+  --purple:        #4c30a8;
+  --purple-dark:   #4c30a8;
+  --purple-light:  #4c30a8;
+  --purple-bg:     rgba(76,48,168,0.06);
+  --purple-10:     rgba(76,48,168,0.10);
+  --purple-15:     rgba(76,48,168,0.15);
+  --purple-20:     rgba(76,48,168,0.20);
+  --orange:        #ff9b37;
+  --orange-bg:     rgba(255,155,55,0.10);
+  --yellow:        #ffd026;
+  --yellow-bg:     rgba(255,208,38,0.12);
+  --green:         #10B981;
+  --green-light:   #34D399;
+  --green-bg:      rgba(16,185,129,0.08);
+  --red:           #EF4444;
+  --red-bg:        rgba(239,68,68,0.08);
+  --blue:          #3B82F6;
+  --blue-bg:       rgba(59,130,246,0.08);
+  --bg:            #ECEAF4;
+  --bg-subtle:     #E4E1EE;
+  --card:          #F5F3FA;
+  --border:        #E0DDE9;
+  --border-focus:  var(--purple);
+  --text:          #424248;
+  --text-sec:      #6B6B73;
+  --text-muted:    #9898A0;
+  --input-bg:      #F5F4FA;
+  --shadow-sm:     0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow:        0 4px 12px rgba(0,0,0,0.06);
+  --shadow-lg:     0 8px 28px rgba(0,0,0,0.08);
+  --shadow-purple: 0 4px 16px rgba(76,48,168,0.22);
+  --radius:        12px;
+  --radius-lg:     16px;
+  --radius-xl:     20px;
+  --transition:    all 0.2s cubic-bezier(0.4,0,0.2,1);
+  --transition-spring: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ═══════════════════════════════════════════════════
+   SPLASH / LANDING SCREEN — 1:1 wie Lead-App
+   ═══════════════════════════════════════════════════ */
+.splash {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  overflow: hidden;
+}
+.splash.fade-out {
+  opacity: 0; transform: scale(1.1);
+  pointer-events: none;
+}
+.splash-hint {
+  position: absolute; bottom: 34px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  animation: hintPulse 2.5s ease-in-out infinite;
+}
+.splash-hint-label {
+  font-size: 10px; color: rgba(76,48,168,0.3); font-weight: 600;
+  letter-spacing: 2.5px; text-transform: uppercase;
+}
+.splash-hint-dots {
+  display: flex; gap: 28px;
+}
+.splash-hint-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(76,48,168,0.25);
+}
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+/* Splash content: O logo + letter spans in a row */
+.splash-content {
+  display: flex; align-items: center; justify-content: center;
+  position: relative; z-index: 1;
+  gap: 0;
+  transition: transform 1.1s cubic-bezier(0.22,1,0.36,1);
+}
+
+/* The O logo mark — starts huge, shrinks to text size */
+.splash-o {
+  position: relative;
+  width: min(70vw, 440px); height: min(70vw, 440px); flex-shrink: 0;
+  overflow: visible;
+  animation: splashBreathe 6s ease-in-out infinite;
+  transition: width 1.1s cubic-bezier(0.22,1,0.36,1),
+              height 1.1s cubic-bezier(0.22,1,0.36,1),
+              margin-right 1.1s cubic-bezier(0.22,1,0.36,1);
+  margin-right: 0;
+  z-index: 10;
+}
+/* Image wrapper clips the oversized PNG */
+.splash-o-img-wrap {
+  position: absolute; inset: 0;
+  overflow: hidden; border-radius: 0;
+}
+/* Crop: PNG has ~33% content centered; 300%/auto keeps aspect ratio */
+.splash-o img.logo-img {
+  width: 300%; height: auto;
+  max-width: none; max-height: none;
+  margin: -91.3% -100%;
+  display: block;
+}
+.splash-o.to-text {
+  animation: none;
+  width: min(10vw, 72px); height: min(10vw, 72px);
+  margin-right: min(0.85vw, 6px);
+}
+
+@keyframes splashBreathe {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.25; }
+  100% { opacity: 1; }
+}
+
+/* ═══ 3 RING-SEGMENT HOTSPOTS (Messe-Erweiterung) ═══
+   Invisible SVG arcs exactly on the 3 ring segments.
+   Only visible when logo is large (before to-text). */
+.ring-buttons-svg {
+  position: absolute;
+  left: 0%; top: 0%;
+  width: 100%; height: 118.7%;
+  z-index: 5;
+  pointer-events: none;
+  overflow: visible;
+}
+.ring-btn-path {
+  pointer-events: all;
+  cursor: pointer;
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 0;
+}
+.splash-o.to-text .ring-buttons-svg { display: none; }
+
+/* Tooltip labels — appear on hover */
+.ring-tooltip {
+  position: absolute;
+  white-space: nowrap;
+  font-size: 11px; font-weight: 700;
+  color: #fff;
+  background: var(--purple);
+  padding: 5px 14px;
+  border-radius: 20px;
+  letter-spacing: 1px; text-transform: uppercase;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 4px 14px rgba(76,48,168,0.3);
+  transform: translate(-50%, 8px);
+  z-index: 10;
+}
+.ring-tooltip::after {
+  content: '';
+  position: absolute; top: 100%; left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--purple);
+}
+.ring-tooltip.tt-left   { left: 36.5%; top: 64%; }
+.ring-tooltip.tt-center { left: 50.0%; top: 69%; }
+.ring-tooltip.tt-right  { left: 63.4%; top: 64%; }
+.splash-o.to-text .ring-tooltip { display: none; }
+
+/* ═══ IDLE ATTENTION: Tooltip flash to show clickable areas ═══ */
+@keyframes tooltipFlashIn {
+  0%   { opacity: 0; transform: translate(-50%, 12px) scale(0.8); }
+  15%  { opacity: 1; transform: translate(-50%, 0) scale(1.05); }
+  30%  { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  70%  { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  85%  { opacity: 0.6; transform: translate(-50%, -2px) scale(0.98); }
+  100% { opacity: 0; transform: translate(-50%, 8px) scale(0.9); }
+}
+.ring-tooltip.attention-flash {
+  animation: tooltipFlashIn 1.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+
+/* Letters C T R I O N — actual PNG crops from original logo */
+.splash-letters {
+  display: flex; align-items: flex-end;
+  overflow: visible;
+  max-width: 0;
+  transition: max-width 1.4s cubic-bezier(0.22,1,0.36,1);
+}
+.splash-letters.expand { max-width: 90vw; }
+.splash-letter {
+  height: min(10vw, 72px);
+  width: auto;
+  display: inline-block;
+  opacity: 0;
+  transform: translateX(calc(-100% - min(15vw, 120px)));
+  transition: none;
+}
+.splash-letter img {
+  height: 100%; width: auto;
+  display: block;
+}
+/* Gaps between letters match original logo proportions */
+.splash-letter:nth-child(2) { margin-left: min(0.52vw, 3.7px); }
+.splash-letter:nth-child(3) { margin-left: min(0.78vw, 5.6px); }
+.splash-letter:nth-child(4) { margin-left: min(1.23vw, 8.8px); }
+.splash-letter:nth-child(5) { margin-left: min(1.23vw, 8.8px); }
+.splash-letter:nth-child(6) { margin-left: min(1.35vw, 9.7px); }
+.splash-letter.fly-in {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1),
+              transform 0.9s cubic-bezier(0.22,1,0.36,1);
+}
+
+@media (max-width: 768px) {
+  .splash-o.to-text { width: min(13vw, 56px); height: min(13vw, 56px); margin-right: min(1vw, 4px); }
+  .splash-letter { height: min(13vw, 56px); }
+}
+
+/* Ripple effect on tentacle click */
+.ripple {
+  position: absolute; border-radius: 50%;
+  background: rgba(76,48,168,0.15);
+  animation: rippleOut 0.6s ease-out forwards;
+  pointer-events: none; z-index: 1;
+}
+@keyframes rippleOut {
+  0% { width: 0; height: 0; opacity: 1; }
+  100% { width: 200px; height: 200px; opacity: 0; margin-top: -100px; margin-left: -100px; }
+}
+
+/* ═══════════════════════════════════════════════════
+   APP FRAME — Tablet Kiosk Layout
+   ═══════════════════════════════════════════════════ */
+.frame {
+  position: relative;
+  display: flex; flex-direction: column;
+  height: 100dvh; width: 100vw;
+  background: var(--card);
+  overflow: hidden;
+}
+
+/* ═══ TOPBAR ══════════════════════════════════ */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--card);
+  padding: 0 20px; height: 56px;
+  display: flex; align-items: center; gap: 14px;
+  flex-shrink: 0;
+}
+
+.logo {
+  display: flex; align-items: center; gap: 0;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.logo-icon {
+  width: 22px; height: 22px;
+  overflow: hidden; flex-shrink: 0;
+  margin-right: 2px;
+}
+.logo-icon img {
+  width: 300%; height: 300%;
+  max-width: none; max-height: none;
+  margin: -100%; display: block;
+}
+.logo-text {
+  height: 22px; display: flex; align-items: center;
+}
+.logo-text img {
+  height: 100%; width: auto; display: block;
+}
+
+.tb-sep { width: 1px; height: 28px; background: var(--border); }
+.tb-spacer { flex: 1; }
+
+.event-pill {
+  font-size: 10px; font-weight: 700;
+  color: var(--purple); letter-spacing: 0.5px;
+  background: var(--purple-bg);
+  padding: 5px 12px; border-radius: 20px;
+  text-transform: uppercase; white-space: nowrap;
+}
+
+/* Tab navigation — TOP placement */
+.top-tabs {
+  display: flex; gap: 4px;
+  height: 100%;
+  align-items: stretch;
+}
+.tab-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 0 18px; height: 100%;
+  border: none; background: none;
+  color: var(--text-muted);
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 0.5px; text-transform: uppercase;
+  cursor: pointer; transition: var(--transition);
+  position: relative; font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: var(--purple); background: var(--purple-bg); }
+.tab-btn.active { color: var(--purple); }
+.tab-btn.active::after {
+  content: ''; position: absolute; bottom: 0;
+  left: 15%; right: 15%; height: 3px;
+  background: var(--purple);
+  border-radius: 3px 3px 0 0;
+}
+.tab-icon { width: 18px; height: 18px; flex-shrink: 0; }
+.tab-icon svg { width: 100%; height: 100%; fill: currentColor; }
+
+/* Back to splash */
+.back-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--card); cursor: pointer;
+  font-family: inherit; font-size: 11px; font-weight: 700;
+  color: var(--text-sec); transition: var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+.back-btn:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-bg); }
+.back-btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+/* ═══ MAIN CONTENT ════════════════════════════ */
+.main {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 20px 24px;
+  display: flex; flex-direction: column;
+  background: var(--bg);
+}
+
+.section { display: none; }
+.section.active {
+  display: flex; flex-direction: column; flex: 1 0 auto;
+  animation: fadeUp 0.35s ease;
+  gap: 20px;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══ SECTION HERO HEADER ═════════════════════ */
+.section-hero {
+  background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%);
+  border-radius: var(--radius-xl);
+  padding: 36px 40px;
+  color: #fff;
+  position: relative; overflow: hidden;
+}
+.section-hero::before {
+  content: ''; position: absolute; top: -50%; right: -20%;
+  width: 300px; height: 300px; border-radius: 50%;
+  background: rgba(255,155,55,0.08);
+}
+.section-hero::after {
+  content: ''; position: absolute; bottom: -40%; left: -10%;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: rgba(255,208,38,0.06);
+}
+.section-hero h1 {
+  font-size: 28px; font-weight: 900; letter-spacing: 1px;
+  position: relative; z-index: 1;
+}
+.section-hero h1 span { color: var(--orange); }
+.section-hero p {
+  font-size: 14px; margin-top: 8px;
+  color: rgba(255,255,255,0.7);
+  position: relative; z-index: 1;
+  max-width: 600px;
+}
+
+/* ═══ SUB-TABS (inside sections) ══════════════ */
+.sub-tabs {
+  display: flex; gap: 8px;
+  flex-wrap: wrap;
+}
+.sub-tab {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 20px; border-radius: var(--radius);
+  border: 2px solid var(--border);
+  background: var(--card);
+  cursor: pointer; transition: var(--transition-spring);
+  font-family: inherit; font-size: 13px; font-weight: 700;
+  color: var(--text-sec);
+  -webkit-tap-highlight-color: transparent;
+}
+.sub-tab:hover {
+  border-color: var(--purple-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.sub-tab.active {
+  border-color: var(--purple);
+  background: var(--purple);
+  color: #fff;
+  box-shadow: var(--shadow-purple);
+}
+.sub-tab-icon { font-size: 18px; }
+
+/* ═══ CONTENT CARDS ═══════════════════════════ */
+.content-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 20px; align-items: start;
+}
+.content-grid.triple { grid-template-columns: 1fr 1fr 1fr; }
+.content-grid .full-width { grid-column: 1 / -1; }
+
+.info-card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: var(--transition-spring);
+}
+.info-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+.info-card-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.info-card-icon {
+  width: 40px; height: 40px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.info-card-icon.purple { background: var(--purple-bg); }
+.info-card-icon.orange { background: var(--orange-bg); }
+.info-card-icon.green  { background: var(--green-bg); }
+.info-card-icon.blue   { background: var(--blue-bg); }
+.info-card-header h3 {
+  font-size: 15px; font-weight: 700; color: var(--text);
+}
+.info-card-header p {
+  font-size: 11px; color: var(--text-muted); margin-top: 2px;
+}
+.info-card-body { padding: 20px; }
+
+/* Interactive stat display */
+.stat-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.stat-label { flex: 1; font-size: 13px; font-weight: 600; color: var(--text-sec); }
+.stat-value { font-size: 15px; font-weight: 800; color: var(--purple); }
+.stat-bar-wrap {
+  flex: 1; height: 6px; background: var(--purple-10);
+  border-radius: 3px; overflow: hidden;
+}
+.stat-bar {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, var(--purple), var(--purple-light));
+  transition: width 1.2s cubic-bezier(0.34,1.56,0.64,1);
+  width: 0;
+}
+.stat-bar.orange { background: linear-gradient(90deg, var(--orange), var(--yellow)); }
+.stat-bar.green  { background: linear-gradient(90deg, var(--green), var(--green-light)); }
+
+/* Feature showcase tiles */
+.feature-tile {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  padding: 28px 24px;
+  text-align: center;
+  transition: var(--transition-spring);
+  cursor: pointer;
+  position: relative; overflow: hidden;
+}
+.feature-tile::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--purple-bg), transparent);
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.feature-tile:hover::before { opacity: 1; }
+.feature-tile:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--purple-light);
+}
+.feature-tile:active {
+  transform: scale(0.97);
+}
+.feature-icon {
+  width: 56px; height: 56px; margin: 0 auto 12px;
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; position: relative; z-index: 1;
+}
+.feature-icon.purple { background: linear-gradient(135deg, var(--purple), var(--purple-dark)); color: #fff; }
+.feature-icon.orange { background: linear-gradient(135deg, var(--orange), #e8872a); color: #fff; }
+.feature-icon.green  { background: linear-gradient(135deg, var(--green), #0d9668); color: #fff; }
+.feature-icon.blue   { background: linear-gradient(135deg, var(--blue), #2563eb); color: #fff; }
+.feature-tile h4 {
+  font-size: 14px; font-weight: 800; color: var(--text);
+  margin-bottom: 4px; position: relative; z-index: 1;
+}
+.feature-tile p {
+  font-size: 12px; color: var(--text-muted);
+  position: relative; z-index: 1;
+}
+
+/* KPI Counters */
+.kpi-strip {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.kpi-card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  padding: 20px;
+  text-align: center;
+  transition: var(--transition-spring);
+  box-shadow: var(--shadow-sm);
+}
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.kpi-value {
+  font-size: 32px; font-weight: 900;
+  background: linear-gradient(135deg, var(--purple), var(--purple-light));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.kpi-value.orange {
+  background: linear-gradient(135deg, var(--orange), var(--yellow));
+  -webkit-background-clip: text; background-clip: text;
+}
+.kpi-value.green {
+  background: linear-gradient(135deg, var(--green), var(--green-light));
+  -webkit-background-clip: text; background-clip: text;
+}
+.kpi-label {
+  font-size: 10px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;
+}
+
+/* Timeline / Process steps */
+.process-timeline {
+  display: flex; gap: 0; align-items: flex-start;
+  position: relative; padding: 20px 0;
+}
+.process-step {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; text-align: center;
+  position: relative; z-index: 1;
+  cursor: pointer; transition: var(--transition);
+}
+.process-step:hover { transform: translateY(-2px); }
+.process-line {
+  position: absolute; top: 24px;
+  left: 15%; right: 15%; height: 3px;
+  background: var(--border);
+  z-index: 0;
+}
+.process-line-fill {
+  height: 100%; width: 0;
+  background: linear-gradient(90deg, var(--purple), var(--orange));
+  border-radius: 2px;
+  transition: width 1.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+.process-dot {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--card);
+  border: 3px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; transition: var(--transition-spring);
+  box-shadow: var(--shadow-sm);
+}
+.process-step.active .process-dot {
+  border-color: var(--purple);
+  background: var(--purple);
+  color: #fff;
+  box-shadow: var(--shadow-purple);
+  transform: scale(1.1);
+}
+.process-step.completed .process-dot {
+  border-color: var(--green);
+  background: var(--green);
+  color: #fff;
+}
+.process-step-title {
+  font-size: 12px; font-weight: 700; color: var(--text);
+  margin-top: 10px;
+}
+.process-step-desc {
+  font-size: 11px; color: var(--text-muted);
+  margin-top: 2px; max-width: 120px;
+}
+
+/* Animated badge/chip */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.badge.purple { background: var(--purple-bg); color: var(--purple); }
+.badge.orange { background: var(--orange-bg); color: var(--orange); }
+.badge.green  { background: var(--green-bg); color: var(--green); }
+.badge.blue   { background: var(--blue-bg); color: var(--blue); }
+
+/* Interactive showcase */
+.showcase-panel {
+  background: var(--card);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  padding: 32px;
+  box-shadow: var(--shadow);
+  min-height: 200px;
+}
+
+/* Animated counters */
+.counter-animated {
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+/* Pulse dot */
+.live-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--green); display: inline-block;
+  animation: livePulse 2s ease-in-out infinite;
+}
+@keyframes livePulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16,185,129,0.4); }
+  50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(16,185,129,0); }
+}
+
+/* Sub-tab content panels */
+.sub-content { display: none; }
+.sub-content.active {
+  display: block;
+  animation: fadeUp 0.3s ease;
+}
+
+/* Scrollbar styling */
+.main::-webkit-scrollbar { width: 6px; }
+.main::-webkit-scrollbar-track { background: transparent; }
+.main::-webkit-scrollbar-thumb { background: var(--purple-15); border-radius: 3px; }
+.main::-webkit-scrollbar-thumb:hover { background: var(--purple-20); }
+
+/* CTA button */
+.cta-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 28px; border-radius: var(--radius);
+  background: #fff;
+  color: var(--purple); font-family: inherit;
+  font-size: 14px; font-weight: 700;
+  border: 2px solid var(--border);
+  cursor: pointer;
+  transition: var(--transition-spring);
+  box-shadow: var(--shadow-sm);
+  letter-spacing: 0.5px;
+}
+.cta-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  border-color: var(--purple);
+  box-shadow: var(--shadow-purple);
+}
+.cta-btn:active { transform: scale(0.96); }
+.cta-btn.orange {
+  color: var(--orange);
+  border-color: var(--orange);
+}
+
+/* Idle / screensaver overlay */
+.idle-overlay {
+  position: fixed; inset: 0; z-index: 8000;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+.idle-overlay.active {
+  opacity: 1; pointer-events: auto;
+}
+.idle-card {
+  background: var(--card); border-radius: var(--radius-xl);
+  padding: 40px 48px; text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  max-width: 380px; width: 90%;
+  position: relative; overflow: hidden;
+}
+.idle-card::after {
+  content: ''; position: absolute; bottom: 0; left: 0;
+  height: 4px; background: var(--purple);
+  width: 100%;
+  animation: idleCountdown 60s linear forwards;
+}
+@keyframes idleCountdown {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+.idle-icon {
+  font-size: 48px; margin-bottom: 16px;
+}
+.idle-text {
+  font-size: 22px; font-weight: 900; color: var(--text);
+  letter-spacing: 0.5px; margin-bottom: 6px;
+}
+.idle-sub {
+  font-size: 13px; color: var(--text-muted);
+  margin-bottom: 24px;
+}
+.idle-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 36px; border-radius: var(--radius);
+  background: var(--purple); color: #fff;
+  font-family: inherit; font-size: 15px; font-weight: 700;
+  border: none; cursor: pointer;
+  transition: var(--transition-spring);
+  box-shadow: var(--shadow-purple);
+}
+.idle-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+}
+.idle-btn:active { transform: scale(0.96); }
+
+/* Toast */
+.toast {
+  position: fixed; top: 70px; left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  z-index: 200; padding: 10px 20px;
+  background: var(--card);
+  border-radius: 28px; box-shadow: var(--shadow-lg);
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; font-weight: 600;
+  opacity: 0; transition: var(--transition-spring);
+  border: 1px solid var(--border);
+}
+.toast.show {
+  transform: translateX(-50%) translateY(0); opacity: 1;
+}
+
+/* ═══ RESPONSIVE ══════════════════════════════ */
+@media (max-width: 900px) {
+  .content-grid { grid-template-columns: 1fr; }
+  .content-grid.triple { grid-template-columns: 1fr 1fr; }
+  .kpi-strip { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .topbar { padding: 0 12px; height: 52px; }
+  .main { padding: 16px; }
+  .section-hero { padding: 24px; }
+  .section-hero h1 { font-size: 22px; }
+  .kpi-strip { grid-template-columns: 1fr; }
+  .tab-btn span { display: none; }
+  .tab-btn { padding: 0 12px; }
+}
+
+/* Page enter animation */
+.animate-in {
+  animation: slideUpReveal 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes slideUpReveal {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.delay-1 { animation-delay: 0.05s; }
+.delay-2 { animation-delay: 0.10s; }
+.delay-3 { animation-delay: 0.15s; }
+.delay-4 { animation-delay: 0.20s; }
+.delay-5 { animation-delay: 0.25s; }
+.delay-6 { animation-delay: 0.30s; }
+
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     SPLASH — Large OCTRION Logo · 3 Bottom Shapes = Buttons
+     Logo = the "O" in OCTRION wordmark · Purple on White
+     ═══════════════════════════════════════════════════ -->
+<div class="splash" id="splash">
+  <div class="splash-content" id="splashContent">
+    <div class="splash-o" id="splashO">
+      <div class="splash-o-img-wrap">
+        <img class="logo-img" src="../13459_OCTRION_Bildmarke_RGB_lila.png" alt="O">
+      </div>
+
+      <!-- 3 klickbare Ring-Segmente als SVG-Arcs exakt auf dem lila Ring -->
+      <svg class="ring-buttons-svg" viewBox="597 562 598 668" preserveAspectRatio="none">
+        <!-- Links (Lösungen): 111.50°–128.00° — Ringdicke -40% -->
+        <path class="ring-btn-path" id="ringLeft"
+              d="M 772.9 1156.6 A 336 336 0 0 1 689.1 1108.8 L 780.3 992.1 A 188 188 0 0 0 827.1 1018.9 Z"
+              onclick="openSection('solutions')" />
+        <!-- Mitte (Showcase): 79.50°–100.75° -->
+        <path class="ring-btn-path" id="ringCenter"
+              d="M 956.3 1169.5 A 331 331 0 0 1 834.2 1169.2 L 860.2 1032.6 A 192 192 0 0 0 931.0 1032.8 Z"
+              onclick="openSection('showcase')" />
+        <!-- Rechts (Kontakt): 52.25°–68.75° -->
+        <path class="ring-btn-path" id="ringRight"
+              d="M 1101.4 1109.9 A 336 336 0 0 1 1017.8 1157.2 L 964.1 1019.2 A 188 188 0 0 0 1011.1 992.6 Z"
+              onclick="openSection('contact')" />
+      </svg>
+
+      <!-- Tooltip-Labels -->
+      <span class="ring-tooltip tt-left">Lösungen</span>
+      <span class="ring-tooltip tt-center">Showcase</span>
+      <span class="ring-tooltip tt-right">Kontakt</span>
+    </div>
+    <div class="splash-letters" id="splashLetters">
+      <span class="splash-letter"><img src="../letter_c.png" alt="C"></span>
+      <span class="splash-letter"><img src="../letter_t.png" alt="T"></span>
+      <span class="splash-letter"><img src="../letter_r.png" alt="R"></span>
+      <span class="splash-letter"><img src="../letter_i.png" alt="I"></span>
+      <span class="splash-letter"><img src="../letter_o2.png" alt="O"></span>
+      <span class="splash-letter"><img src="../letter_n.png" alt="N"></span>
+    </div>
+  </div>
+  <div class="splash-hint" id="splashHint">
+    <div class="splash-hint-dots">
+      <span class="splash-hint-dot"></span>
+      <span class="splash-hint-dot"></span>
+      <span class="splash-hint-dot"></span>
+    </div>
+    <span class="splash-hint-label">Bereiche entdecken</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     IDLE OVERLAY — Returns to splash after inactivity
+     ═══════════════════════════════════════════════════ -->
+<div class="idle-overlay" id="idleOverlay">
+  <div class="idle-card">
+    <div class="idle-icon">👋</div>
+    <div class="idle-text">Noch da?</div>
+    <div class="idle-sub">Die Sitzung wird gleich automatisch beendet</div>
+    <button class="idle-btn" id="idleStayBtn">Ja, weiter!</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     APP FRAME
+     ═══════════════════════════════════════════════════ -->
+<div class="frame" id="appFrame" style="display: none;">
+  
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="logo" onclick="backToSplash()">
+      <div class="logo-icon">
+        <img src="../13459_OCTRION_Bildmarke_RGB_lila.png" alt="OCTRION">
+      </div>
+      <div class="logo-text"><img src="../ctrion_text.png" alt="CTRION"></div>
+    </div>
+    <div class="tb-sep"></div>
+    <span class="event-pill">🎪 Messe 2026</span>
+    <div class="tb-spacer"></div>
+
+    <!-- Top Tab Navigation -->
+    <nav class="top-tabs" id="topTabs">
+      <button class="tab-btn" data-section="solutions" onclick="switchSection('solutions')">
+        <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+        <span>Lösungen</span>
+      </button>
+      <button class="tab-btn" data-section="showcase" onclick="switchSection('showcase')">
+        <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <span>Showcase</span>
+      </button>
+      <button class="tab-btn" data-section="contact" onclick="switchSection('contact')">
+        <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div>
+        <span>Kontakt</span>
+      </button>
+    </nav>
+
+    <div class="tb-sep"></div>
+    <button class="back-btn" onclick="backToSplash()">
+      <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      Start
+    </button>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main" id="mainContent">
+
+    <!-- ═══ SECTION 1: LÖSUNGEN ═══════════════════ -->
+    <div class="section" id="sec-solutions">
+      
+      <div class="section-hero animate-in">
+        <h1>Unsere <span>Lösungen</span></h1>
+        <p>Entdecken Sie, wie OKTOPUS Ihr Unternehmen mit intelligenter Digitalisierung transformiert — von der Prozessoptimierung bis zur KI-gestützten Analyse.</p>
+      </div>
+
+      <!-- Sub-Tabs -->
+      <div class="sub-tabs animate-in delay-1">
+        <button class="sub-tab active" onclick="switchSubTab('solutions', 'overview')">
+          <span class="sub-tab-icon">🔭</span> Übersicht
+        </button>
+        <button class="sub-tab" onclick="switchSubTab('solutions', 'automation')">
+          <span class="sub-tab-icon">⚡</span> Automatisierung
+        </button>
+        <button class="sub-tab" onclick="switchSubTab('solutions', 'analytics')">
+          <span class="sub-tab-icon">📊</span> Analytics
+        </button>
+        <button class="sub-tab" onclick="switchSubTab('solutions', 'integration')">
+          <span class="sub-tab-icon">🔗</span> Integration
+        </button>
+      </div>
+
+      <!-- Sub-Tab: Overview -->
+      <div class="sub-content active" id="sub-solutions-overview">
+        <div class="kpi-strip animate-in delay-2">
+          <div class="kpi-card">
+            <div class="kpi-value" data-count="147">0</div>
+            <div class="kpi-label">Projekte Live</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value orange" data-count="98" data-suffix="%">0%</div>
+            <div class="kpi-label">Kundenzufriedenheit</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value green" data-count="42" data-suffix="x">0x</div>
+            <div class="kpi-label">ROI Durchschnitt</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value" data-count="24" data-suffix="/7">0/7</div>
+            <div class="kpi-label">Support</div>
+          </div>
+        </div>
+        <div class="content-grid triple animate-in delay-3">
+          <div class="feature-tile" onclick="switchSubTab('solutions','automation')">
+            <div class="feature-icon purple">⚡</div>
+            <h4>Prozess-Automation</h4>
+            <p>Workflows automatisieren & beschleunigen</p>
+          </div>
+          <div class="feature-tile" onclick="switchSubTab('solutions','analytics')">
+            <div class="feature-icon orange">📊</div>
+            <h4>Smart Analytics</h4>
+            <p>KI-gestützte Datenanalyse in Echtzeit</p>
+          </div>
+          <div class="feature-tile" onclick="switchSubTab('solutions','integration')">
+            <div class="feature-icon green">🔗</div>
+            <h4>System Integration</h4>
+            <p>Nahtlose Anbindung aller Systeme</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-Tab: Automatisierung -->
+      <div class="sub-content" id="sub-solutions-automation">
+        <div class="content-grid animate-in delay-2">
+          <div class="info-card">
+            <div class="info-card-header">
+              <div class="info-card-icon purple">⚙️</div>
+              <div>
+                <h3>Workflow Engine</h3>
+                <p>Visuelle Prozessgestaltung ohne Code</p>
+              </div>
+            </div>
+            <div class="info-card-body">
+              <div class="stat-row"><div class="stat-dot" style="background:var(--purple)"></div><span class="stat-label">Zeitersparnis</span><div class="stat-bar-wrap"><div class="stat-bar" data-width="85"></div></div><span class="stat-value">85%</span></div>
+              <div class="stat-row"><div class="stat-dot" style="background:var(--orange)"></div><span class="stat-label">Fehlerrate reduziert</span><div class="stat-bar-wrap"><div class="stat-bar orange" data-width="92"></div></div><span class="stat-value">92%</span></div>
+              <div class="stat-row"><div class="stat-dot" style="background:var(--green)"></div><span class="stat-label">ROI nach 6 Monaten</span><div class="stat-bar-wrap"><div class="stat-bar green" data-width="78"></div></div><span class="stat-value">340%</span></div>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-header">
+              <div class="info-card-icon orange">🤖</div>
+              <div>
+                <h3>KI-Assistent</h3>
+                <p>Intelligente Entscheidungsunterstützung</p>
+              </div>
+            </div>
+            <div class="info-card-body">
+              <div class="process-timeline" id="timeline-auto">
+                <div class="process-line"><div class="process-line-fill"></div></div>
+                <div class="process-step completed"><div class="process-dot">📥</div><div class="process-step-title">Daten erfassen</div><div class="process-step-desc">Automatisch</div></div>
+                <div class="process-step completed"><div class="process-dot">🧠</div><div class="process-step-title">KI Analyse</div><div class="process-step-desc">Echtzeit</div></div>
+                <div class="process-step active"><div class="process-dot">📋</div><div class="process-step-title">Empfehlung</div><div class="process-step-desc">Actionable</div></div>
+                <div class="process-step"><div class="process-dot">🚀</div><div class="process-step-title">Umsetzung</div><div class="process-step-desc">One-Click</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-Tab: Analytics -->
+      <div class="sub-content" id="sub-solutions-analytics">
+        <div class="content-grid animate-in delay-2">
+          <div class="info-card full-width">
+            <div class="info-card-header">
+              <div class="info-card-icon blue">📈</div>
+              <div>
+                <h3>Echtzeit-Dashboard</h3>
+                <p>Alle KPIs auf einen Blick — live & interaktiv</p>
+              </div>
+              <div style="margin-left:auto"><span class="badge green"><span class="live-dot"></span> Live</span></div>
+            </div>
+            <div class="info-card-body">
+              <div class="kpi-strip">
+                <div class="kpi-card"><div class="kpi-value" data-count="1284">0</div><div class="kpi-label">Datenpunkte/Sek</div></div>
+                <div class="kpi-card"><div class="kpi-value orange" data-count="23" data-suffix="ms">0ms</div><div class="kpi-label">Latenz</div></div>
+                <div class="kpi-card"><div class="kpi-value green" data-count="99" data-suffix=".9%">0%</div><div class="kpi-label">Uptime</div></div>
+                <div class="kpi-card"><div class="kpi-value" data-count="16">0</div><div class="kpi-label">Datenquellen</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="feature-tile">
+            <div class="feature-icon purple">🎯</div>
+            <h4>Predictive Analytics</h4>
+            <p>Trends erkennen bevor sie entstehen</p>
+          </div>
+          <div class="feature-tile">
+            <div class="feature-icon blue">🗂️</div>
+            <h4>Custom Reports</h4>
+            <p>Berichte automatisch generieren</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-Tab: Integration -->
+      <div class="sub-content" id="sub-solutions-integration">
+        <div class="content-grid triple animate-in delay-2">
+          <div class="feature-tile">
+            <div class="feature-icon purple">☁️</div>
+            <h4>Cloud & On-Premise</h4>
+            <p>Flexible Deployment-Optionen</p>
+          </div>
+          <div class="feature-tile">
+            <div class="feature-icon orange">🔌</div>
+            <h4>API Gateway</h4>
+            <p>REST, GraphQL, Webhooks</p>
+          </div>
+          <div class="feature-tile">
+            <div class="feature-icon green">🛡️</div>
+            <h4>Enterprise Security</h4>
+            <p>ISO 27001 zertifiziert</p>
+          </div>
+          <div class="feature-tile">
+            <div class="feature-icon blue">📱</div>
+            <h4>Mobile First</h4>
+            <p>Native Apps & responsive Web</p>
+          </div>
+          <div class="feature-tile">
+            <div class="feature-icon purple">🔄</div>
+            <h4>ERP Connector</h4>
+            <p>SAP, MS Dynamics, Sage & mehr</p>
+          </div>
+          <div class="feature-tile">
+            <div class="feature-icon orange">📧</div>
+            <h4>MS 365 Integration</h4>
+            <p>Teams, Outlook, SharePoint</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION 2: SHOWCASE ═══════════════════ -->
+    <div class="section" id="sec-showcase">
+      
+      <div class="section-hero animate-in" style="background: linear-gradient(135deg, #ff9b37 0%, #e8872a 100%);">
+        <h1>Live <span style="color:#fff;">Showcase</span></h1>
+        <p>Erleben Sie unsere Technologie in Aktion. Interaktive Demos, Erfolgsgeschichten und die Zukunft der Digitalisierung — zum Anfassen.</p>
+      </div>
+
+      <!-- Sub-Tabs -->
+      <div class="sub-tabs animate-in delay-1">
+        <button class="sub-tab active" onclick="switchSubTab('showcase', 'demos')">
+          <span class="sub-tab-icon">🎮</span> Live Demos
+        </button>
+        <button class="sub-tab" onclick="switchSubTab('showcase', 'cases')">
+          <span class="sub-tab-icon">🏆</span> Success Stories
+        </button>
+        <button class="sub-tab" onclick="switchSubTab('showcase', 'roadmap')">
+          <span class="sub-tab-icon">🗺️</span> Roadmap
+        </button>
+      </div>
+
+      <!-- Sub-Tab: Live Demos -->
+      <div class="sub-content active" id="sub-showcase-demos">
+        <div class="content-grid animate-in delay-2">
+          <div class="info-card">
+            <div class="info-card-header">
+              <div class="info-card-icon purple">🎯</div>
+              <div>
+                <h3>Lead Capture Demo</h3>
+                <p>Visitenkarten scannen & CRM-Sync</p>
+              </div>
+              <div style="margin-left:auto"><span class="badge green"><span class="live-dot"></span> Interaktiv</span></div>
+            </div>
+            <div class="info-card-body" style="text-align:center; padding: 30px;">
+              <div class="feature-icon purple" style="margin: 0 auto 16px; width: 64px; height: 64px; font-size: 32px;">📸</div>
+              <h4 style="margin-bottom: 8px;">Visitenkarte scannen</h4>
+              <p style="color: var(--text-muted); margin-bottom: 16px; font-size: 13px;">Einfach abfotografieren — KI erkennt alle Kontaktdaten automatisch</p>
+              <button class="cta-btn" onclick="simulateDemo('scan')">
+                ▶ Demo starten
+              </button>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-header">
+              <div class="info-card-icon orange">📊</div>
+              <div>
+                <h3>Dashboard Demo</h3>
+                <p>Real-time Analytics erleben</p>
+              </div>
+              <div style="margin-left:auto"><span class="badge orange">Neu</span></div>
+            </div>
+            <div class="info-card-body" style="text-align:center; padding: 30px;">
+              <div class="feature-icon orange" style="margin: 0 auto 16px; width: 64px; height: 64px; font-size: 32px;">📈</div>
+              <h4 style="margin-bottom: 8px;">Live-Daten visualisiert</h4>
+              <p style="color: var(--text-muted); margin-bottom: 16px; font-size: 13px;">Sehen Sie Echtzeit-Datenströme in interaktiven Charts</p>
+              <button class="cta-btn orange" onclick="simulateDemo('dashboard')">
+                ▶ Demo starten
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Demo output area -->
+        <div class="showcase-panel animate-in delay-3" id="demoOutput" style="display:none;">
+          <div id="demoContent"></div>
+        </div>
+      </div>
+
+      <!-- Sub-Tab: Success Stories -->
+      <div class="sub-content" id="sub-showcase-cases">
+        <div class="content-grid animate-in delay-2">
+          <div class="info-card">
+            <div class="info-card-header">
+              <div class="info-card-icon green">🏭</div>
+              <div>
+                <h3>Industrie GmbH</h3>
+                <p>Fertigungsautomatisierung</p>
+              </div>
+              <div style="margin-left:auto"><span class="badge green">+340% ROI</span></div>
+            </div>
+            <div class="info-card-body">
+              <div class="stat-row"><div class="stat-dot" style="background:var(--green)"></div><span class="stat-label">Produktivität</span><div class="stat-bar-wrap"><div class="stat-bar green" data-width="89"></div></div><span class="stat-value">+89%</span></div>
+              <div class="stat-row"><div class="stat-dot" style="background:var(--orange)"></div><span class="stat-label">Kosten reduziert</span><div class="stat-bar-wrap"><div class="stat-bar orange" data-width="45"></div></div><span class="stat-value">-45%</span></div>
+              <div class="stat-row"><div class="stat-dot" style="background:var(--purple)"></div><span class="stat-label">Time-to-Market</span><div class="stat-bar-wrap"><div class="stat-bar" data-width="67"></div></div><span class="stat-value">-67%</span></div>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-header">
+              <div class="info-card-icon blue">🏥</div>
+              <div>
+                <h3>MedTech Solutions</h3>
+                <p>Digitale Patientenakte</p>
+              </div>
+              <div style="margin-left:auto"><span class="badge blue">Healthcare</span></div>
+            </div>
+            <div class="info-card-body">
+              <div class="stat-row"><div class="stat-dot" style="background:var(--blue)"></div><span class="stat-label">Digitalisierungsgrad</span><div class="stat-bar-wrap"><div class="stat-bar" data-width="95" style="background: linear-gradient(90deg, var(--blue), #60a5fa);"></div></div><span class="stat-value">95%</span></div>
+              <div class="stat-row"><div class="stat-dot" style="background:var(--green)"></div><span class="stat-label">Patientenzufriedenheit</span><div class="stat-bar-wrap"><div class="stat-bar green" data-width="91"></div></div><span class="stat-value">+91%</span></div>
+              <div class="stat-row"><div class="stat-dot" style="background:var(--orange)"></div><span class="stat-label">Verwaltungsaufwand</span><div class="stat-bar-wrap"><div class="stat-bar orange" data-width="60"></div></div><span class="stat-value">-60%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-Tab: Roadmap -->
+      <div class="sub-content" id="sub-showcase-roadmap">
+        <div class="info-card full-width animate-in delay-2">
+          <div class="info-card-header">
+            <div class="info-card-icon purple">🗺️</div>
+            <div>
+              <h3>Produkt-Roadmap 2026</h3>
+              <p>Was kommt als Nächstes</p>
+            </div>
+          </div>
+          <div class="info-card-body">
+            <div class="process-timeline" id="timeline-roadmap">
+              <div class="process-line"><div class="process-line-fill" data-width="62"></div></div>
+              <div class="process-step completed"><div class="process-dot">✅</div><div class="process-step-title">Q1 2026</div><div class="process-step-desc">KI Engine v3</div></div>
+              <div class="process-step completed"><div class="process-dot">✅</div><div class="process-step-title">Q2 2026</div><div class="process-step-desc">Mobile Suite</div></div>
+              <div class="process-step active"><div class="process-dot">🔄</div><div class="process-step-title">Q3 2026</div><div class="process-step-desc">IoT Platform</div></div>
+              <div class="process-step"><div class="process-dot">🎯</div><div class="process-step-title">Q4 2026</div><div class="process-step-desc">AR Interface</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="content-grid triple animate-in delay-3">
+          <div class="feature-tile">
+            <div class="feature-icon purple">🧠</div>
+            <h4>KI Engine v3</h4>
+            <p>Nächste Generation ML-Modelle</p>
+          </div>
+          <div class="feature-tile">
+            <div class="feature-icon orange">📱</div>
+            <h4>Mobile Suite</h4>
+            <p>Native iOS & Android Apps</p>
+          </div>
+          <div class="feature-tile">
+            <div class="feature-icon green">🌐</div>
+            <h4>IoT Platform</h4>
+            <p>Sensor-Daten in Echtzeit</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION 3: KONTAKT ═══════════════════ -->
+    <div class="section" id="sec-contact">
+      
+      <div class="section-hero animate-in" style="background: linear-gradient(135deg, #10B981 0%, #0d9668 100%);">
+        <h1>Sprechen Sie <span style="color:#fff;">mit uns</span></h1>
+        <p>Wir freuen uns auf den persönlichen Austausch. Lassen Sie uns gemeinsam herausfinden, wie OKTOPUS Ihr Unternehmen voranbringt.</p>
+      </div>
+
+      <!-- Sub-Tabs -->
+      <div class="sub-tabs animate-in delay-1">
+        <button class="sub-tab active" onclick="switchSubTab('contact', 'team')">
+          <span class="sub-tab-icon">👥</span> Unser Team
+        </button>
+        <button class="sub-tab" onclick="switchSubTab('contact', 'form')">
+          <span class="sub-tab-icon">✉️</span> Nachricht
+        </button>
+        <button class="sub-tab" onclick="switchSubTab('contact', 'meeting')">
+          <span class="sub-tab-icon">📅</span> Termin buchen
+        </button>
+      </div>
+
+      <!-- Sub-Tab: Team -->
+      <div class="sub-content active" id="sub-contact-team">
+        <div class="content-grid triple animate-in delay-2">
+          <div class="info-card" style="text-align:center;">
+            <div class="info-card-body" style="padding: 28px;">
+              <div style="width:72px; height:72px; border-radius:50%; background: linear-gradient(135deg,var(--purple),var(--purple-dark)); margin: 0 auto 12px; display:flex; align-items:center; justify-content:center; font-size:28px; color:#fff; box-shadow: var(--shadow-purple);">👨‍💼</div>
+              <h4 style="font-size:15px; font-weight:800;">Max Mustermann</h4>
+              <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">CEO & Gründer</p>
+              <div style="margin-top:12px; display:flex; gap:6px; justify-content:center;">
+                <span class="badge purple">Strategie</span>
+                <span class="badge orange">Innovation</span>
+              </div>
+            </div>
+          </div>
+          <div class="info-card" style="text-align:center;">
+            <div class="info-card-body" style="padding: 28px;">
+              <div style="width:72px; height:72px; border-radius:50%; background: linear-gradient(135deg,var(--orange),#e8872a); margin: 0 auto 12px; display:flex; align-items:center; justify-content:center; font-size:28px; color:#fff; box-shadow: 0 4px 16px rgba(255,155,55,0.3);">👩‍💻</div>
+              <h4 style="font-size:15px; font-weight:800;">Lisa Technik</h4>
+              <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">CTO</p>
+              <div style="margin-top:12px; display:flex; gap:6px; justify-content:center;">
+                <span class="badge purple">Architektur</span>
+                <span class="badge green">DevOps</span>
+              </div>
+            </div>
+          </div>
+          <div class="info-card" style="text-align:center;">
+            <div class="info-card-body" style="padding: 28px;">
+              <div style="width:72px; height:72px; border-radius:50%; background: linear-gradient(135deg,var(--green),#0d9668); margin: 0 auto 12px; display:flex; align-items:center; justify-content:center; font-size:28px; color:#fff; box-shadow: 0 4px 16px rgba(16,185,129,0.3);">👨‍🔬</div>
+              <h4 style="font-size:15px; font-weight:800;">Tom Berater</h4>
+              <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Head of Consulting</p>
+              <div style="margin-top:12px; display:flex; gap:6px; justify-content:center;">
+                <span class="badge blue">Beratung</span>
+                <span class="badge orange">Projekte</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-Tab: Nachricht -->
+      <div class="sub-content" id="sub-contact-form">
+        <div class="content-grid animate-in delay-2">
+          <div class="info-card full-width">
+            <div class="info-card-header">
+              <div class="info-card-icon green">✉️</div>
+              <div>
+                <h3>Nachricht hinterlassen</h3>
+                <p>Wir melden uns innerhalb von 24 Stunden</p>
+              </div>
+            </div>
+            <div class="info-card-body">
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                <div>
+                  <label style="font-size:11px; font-weight:700; color:var(--text-sec); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:4px;">Vorname</label>
+                  <input type="text" placeholder="Ihr Vorname" style="width:100%; padding:10px 12px; background:var(--input-bg); border:1.5px solid var(--border); border-radius:var(--radius); font-size:14px; color:var(--text); font-family:inherit; outline:none; transition: var(--transition);" onfocus="this.style.borderColor='var(--purple)'; this.style.boxShadow='0 0 0 3px var(--purple-10)'" onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none'">
+                </div>
+                <div>
+                  <label style="font-size:11px; font-weight:700; color:var(--text-sec); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:4px;">Nachname</label>
+                  <input type="text" placeholder="Ihr Nachname" style="width:100%; padding:10px 12px; background:var(--input-bg); border:1.5px solid var(--border); border-radius:var(--radius); font-size:14px; color:var(--text); font-family:inherit; outline:none; transition: var(--transition);" onfocus="this.style.borderColor='var(--purple)'; this.style.boxShadow='0 0 0 3px var(--purple-10)'" onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none'">
+                </div>
+              </div>
+              <div style="margin-bottom: 12px;">
+                <label style="font-size:11px; font-weight:700; color:var(--text-sec); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:4px;">E-Mail</label>
+                <input type="email" placeholder="ihre@email.de" style="width:100%; padding:10px 12px; background:var(--input-bg); border:1.5px solid var(--border); border-radius:var(--radius); font-size:14px; color:var(--text); font-family:inherit; outline:none; transition: var(--transition);" onfocus="this.style.borderColor='var(--purple)'; this.style.boxShadow='0 0 0 3px var(--purple-10)'" onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none'">
+              </div>
+              <div style="margin-bottom: 12px;">
+                <label style="font-size:11px; font-weight:700; color:var(--text-sec); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:4px;">Unternehmen</label>
+                <input type="text" placeholder="Ihr Unternehmen" style="width:100%; padding:10px 12px; background:var(--input-bg); border:1.5px solid var(--border); border-radius:var(--radius); font-size:14px; color:var(--text); font-family:inherit; outline:none; transition: var(--transition);" onfocus="this.style.borderColor='var(--purple)'; this.style.boxShadow='0 0 0 3px var(--purple-10)'" onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none'">
+              </div>
+              <div style="margin-bottom: 16px;">
+                <label style="font-size:11px; font-weight:700; color:var(--text-sec); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:4px;">Nachricht</label>
+                <textarea placeholder="Wie können wir Ihnen helfen?" rows="4" style="width:100%; padding:10px 12px; background:var(--input-bg); border:1.5px solid var(--border); border-radius:var(--radius); font-size:14px; color:var(--text); font-family:inherit; outline:none; resize:vertical; transition: var(--transition);" onfocus="this.style.borderColor='var(--purple)'; this.style.boxShadow='0 0 0 3px var(--purple-10)'" onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none'"></textarea>
+              </div>
+              <button class="cta-btn" onclick="showToast('Nachricht gesendet! Wir melden uns bei Ihnen.', 'success')" style="width:100%; justify-content:center;">
+                ✉️ Nachricht senden
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-Tab: Termin buchen -->
+      <div class="sub-content" id="sub-contact-meeting">
+        <div class="content-grid triple animate-in delay-2">
+          <div class="feature-tile" onclick="showToast('Termin-Slot gewählt: Vormittag', 'success')">
+            <div class="feature-icon purple">🌅</div>
+            <h4>Vormittag</h4>
+            <p>09:00 – 12:00 Uhr</p>
+          </div>
+          <div class="feature-tile" onclick="showToast('Termin-Slot gewählt: Nachmittag', 'success')">
+            <div class="feature-icon orange">☀️</div>
+            <h4>Nachmittag</h4>
+            <p>13:00 – 17:00 Uhr</p>
+          </div>
+          <div class="feature-tile" onclick="showToast('Termin-Slot gewählt: Individuell', 'success')">
+            <div class="feature-icon green">🕐</div>
+            <h4>Individuell</h4>
+            <p>Wunschtermin vereinbaren</p>
+          </div>
+        </div>
+        <div class="info-card animate-in delay-3">
+          <div class="info-card-header">
+            <div class="info-card-icon purple">📅</div>
+            <div>
+              <h3>Verfügbare Termine</h3>
+              <p>Wählen Sie einen passenden Zeitraum</p>
+            </div>
+          </div>
+          <div class="info-card-body">
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+              <button class="cta-btn" onclick="showToast('Termin Di 10:00 vorgemerkt!', 'success')" style="font-size:12px; padding:10px 14px; justify-content:center;">Di 10:00</button>
+              <button class="cta-btn" onclick="showToast('Termin Di 14:00 vorgemerkt!', 'success')" style="font-size:12px; padding:10px 14px; justify-content:center;">Di 14:00</button>
+              <button class="cta-btn" onclick="showToast('Termin Mi 09:00 vorgemerkt!', 'success')" style="font-size:12px; padding:10px 14px; justify-content:center;">Mi 09:00</button>
+              <button class="cta-btn orange" onclick="showToast('Termin Mi 15:00 vorgemerkt!', 'success')" style="font-size:12px; padding:10px 14px; justify-content:center;">Mi 15:00</button>
+              <button class="cta-btn orange" onclick="showToast('Termin Do 11:00 vorgemerkt!', 'success')" style="font-size:12px; padding:10px 14px; justify-content:center;">Do 11:00</button>
+              <button class="cta-btn orange" onclick="showToast('Termin Do 16:00 vorgemerkt!', 'success')" style="font-size:12px; padding:10px 14px; justify-content:center;">Do 16:00</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /frame -->
+
+<!-- Toast container -->
+<div class="toast" id="toast">
+  <div class="toast-icon" id="toastIcon"></div>
+  <span class="toast-text" id="toastText"></span>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     JAVASCRIPT — Offline · No Dependencies
+     ═══════════════════════════════════════════════════ -->
+<script>
+(function() {
+  'use strict';
+
+  // ─── State ──────────────────────────────────
+  let currentSection = null;
+  let idleTimer = null;
+  let idleAutoBackTimer = null;
+  let splashActivated = false;
+  const IDLE_TIMEOUT = 60000; // 60s idle → "Noch da?" prompt
+  const IDLE_AUTO_BACK = 60000; // 60s more → auto back to splash
+
+  // ─── Splash activation (like lead app) ─────
+  // First click/tap: Logo stops breathing, shrinks, CTRION letters fly in
+  // The 3 ring-segment SVG buttons open their sections directly
+  document.getElementById('splash').addEventListener('click', function(e) {
+    if (e.target.closest('.ring-btn-path')) return;
+    // Don't activate on general click — only ring buttons navigate
+  });
+
+  // Tooltip hover logic for SVG ring segments
+  const ringTooltipMap = {
+    'ringLeft': 'tt-left',
+    'ringCenter': 'tt-center',
+    'ringRight': 'tt-right'
+  };
+  document.querySelectorAll('.ring-btn-path').forEach(path => {
+    const ttClass = ringTooltipMap[path.id];
+    const tooltip = document.querySelector('.ring-tooltip.' + ttClass);
+    if (!tooltip) return;
+    path.addEventListener('mouseenter', () => {
+      tooltip.style.opacity = '1';
+      tooltip.style.transform = 'translate(-50%, 0)';
+    });
+    path.addEventListener('mouseleave', () => {
+      tooltip.style.opacity = '0';
+      tooltip.style.transform = 'translate(-50%, 8px)';
+    });
+  });
+
+  function activateSplash() {
+    if (splashActivated) return;
+    splashActivated = true;
+    stopSplashAttention();
+
+    // Hide hint
+    const hint = document.getElementById('splashHint');
+    if (hint) hint.style.opacity = '0';
+
+    // Shrink O to its text position in OCTRION (like lead app)
+    const oLogo = document.getElementById('splashO');
+    oLogo.classList.add('to-text');
+    oLogo.style.opacity = '1';
+
+    // Expand letters container immediately so flex reflow stays smooth
+    const lettersBox = document.getElementById('splashLetters');
+    lettersBox.classList.add('expand');
+
+    // Fly in letters one by one: C, T, R, I, O, N (10% slower timing)
+    const letters = document.querySelectorAll('#splashLetters .splash-letter');
+    letters.forEach((el, i) => {
+      setTimeout(() => el.classList.add('fly-in'), 550 + i * 143);
+    });
+
+  }
+
+  // ─── Open section from splash (ring segment buttons) ──────────────
+  window.openSection = function(section) {
+    // Run activation animation, then transition
+    if (!splashActivated) {
+      activateSplash();
+      // Wait for wordmark animation, then transition quickly
+      const letters = document.querySelectorAll('#splashLetters .splash-letter');
+      const animTime = 550 + letters.length * 143 + 600; // less wait after letters
+      setTimeout(() => {
+        // Prepare app frame behind splash before fading
+        document.getElementById('appFrame').style.display = 'flex';
+        document.getElementById('appFrame').style.opacity = '0';
+        document.getElementById('appFrame').style.transform = 'translateY(20px)';
+        document.getElementById('appFrame').style.transition = 'opacity 0.8s cubic-bezier(0.4,0,0.2,1), transform 0.8s cubic-bezier(0.4,0,0.2,1)';
+        // Fade out splash
+        document.getElementById('splash').classList.add('fade-out');
+        // Simultaneously fade in app frame
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            document.getElementById('appFrame').style.opacity = '1';
+            document.getElementById('appFrame').style.transform = 'translateY(0)';
+          });
+        });
+        setTimeout(() => {
+          document.getElementById('splash').style.display = 'none';
+          switchSection(section);
+          resetIdle();
+          // Clean up inline transition styles
+          document.getElementById('appFrame').style.transition = '';
+          document.getElementById('appFrame').style.transform = '';
+        }, 1000);
+      }, animTime);
+    } else {
+      document.getElementById('appFrame').style.display = 'flex';
+      document.getElementById('appFrame').style.opacity = '0';
+      document.getElementById('appFrame').style.transform = 'translateY(20px)';
+      document.getElementById('appFrame').style.transition = 'opacity 0.8s cubic-bezier(0.4,0,0.2,1), transform 0.8s cubic-bezier(0.4,0,0.2,1)';
+      document.getElementById('splash').classList.add('fade-out');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.getElementById('appFrame').style.opacity = '1';
+          document.getElementById('appFrame').style.transform = 'translateY(0)';
+        });
+      });
+      setTimeout(() => {
+        document.getElementById('splash').style.display = 'none';
+        switchSection(section);
+        resetIdle();
+        document.getElementById('appFrame').style.transition = '';
+        document.getElementById('appFrame').style.transform = '';
+      }, 1000);
+    }
+  };
+
+  // ─── Section switching (top tabs) ──────────
+  window.switchSection = function(section) {
+    currentSection = section;
+    
+    // Update tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.section === section);
+    });
+
+    // Show section
+    document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+    const target = document.getElementById('sec-' + section);
+    if (target) {
+      target.classList.add('active');
+      animateBars(target);
+      animateCounters(target);
+      animateTimelines(target);
+    }
+
+    resetIdle();
+  };
+
+  // ─── Sub-tab switching ─────────────────────
+  window.switchSubTab = function(section, tab) {
+    // Update sub-tab buttons within the section
+    const sec = document.getElementById('sec-' + section);
+    if (!sec) return;
+
+    sec.querySelectorAll('.sub-tab').forEach(btn => {
+      const tabName = btn.onclick.toString().match(/'(\w+)'\s*\)/);
+      if (tabName) {
+        btn.classList.toggle('active', tabName[1] === tab);
+      }
+    });
+
+    // Show sub-content
+    sec.querySelectorAll('.sub-content').forEach(sc => sc.classList.remove('active'));
+    const target = document.getElementById('sub-' + section + '-' + tab);
+    if (target) {
+      target.classList.add('active');
+      // Re-trigger animations
+      setTimeout(() => {
+        animateBars(target);
+        animateCounters(target);
+        animateTimelines(target);
+      }, 100);
+    }
+
+    resetIdle();
+  };
+
+  // ─── Back to splash ────────────────────────
+  window.backToSplash = function() {
+    document.getElementById('appFrame').style.display = 'none';
+    const splash = document.getElementById('splash');
+    splash.style.display = 'flex';
+    splash.classList.remove('fade-out');
+
+    // Reset splash state
+    splashActivated = false;
+    const oLogo = document.getElementById('splashO');
+    oLogo.classList.remove('to-text');
+    oLogo.style.opacity = '';
+    document.getElementById('splashLetters').classList.remove('expand');
+    document.querySelectorAll('#splashLetters .splash-letter').forEach(el => {
+      el.classList.remove('fly-in');
+    });
+    const hint = document.getElementById('splashHint');
+    if (hint) hint.style.opacity = '';
+
+    currentSection = null;
+    resetIdle();
+    startSplashAttention();
+  };
+
+  // ─── Animate stat bars ─────────────────────
+  function animateBars(container) {
+    const bars = container.querySelectorAll('.stat-bar[data-width]');
+    bars.forEach((bar, i) => {
+      bar.style.width = '0';
+      setTimeout(() => {
+        bar.style.width = bar.dataset.width + '%';
+      }, 100 + i * 80);
+    });
+  }
+
+  // ─── Animate counters ─────────────────────
+  function animateCounters(container) {
+    const counters = container.querySelectorAll('.kpi-value[data-count]');
+    counters.forEach(el => {
+      const target = parseInt(el.dataset.count);
+      const suffix = el.dataset.suffix || '';
+      let current = 0;
+      const step = Math.max(1, Math.floor(target / 40));
+      const interval = setInterval(() => {
+        current += step;
+        if (current >= target) {
+          current = target;
+          clearInterval(interval);
+        }
+        el.textContent = current + suffix;
+      }, 30);
+    });
+  }
+
+  // ─── Animate timelines ─────────────────────
+  function animateTimelines(container) {
+    const fills = container.querySelectorAll('.process-line-fill');
+    fills.forEach(fill => {
+      const w = fill.dataset.width || '62';
+      fill.style.width = '0';
+      setTimeout(() => { fill.style.width = w + '%'; }, 300);
+    });
+  }
+
+  // ─── Demo simulation ──────────────────────
+  window.simulateDemo = function(type) {
+    const output = document.getElementById('demoOutput');
+    const content = document.getElementById('demoContent');
+    output.style.display = 'block';
+
+    if (type === 'scan') {
+      content.innerHTML = `
+        <div style="text-align:center; padding: 20px 0;">
+          <div style="width:60px; height:60px; border-radius:50%; border:3px solid var(--purple-15); border-top-color:var(--purple); animation: spin 0.8s linear infinite; margin: 0 auto 16px;"></div>
+          <h4 style="color:var(--purple); margin-bottom:8px;">📸 Kamera wird aktiviert...</h4>
+          <p style="color:var(--text-muted); font-size:13px;">Visitenkarte in den Rahmen halten</p>
+        </div>
+      `;
+      setTimeout(() => {
+        content.innerHTML = `
+          <div style="text-align:center; padding: 20px 0;">
+            <div style="font-size:48px; margin-bottom:12px;">✅</div>
+            <h4 style="color:var(--green); margin-bottom:12px;">Kontaktdaten erkannt!</h4>
+            <div style="background:var(--green-bg); border-radius:var(--radius); padding:16px; text-align:left; max-width:360px; margin:0 auto;">
+              <div style="font-size:13px; color:var(--text); margin-bottom:6px;"><strong>Name:</strong> Dr. Sarah Schmidt</div>
+              <div style="font-size:13px; color:var(--text); margin-bottom:6px;"><strong>Firma:</strong> TechVision GmbH</div>
+              <div style="font-size:13px; color:var(--text); margin-bottom:6px;"><strong>E-Mail:</strong> s.schmidt@techvision.de</div>
+              <div style="font-size:13px; color:var(--text);"><strong>Tel:</strong> +49 123 456789</div>
+            </div>
+            <button class="cta-btn" style="margin-top:16px;" onclick="showToast('Kontakt im CRM gespeichert!', 'success')">
+              💾 Im CRM speichern
+            </button>
+          </div>
+        `;
+      }, 2000);
+    } else if (type === 'dashboard') {
+      content.innerHTML = `
+        <div style="padding: 20px 0;">
+          <h4 style="color:var(--orange); margin-bottom:16px; text-align:center;">📊 Live-Dashboard Simulation</h4>
+          <div class="kpi-strip" style="margin-bottom: 20px;">
+            <div class="kpi-card"><div class="kpi-value" data-count="2847" style="font-size:24px;">0</div><div class="kpi-label">Besucher heute</div></div>
+            <div class="kpi-card"><div class="kpi-value orange" data-count="156" style="font-size:24px;">0</div><div class="kpi-label">Leads erfasst</div></div>
+            <div class="kpi-card"><div class="kpi-value green" data-count="89" data-suffix="%" style="font-size:24px;">0%</div><div class="kpi-label">Conversion</div></div>
+            <div class="kpi-card"><div class="kpi-value" data-count="42" style="font-size:24px;">0</div><div class="kpi-label">Demos heute</div></div>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+            <div style="background:var(--purple-bg); border-radius:var(--radius); padding:16px;">
+              <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">Top Interesse</div>
+              <div style="font-size:15px; font-weight:800; color:var(--purple);">⚡ Automatisierung</div>
+            </div>
+            <div style="background:var(--orange-bg); border-radius:var(--radius); padding:16px;">
+              <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">Beliebteste Demo</div>
+              <div style="font-size:15px; font-weight:800; color:var(--orange);">📸 Lead Capture</div>
+            </div>
+          </div>
+        </div>
+      `;
+      setTimeout(() => animateCounters(content), 200);
+    }
+
+    resetIdle();
+  };
+
+  // ─── Toast ─────────────────────────────────
+  window.showToast = function(msg, type) {
+    const toast = document.getElementById('toast');
+    const icon = document.getElementById('toastIcon');
+    const text = document.getElementById('toastText');
+    text.textContent = msg;
+    
+    const icons = {
+      success: { bg: 'var(--green)', svg: '<svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' },
+      error:   { bg: 'var(--red)', svg: '<svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>' },
+      info:    { bg: 'var(--purple)', svg: '<svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>' }
+    };
+    const i = icons[type] || icons.info;
+    icon.style.background = i.bg;
+    icon.innerHTML = i.svg;
+
+    toast.className = 'toast show';
+    setTimeout(() => { toast.className = 'toast'; }, 3000);
+  };
+
+  // ─── Idle / Screensaver ────────────────────
+  function resetIdle() {
+    clearTimeout(idleTimer);
+    clearTimeout(idleAutoBackTimer);
+    const overlay = document.getElementById('idleOverlay');
+    overlay.classList.remove('active');
+    // Restart countdown animation
+    const card = overlay.querySelector('.idle-card');
+    if (card) { card.style.animation = 'none'; void card.offsetWidth; card.style.animation = ''; }
+    idleTimer = setTimeout(goIdle, IDLE_TIMEOUT);
+  }
+
+  function goIdle() {
+    if (!currentSection) return; // Already on splash
+    const overlay = document.getElementById('idleOverlay');
+    overlay.classList.add('active');
+    // After another 60s, auto-return to splash
+    idleAutoBackTimer = setTimeout(() => {
+      overlay.classList.remove('active');
+      backToSplash();
+    }, IDLE_AUTO_BACK);
+  }
+
+  // "Ja, weiter!" button → dismiss & reset
+  document.getElementById('idleStayBtn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    resetIdle();
+  });
+
+  // Touch/click on overlay background → also dismiss
+  document.getElementById('idleOverlay').addEventListener('click', function(e) {
+    if (e.target === this) resetIdle();
+  });
+
+  // Reset idle on any interaction
+  ['touchstart', 'click', 'mousemove', 'scroll'].forEach(evt => {
+    document.addEventListener(evt, resetIdle, { passive: true });
+  });
+
+  // ─── Spin animation (used in demo) ────────
+  const spinStyle = document.createElement('style');
+  spinStyle.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+  document.head.appendChild(spinStyle);
+
+  // ─── Splash idle attention: flash tooltips after inactivity ────
+  let splashAttentionTimer = null;
+  let splashAttentionInterval = null;
+  const SPLASH_ATTENTION_DELAY = 4000; // 8s before first attention flash
+  const SPLASH_ATTENTION_REPEAT = 4000; // repeat every 12s
+
+  function startSplashAttention() {
+    stopSplashAttention();
+    splashAttentionTimer = setTimeout(() => {
+      flashTooltipsSequence();
+      splashAttentionInterval = setInterval(flashTooltipsSequence, SPLASH_ATTENTION_REPEAT);
+    }, SPLASH_ATTENTION_DELAY);
+  }
+
+  function stopSplashAttention() {
+    clearTimeout(splashAttentionTimer);
+    clearInterval(splashAttentionInterval);
+    splashAttentionTimer = null;
+    splashAttentionInterval = null;
+    // Remove any active flash classes
+    document.querySelectorAll('.ring-tooltip').forEach(tt => {
+      tt.classList.remove('attention-flash');
+    });
+  }
+
+  function flashTooltipsSequence() {
+    if (splashActivated) { stopSplashAttention(); return; }
+    const tooltips = [
+      document.querySelector('.ring-tooltip.tt-left'),
+      document.querySelector('.ring-tooltip.tt-center'),
+      document.querySelector('.ring-tooltip.tt-right')
+    ];
+    tooltips.forEach((tt, i) => {
+      if (!tt) return;
+      setTimeout(() => {
+        tt.classList.remove('attention-flash');
+        // Force reflow to restart animation
+        void tt.offsetWidth;
+        tt.classList.add('attention-flash');
+        // Clean up after animation ends
+        setTimeout(() => tt.classList.remove('attention-flash'), 1600);
+      }, i * 400); // stagger: 0ms, 400ms, 800ms
+    });
+  }
+
+  // Reset splash attention on any touch/interaction while on splash
+  ['touchstart', 'click', 'mousemove'].forEach(evt => {
+    document.getElementById('splash').addEventListener(evt, function() {
+      if (!splashActivated) startSplashAttention();
+    }, { passive: true });
+  });
+
+  // Start attention timer on load
+  startSplashAttention();
+
+  // ─── Init ──────────────────────────────────
+  resetIdle();
+
+  // ═══════════════════════════════════════════════════════════════
+  // DEBUG-MODUS: Taste "D" → Ring-Segmente farbig anzeigen
+  // ═══════════════════════════════════════════════════════════════
+  let debugActive = false;
+  const debugFills = {
+    'ringLeft': '#ff336660',
+    'ringCenter': '#33cc6660',
+    'ringRight': '#3399ff60'
+  };
+  const debugStrokes = {
+    'ringLeft': '#ff3366',
+    'ringCenter': '#33cc66',
+    'ringRight': '#3399ff'
+  };
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'd' || e.key === 'D') {
+      debugActive = !debugActive;
+      document.querySelectorAll('.ring-btn-path').forEach(path => {
+        if (debugActive) {
+          path.setAttribute('fill', debugFills[path.id]);
+          path.setAttribute('stroke', debugStrokes[path.id]);
+          path.setAttribute('stroke-width', '4');
+        } else {
+          path.setAttribute('fill', 'transparent');
+          path.setAttribute('stroke', 'transparent');
+          path.setAttribute('stroke-width', '0');
+        }
+      });
+      console.log(debugActive
+        ? '🔧 DEBUG ON — Ring-Segmente sichtbar (rot=Links, grün=Mitte, blau=Rechts)'
+        : '🔧 DEBUG OFF');
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
